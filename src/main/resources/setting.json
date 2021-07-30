@@ -1,0 +1,24 @@
+{
+  "admins": [
+    165485
+  ],
+  "config": {
+    "token": {
+      "acgmx":null,
+      "saucenao": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    }
+  },
+  "command": {
+    "getDetailOfId": "psid-",
+    "picToSearch": "ptst-",
+    "showRank":"rank-",
+    "findUserWorksById": "user-"
+  },
+  "groups": [
+    123456,548795
+  ]
+}
