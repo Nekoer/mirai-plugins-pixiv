@@ -10,6 +10,7 @@ import com.hcyacg.config.Config.groups
 import com.hcyacg.config.Config.host
 import com.hcyacg.config.Config.picToSearch
 import com.hcyacg.config.Config.port
+import com.hcyacg.config.Config.recall
 import com.hcyacg.config.Config.saucenao
 import com.hcyacg.config.Config.showRank
 import net.mamoe.mirai.utils.MiraiLogger
@@ -59,6 +60,8 @@ class Configuration {
                 val token: JSONObject = JSONObject.parseObject(config.getString("token"))
                 acgmx = token.getString("acgmx")
                 saucenao = token.getString("saucenao")
+
+                recall = config.getLong("recall")
                 //设置http请求代理
                 val proxy: JSONObject = JSONObject.parseObject(config.getString("proxy"))
                 host = proxy.getString("host")

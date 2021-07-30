@@ -10,7 +10,8 @@
     "proxy": {
       "host": null,
       "port": null
-    }
+    },
+    "recall": 5000
   },
   "command": {
     "getDetailOfId": "psid-",

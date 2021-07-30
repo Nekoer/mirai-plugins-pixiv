@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject
 import com.hcyacg.config.Config.getDetailOfId
 import com.hcyacg.config.Config.acgmx
 import com.hcyacg.config.Config.groups
+import com.hcyacg.config.Config.recall
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
 import com.hcyacg.utils.RequestUtil.Companion.request
@@ -31,14 +32,14 @@ class PicDetails {
 
 
     suspend fun getDetailOfId(event: GroupMessageEvent, logger: MiraiLogger) {
-        var data: JSONObject? = null
+        var data: JSONObject?
         val messageChain: MessageChain = event.message
 
         /**
          * 获取要查询的id和图片的张数，通过分割获取
          */
         var id: String? = null
-        var page: String? = null
+        var page: String?
         try {
             page = getDetailOfId?.let { messageChain.content.replace(it, "").replace(" ","").split("-")[1] }
         } catch (e: Exception) {
@@ -140,7 +141,16 @@ class PicDetails {
             message.plus("\n").plus("您未配置acgmx_token,请到https://www.acgmx.com/account申请")
         }
 
-        event.subject.sendMessage(message)
+        /**
+         * 判断是否配置了撤回时间
+         */
+
+        if (sanityLevel == 6 && !StringUtils.isBlank(recall.toString())){
+            event.subject.sendMessage(message).recallIn(recall)
+        }else{
+            event.subject.sendMessage(message)
+        }
+
     }
 
 

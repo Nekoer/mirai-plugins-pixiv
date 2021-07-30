@@ -10,6 +10,7 @@ object Config {
     var groups: JSONArray = JSONArray.parseArray("[]")
     var acgmx : String? = null
     var saucenao : String? = null
+    var recall : Long = 5000
 
     var host : String? = null
     var port : Int? = null
