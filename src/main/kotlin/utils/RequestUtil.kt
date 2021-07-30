@@ -19,6 +19,8 @@ class RequestUtil {
 
         fun request(method: Method, uri: String, body: RequestBody?, headers: Headers,logger:MiraiLogger): JSONObject? {
 //            var backData = JSONObject.parseObject("")
+
+
             /**
              * 进行请求转发
              */
@@ -45,18 +47,26 @@ class RequestUtil {
          */
         private fun http(request: Request,logger:MiraiLogger): JSONObject? {
             var response: Response? = null
-            response = if (null == host || null == port){
-                client.build().newCall(request).execute()
-            }else{
-                val proxy = Proxy(Proxy.Type.HTTP,InetSocketAddress(host, port!!))
-                client.proxy(proxy).build().newCall(request).execute()
-            }
+            try{
+
+                response = if (null == host || null == port){
+                    client.build().newCall(request).execute()
+                }else{
+                    val proxy = Proxy(Proxy.Type.HTTP,InetSocketAddress(host, port!!))
+                    client.proxy(proxy).build().newCall(request).execute()
+                }
 
 
-            if (response.isSuccessful) {
-                return JSONObject.parseObject(response.body?.string())
+                if (response.isSuccessful) {
+                    return JSONObject.parseObject(response.body?.string())
+                }
+                return null
+            }catch (e : Exception){
+                logger.error(e.message)
+                return null
+            }finally {
+                response?.close()
             }
-            return null
         }
 
         /**
