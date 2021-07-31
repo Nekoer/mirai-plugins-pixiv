@@ -1,2 +1,37 @@
 # mirai-plugins-pixiv
 可查看pixiv排行榜，作者作品，插画图片等等
+ - pixiv排行榜
+ - 查看图片
+ - 查看作者作品
+ - 搜图
+ - 搜番
+
+```
+{
+  "admins": [
+    165485 #管理员
+  ],
+  "config": {
+    "token": {
+      "acgmx":null, # https://www.acgmx.com/account申请
+      "saucenao": null, #saucenao.com注册账号后能看到api_key
+      "trace": null #暂时不用管
+    },
+    "proxy": { # http请求代理
+      "host": null, 
+      "port": null
+    },
+    "recall": 5000 # 涩图经过多少秒撤回
+  },
+  "command": {
+    "getDetailOfId": "psid-", #根据id查看插画
+    "picToSearch": "ptst-", #以图搜图
+    "showRank":"rank-", #排行榜 day|week|month|setu
+    "findUserWorksById": "user-", #查看作者作品
+    "searchInfoByPic": "ptsf-" 以图搜番
+  },
+  "groups": [
+    123456,548795 #有涩图权限的群
+  ]
+}
+```
