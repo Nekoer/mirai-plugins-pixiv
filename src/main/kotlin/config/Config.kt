@@ -8,8 +8,13 @@ import com.alibaba.fastjson.JSONArray
 object Config {
     var admins: JSONArray = JSONArray.parseArray("[]")
     var groups: JSONArray = JSONArray.parseArray("[]")
+
+
     var acgmx : String? = null
     var saucenao : String? = null
+    var trace : String? = null
+
+
     var recall : Long = 5000
 
     var host : String? = null
@@ -19,4 +24,5 @@ object Config {
     var picToSearch : String? = null
     var showRank : String? = null
     var findUserWorksById : String? = null
+    var searchInfoByPic : String? = null
 }

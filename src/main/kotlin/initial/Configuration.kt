@@ -12,6 +12,7 @@ import com.hcyacg.config.Config.picToSearch
 import com.hcyacg.config.Config.port
 import com.hcyacg.config.Config.recall
 import com.hcyacg.config.Config.saucenao
+import com.hcyacg.config.Config.searchInfoByPic
 import com.hcyacg.config.Config.showRank
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
@@ -72,6 +73,7 @@ class Configuration {
                 picToSearch = command.getString("picToSearch")
                 showRank = command.getString("showRank")
                 findUserWorksById = command.getString("findUserWorksById")
+                searchInfoByPic = command.getString("searchInfoByPic")
 
             }
         }

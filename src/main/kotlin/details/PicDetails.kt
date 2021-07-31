@@ -120,7 +120,7 @@ class PicDetails {
 
 //        val imageId: String = event.group.uploadImage(ByteArrayInputStream(ImageUtil.getImageFromPixiv(large)?.toByteArray().toExternalResource())).imageId
 //        ImageUtil.getImageFromPixiv(large)?.toByteArray()?.toExternalResource()!!.sendAsImageTo(event.group)
-        val imageId: String = ImageUtil.getImageFromPixiv(large)?.toByteArray()?.toExternalResource()
+        val imageId: String = ImageUtil.getImage(large)?.toByteArray()?.toExternalResource()
             ?.uploadAsImage(event.group)!!.imageId
 
 //        ImageUtil.getImageFromPixiv(large)?.toByteArray()?.toExternalResource()?.let { event.subject.sendImage(it) }

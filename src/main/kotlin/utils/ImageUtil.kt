@@ -9,6 +9,7 @@ import okhttp3.Response
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 class ImageUtil {
     companion object {
@@ -20,7 +21,7 @@ class ImageUtil {
         /**
          * 将图片链接读取到内存转换成ByteArrayOutputStream，方便操作
          */
-        fun getImageFromPixiv(imageUri: String): ByteArrayOutputStream? {
+        fun getImage(imageUri: String): ByteArrayOutputStream? {
 
 //            val request: Request = Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).get().build()
             val request: Request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
@@ -40,6 +41,16 @@ class ImageUtil {
             infoStream.write((Math.random() * 100).toInt() + 1)
             infoStream.close()
             return infoStream
+        }
+
+        /**
+         * 将图片链接读取到内存转换成ByteArrayOutputStream，方便操作
+         */
+        fun getVideo(videoUri: String): InputStream? {
+
+//            val request: Request = Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).get().build()
+            val request: Request = Request.Builder().url(videoUri).get().build()
+            return client.newCall(request).execute().body?.byteStream()
         }
     }
 }

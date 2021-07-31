@@ -3,6 +3,7 @@ package com.hcyacg.search
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.config.Config.saucenao
+import com.hcyacg.config.Config.picToSearch
 import com.hcyacg.plugin.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
@@ -112,7 +113,7 @@ class Saucenao {
 
             }
         }catch (e:Exception){
-            event.subject.sendMessage("请输入正确的命令 ${saucenao}图片")
+            event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
         }
 
     }
@@ -142,7 +143,7 @@ class Saucenao {
                 throw RuntimeException("搜索到的插画id为空")
             }
 
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
                 At(event.sender).plus("\r\n").plus(Image(imageId)).plus("\r\n")
@@ -186,7 +187,7 @@ class Saucenao {
             if (StringUtils.isBlank(danbooruId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
                 At(event.sender).plus("\r\n")
@@ -230,7 +231,7 @@ class Saucenao {
             if (StringUtils.isBlank(seigaId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
@@ -280,7 +281,7 @@ class Saucenao {
             if (StringUtils.isBlank(daId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
@@ -329,7 +330,7 @@ class Saucenao {
             if (StringUtils.isBlank(bcyId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
@@ -378,7 +379,7 @@ class Saucenao {
             if (StringUtils.isBlank(mdId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
@@ -425,7 +426,7 @@ class Saucenao {
             if (StringUtils.isBlank(nijieId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
@@ -476,7 +477,7 @@ class Saucenao {
             if (StringUtils.isBlank(drawrID)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImageFromPixiv(thumbnail)?.toByteArray()?.toExternalResource()
+            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
                 ?.uploadAsImage(event.group)!!.imageId
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 

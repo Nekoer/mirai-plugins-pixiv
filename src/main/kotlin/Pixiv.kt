@@ -6,6 +6,7 @@ import com.hcyacg.details.UserDetails
 import com.hcyacg.initial.Configuration.Companion.init
 import com.hcyacg.rank.Rank
 import com.hcyacg.search.Saucenao
+import com.hcyacg.search.Trace
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -43,6 +44,10 @@ object Pixiv : KotlinPlugin(
 
             if (event.message.content.indexOf(Config.findUserWorksById.toString()) >= 0){
                 UserDetails().findUserWorksById(event, logger)
+            }
+
+            if (event.message.content.indexOf(Config.searchInfoByPic.toString()) >= 0){
+                Trace().searchInfoByPic(event, logger)
             }
 
         }

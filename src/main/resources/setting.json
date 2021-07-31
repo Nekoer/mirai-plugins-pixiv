@@ -5,7 +5,8 @@
   "config": {
     "token": {
       "acgmx":null,
-      "saucenao": null
+      "saucenao": null,
+      "trace": null
     },
     "proxy": {
       "host": null,
@@ -17,7 +18,8 @@
     "getDetailOfId": "psid-",
     "picToSearch": "ptst-",
     "showRank":"rank-",
-    "findUserWorksById": "user-"
+    "findUserWorksById": "user-",
+    "searchInfoByPic": "ptsf-"
   },
   "groups": [
     123456,548795
