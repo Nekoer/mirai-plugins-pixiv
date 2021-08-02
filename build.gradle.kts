@@ -7,8 +7,8 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.3"
-//version = "1.3-FFmpeg"
+version = "1.4"
+//version = "1.4-FFmpeg"
 
 repositories {
     mavenLocal()
@@ -18,10 +18,11 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("org.wso2.apache.httpcomponents:httpclient:4.3.1.wso2v1")
     implementation("com.squareup.okhttp3:okhttp:4.2.2")
     implementation("com.alibaba:fastjson:1.2.76")
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+
     compileOnly("com.madgag:animated-gif-lib:1.4")
     compileOnly("org.bytedeco:javacv-platform:1.5.5")
 

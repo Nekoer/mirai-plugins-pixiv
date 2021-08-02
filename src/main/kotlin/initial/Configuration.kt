@@ -24,8 +24,11 @@ class Configuration {
         private val fileDirectory: File =
             File(systemPath + File.separator + "config" + File.separator + "com.hcyacg.pixiv")
         private val file: File = File(fileDirectory.path + File.separator + "setting.json")
+        private val tracePath: File =
+            File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
         var projectJson: JSONObject = JSONObject.parseObject("{}")
         private val logger = MiraiLogger.create("Bot")
+
 
         /**
          * 初始化插件各项配置
@@ -34,8 +37,14 @@ class Configuration {
             /**
              * 不存在配置文件将自动创建
              */
+//            if (!tracePath.exists()){
+//                tracePath.mkdirs()
+//            }
+
             if (!fileDirectory.exists() || !file.exists()) {
+
                 fileDirectory.mkdirs()
+                tracePath.mkdirs()
                 file.createNewFile()
                 val resourceAsStream: InputStream? =
                     Configuration::class.java.classLoader.getResourceAsStream("setting.json")
