@@ -60,9 +60,11 @@ class RequestUtil {
                 if (response.isSuccessful) {
                     return JSONObject.parseObject(response.body?.string())
                 }
+
                 return null
             }catch (e : Exception){
-                logger.error(e.message)
+                e.printStackTrace()
+//                logger.error(e.message)
                 return null
             }finally {
                 response?.close()

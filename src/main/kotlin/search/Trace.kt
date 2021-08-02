@@ -19,6 +19,7 @@ import okhttp3.Headers
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.closeQuietly
+import org.apache.commons.lang3.StringUtils
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.ByteArrayOutputStream
@@ -54,6 +55,7 @@ class Trace {
                 headers.build(),
                 logger
             )
+//                logger.warning(data.toString())
             val result = JSONArray.parseArray(data!!.getString("result"))
 
             val message: Message = At(event.sender).plus("\n")
@@ -78,17 +80,22 @@ class Trace {
                 .toString().toRequestBody()
             val tempData = RequestUtil.request(
                 RequestUtil.Companion.Method.POST,
-                "https://trace.moe/anilist/",
+                "https://graphql.anilist.co",
                 requestBody,
                 headers.build(),
                 logger
             )
 
-            val cn = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("chinese")
-            val jp = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData.getString("data")).getString("Media")).getString("title")).getString("native")
+
+
+//            val cn = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("chinese")
+            val jp = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("native")
             val coverImage = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData.getString("data")).getString("Media")).getString("coverImage")).getString("extraLarge")
             var externalResource = ImageUtil.getImage(coverImage)!!.toByteArray().toExternalResource()
             val imageId: String = externalResource.uploadAsImage(event.group).imageId
+
+
+
             //开始时间
             val formatter = SimpleDateFormat("HH:mm:ss")
             formatter.timeZone = TimeZone.getTimeZone("GMT+00:00")
@@ -98,8 +105,8 @@ class Trace {
             event.subject.sendMessage(
                 message
                     .plus(Image(imageId)).plus("\n")
-                    .plus("番名：${cn}").plus("\n")
-                    .plus("日文名：${jp}").plus("\n")
+//                    .plus("番名：${cn}").plus("\n")
+                    .plus("番名：${jp}").plus("\n")
                     .plus("别名：${fileName}").plus("\n")
                     .plus("集数：${episode}").plus("\n")
                     .plus("出现在：${startTime} - $endTime").plus("\n")
@@ -111,7 +118,10 @@ class Trace {
              */
             externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!,logger).toByteArray().toExternalResource()
             event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
-        }catch (e:Exception){
+        }catch (e:IllegalStateException){
+//            e.printStackTrace()
+//            event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
+        }catch (e:IllegalStateException){
             e.printStackTrace()
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
         }
@@ -141,6 +151,9 @@ class Trace {
             }
             return infoStream
         }catch (e:Exception){
+//            e.printStackTrace()
+            return infoStream
+        }catch(e:NoClassDefFoundError){
             logger.error("您未使用FFmpeg版本,将缺少视频转Gif的功能")
             return infoStream
         }
