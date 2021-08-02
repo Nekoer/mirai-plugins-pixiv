@@ -109,7 +109,7 @@ class Trace {
             /**
              * 发送视频文件
              */
-            externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!).toByteArray().toExternalResource()
+            externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!,logger).toByteArray().toExternalResource()
             event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
         }catch (e:Exception){
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
@@ -117,25 +117,30 @@ class Trace {
     }
 
     @Throws(Exception::class)
-    private fun video2Gif(videoPath: InputStream): ByteArrayOutputStream {
+    private fun video2Gif(videoPath: InputStream,logger:MiraiLogger): ByteArrayOutputStream {
         val infoStream = ByteArrayOutputStream()
 
-        FFmpegFrameGrabber(videoPath).use { grabber ->
-            grabber.start()
-            val frames: Int = grabber.lengthInFrames
-            val encoder = AnimatedGifEncoder()
-            encoder.setFrameRate(frames.toFloat())
-            encoder.start(infoStream)
-            val converter = Java2DFrameConverter()
-            var i = 0
-            while (i < frames) {
-                // 8帧合成1帧？（反正越大动图越小、越快）
-                encoder.setDelay(grabber.delayedTime.toInt())
-                encoder.addFrame(converter.convert(grabber.grabImage()))
-                grabber.frameNumber = i
-                i += 8
+        try{
+            FFmpegFrameGrabber(videoPath).use { grabber ->
+                grabber.start()
+                val frames: Int = grabber.lengthInFrames
+                val encoder = AnimatedGifEncoder()
+                encoder.setFrameRate(frames.toFloat())
+                encoder.start(infoStream)
+                val converter = Java2DFrameConverter()
+                var i = 0
+                while (i < frames) {
+                    // 8帧合成1帧？（反正越大动图越小、越快）
+                    encoder.setDelay(grabber.delayedTime.toInt())
+                    encoder.addFrame(converter.convert(grabber.grabImage()))
+                    grabber.frameNumber = i
+                    i += 8
+                }
+                encoder.finish()
             }
-            encoder.finish()
+            return infoStream
+        }catch (e:Exception){
+            logger.error("您未使用FFmpeg版本,将缺少视频转Gif的功能")
             return infoStream
         }
     }

@@ -113,6 +113,7 @@ class Saucenao {
 
             }
         }catch (e:Exception){
+            e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
         }
 
