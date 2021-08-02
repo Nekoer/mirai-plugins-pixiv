@@ -112,6 +112,7 @@ class Trace {
             externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!,logger).toByteArray().toExternalResource()
             event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
         }catch (e:Exception){
+            e.printStackTrace()
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
         }
     }
