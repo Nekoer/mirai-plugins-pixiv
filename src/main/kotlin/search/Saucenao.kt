@@ -8,7 +8,6 @@ import com.hcyacg.plugin.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
-import com.hcyacg.utils.ImageUtil.Companion.sogoUpload
 import com.hcyacg.utils.RequestUtil
 import net.mamoe.mirai.event.events.GroupMemberEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent

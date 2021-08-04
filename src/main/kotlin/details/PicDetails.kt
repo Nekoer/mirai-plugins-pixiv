@@ -32,7 +32,7 @@ class PicDetails {
 
 
     suspend fun getDetailOfId(event: GroupMessageEvent, logger: MiraiLogger) {
-        var data: JSONObject?
+        val data: JSONObject?
         val messageChain: MessageChain = event.message
 
         /**
