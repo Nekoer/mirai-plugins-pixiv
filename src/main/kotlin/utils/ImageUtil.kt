@@ -37,7 +37,7 @@ class ImageUtil {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
             .add("Referer", "https://www.pixiv.net")
-
+        private var isChange:Boolean = false
 
 
 
@@ -51,24 +51,33 @@ class ImageUtil {
          */
         fun getImage(imageUri: String): ByteArrayOutputStream {
 
-//            val request: Request = Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).get().build()
-            val request: Request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
-
-            val infoStream = ByteArrayOutputStream()
-            val response: Response = client.build().newCall(request).execute();
-
-            val `in` = response.body?.byteStream()
-            val buffer = ByteArray(2048)
-            var len = 0
-            val data = ""
-            if (`in` != null) {
-                while (`in`.read(buffer).also { len = it } > 0) {
-                    infoStream.write(buffer, 0, len)
+            try{
+                val request = if (isChange){
+                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
+                }else{
+                    Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 }
+
+                val infoStream = ByteArrayOutputStream()
+                val response: Response = client.build().newCall(request).execute();
+
+                val `in` = response.body?.byteStream()
+                val buffer = ByteArray(2048)
+                var len = 0
+                val data = ""
+                if (`in` != null) {
+                    while (`in`.read(buffer).also { len = it } > 0) {
+                        infoStream.write(buffer, 0, len)
+                    }
+                }
+                infoStream.write((Math.random() * 100).toInt() + 1)
+                infoStream.close()
+                isChange = false
+                return infoStream
+            }catch (e:Exception){
+                isChange = true
+                return getImage(imageUri)
             }
-            infoStream.write((Math.random() * 100).toInt() + 1)
-            infoStream.close()
-            return infoStream
         }
 
         /**

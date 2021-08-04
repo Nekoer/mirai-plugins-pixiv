@@ -22,6 +22,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
+import okhttp3.internal.closeQuietly
 import org.apache.commons.lang3.StringUtils
 import java.io.ByteArrayInputStream
 import java.lang.Exception
@@ -29,7 +30,7 @@ import java.lang.Exception
 class PicDetails {
     private val headers = Headers.Builder().add("token", "$acgmx")
     private val requestBody: RequestBody? = null
-
+    private var isChange:Boolean = false
 
     suspend fun getDetailOfId(event: GroupMessageEvent, logger: MiraiLogger) {
         val data: JSONObject?
@@ -117,14 +118,9 @@ class PicDetails {
             JSONObject.parseObject(tempData.getString("meta_single_page")).getString("original_image_url")
         }
 
-
-//        val imageId: String = event.group.uploadImage(ByteArrayInputStream(ImageUtil.getImageFromPixiv(large)?.toByteArray().toExternalResource())).imageId
-//        ImageUtil.getImageFromPixiv(large)?.toByteArray()?.toExternalResource()!!.sendAsImageTo(event.group)
-        val imageId: String = ImageUtil.getImage(large)?.toByteArray()?.toExternalResource()
-            ?.uploadAsImage(event.group)!!.imageId
-
-//        ImageUtil.getImageFromPixiv(large)?.toByteArray()?.toExternalResource()?.let { event.subject.sendImage(it) }
-//        event.subject.sendMessage(LightApp(content = "{\"app\":\"com.tencent.mobileqq.reading\",\"desc\":\"\",\"view\":\"singleImg\",\"ver\":\"1.0.0.70\",\"prompt\":\"$title\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"singleImg\":{\"mainImage\":\"https://gchat.qpic.cn/gchatpic_new/0/0-0-${imageId.replace("-", "").replace("{","").replace("}.mirai","")}/0\",\"mainUrl\":\"https://gchat.qpic.cn/gchatpic_new/0/0-0-${imageId.replace("-", "").replace("{","").replace("}.mirai","")}/0\"}},\"config\":{\"forward\":0,\"showSender\":1},\"text\":\"\",\"extraApps\":[],\"sourceAd\":\"\",\"extra\":\"\"}"))
+        val toExternalResource = ImageUtil.getImage(large).toByteArray().toExternalResource()
+        val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+        toExternalResource.closeQuietly()
 
         val message : Message = At(event.sender)
             .plus(Image(imageId)).plus("\n")
