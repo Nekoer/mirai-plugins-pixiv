@@ -19,7 +19,9 @@
     "picToSearch": "ptst-",
     "showRank":"rank-",
     "findUserWorksById": "user-",
-    "searchInfoByPic": "ptsf-"
+    "searchInfoByPic": "ptsf-",
+    "setu": "setu",
+    "tag":"tag-"
   },
   "groups": [
     123456,548795

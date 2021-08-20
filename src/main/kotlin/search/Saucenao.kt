@@ -138,82 +138,6 @@ class Saucenao {
 
     }
 
-    suspend fun website(event: GroupMessageEvent, picUri:String,logger: MiraiLogger){
-        var data: JSONObject? = null
-        val messageChain: MessageChain = event.message
-
-
-        try{
-
-            data = RequestUtil.request(RequestUtil.Companion.Method.GET, "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?", requestBody, headers.build(), logger)
-            val header = JSONObject.parseObject(data!!.getString("header"))
-            val status = header.getIntValue("status")
-            if (status != 0) {
-                event.subject.sendMessage(
-                    At(event.sender)
-                        .plus("您已被限流,请稍后再试").plus("\r\n")
-                        .plus("You have been restricted, please try again later")
-                )
-            }
-
-            val results = JSONArray.parseArray(data.getString("results"))
-
-            /**
-             * 通过循环判断当前json数据为哪种网站，进而进行搭配
-             */
-            for (o in results) {
-                var message: Message? = pixivSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-
-                message = danBooRuSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-
-                message = seiGaSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-
-                message = daSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-
-                message = bcySearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-
-                message = maSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-                message = niJieSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-                message = drawrSearch(event, o)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-            }
-        }catch (e:Exception){
-            e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
-        }
-    }
-
     /**
      * 匹配数据格式
      */
@@ -278,7 +202,7 @@ class Saucenao {
     fun getInfo(picUri:String,logger: MiraiLogger) : JSONObject? {
         var data: JSONObject? = null
         try{
-            data = RequestUtil.request(RequestUtil.Companion.Method.GET, "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?", requestBody, headers.build(), logger)
+            data = RequestUtil.requestObject(RequestUtil.Companion.Method.GET, "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?", requestBody, headers.build(), logger)
             val header = JSONObject.parseObject(data!!.getString("header"))
             val status = header.getIntValue("status")
             if (status != 0) {

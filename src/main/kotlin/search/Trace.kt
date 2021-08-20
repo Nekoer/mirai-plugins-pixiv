@@ -48,7 +48,7 @@ class Trace {
                 .replace("}.png]", "")
                 .replace("}.mirai]", "").replace("}.gif]", "")
 
-            data = RequestUtil.request(
+            data = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
                 "https://api.trace.moe/search?url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri.replace("-", "")}/0?",
                 requestBody,
@@ -78,7 +78,7 @@ class Trace {
 //        requestBody = "query(\$id :Int) {Media(id: \$id, type: ANIME) {id title { native}}}".toRequestBody()
             requestBody = JSONObject.toJSON("{\"query\": \"query{Media(id: $anilist, type: ANIME) {id title { native} coverImage {extraLarge}}}\"}")
                 .toString().toRequestBody()
-            val tempData = RequestUtil.request(
+            val tempData = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.POST,
                 "https://graphql.anilist.co",
                 requestBody,

@@ -13,7 +13,9 @@ import com.hcyacg.config.Config.port
 import com.hcyacg.config.Config.recall
 import com.hcyacg.config.Config.saucenao
 import com.hcyacg.config.Config.searchInfoByPic
+import com.hcyacg.config.Config.setu
 import com.hcyacg.config.Config.showRank
+import com.hcyacg.config.Config.tag
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.io.InputStream
@@ -83,6 +85,8 @@ class Configuration {
                 showRank = command.getString("showRank")
                 findUserWorksById = command.getString("findUserWorksById")
                 searchInfoByPic = command.getString("searchInfoByPic")
+                setu = command.getString("setu")
+                tag = command.getString("tag")
 
             }
         }

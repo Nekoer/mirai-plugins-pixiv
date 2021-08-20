@@ -32,7 +32,7 @@ class UserDetails {
             /**
              * 获取作者信息
              */
-            authorData = RequestUtil.request(
+            authorData = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
                 "https://api.acgmx.com/public/search/users/details?id=$authorId",
                 requestBody,
@@ -47,7 +47,7 @@ class UserDetails {
             /**
              * 获取作者作品信息
              */
-            data = RequestUtil.request(
+            data = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
                 "https://api.acgmx.com/public/search/users/illusts?id=$authorId&offset=30",
                 requestBody,

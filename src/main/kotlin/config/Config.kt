@@ -25,4 +25,6 @@ object Config {
     var showRank : String? = null
     var findUserWorksById : String? = null
     var searchInfoByPic : String? = null
+    var setu : String? = null
+    var tag : String? = null
 }

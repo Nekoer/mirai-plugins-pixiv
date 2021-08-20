@@ -21,7 +21,7 @@ class TotalProcessing {
      */
     fun dealWith(type: String, mode: String, page: Int, perPage: Int, date: String,logger:MiraiLogger) : JSONObject? {
         return try{
-            RequestUtil.request(
+            RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
                 "https://api.acgmx.com/public/ranking?ranking_type=${type}&mode=${mode}&date=$date&per_page=$perPage&page=$page",
                 requestBody,

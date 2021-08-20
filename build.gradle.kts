@@ -3,18 +3,17 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.7-M2"
+    id("net.mamoe.mirai-console") version "2.7-RC-dev-3"
 }
 
 group = "com.hcyacg"
-version = "1.4.1"
-//version = "1.4.1-FFmpeg"
+//version = "1.5.1"
+version = "1.5.1-FFmpeg"
 
 repositories {
     mavenLocal()
-    maven("https://maven.aliyun.com/repository/public")
     maven("https://maven.aliyun.com/repository/gradle-plugin")
-
+    maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
 dependencies {
@@ -25,5 +24,5 @@ dependencies {
 
     implementation("com.madgag:animated-gif-lib:1.4")
     implementation("org.bytedeco:javacv-platform:1.5.5")
-
+//    compileOnly
 }

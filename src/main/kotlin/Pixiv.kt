@@ -5,8 +5,10 @@ import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
 import com.hcyacg.initial.Configuration.Companion.init
 import com.hcyacg.rank.Rank
+import com.hcyacg.rank.Tag
 import com.hcyacg.search.Saucenao
 import com.hcyacg.search.Trace
+import com.hcyacg.sexy.SexyCenter
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -48,6 +50,14 @@ object Pixiv : KotlinPlugin(
 
             if (event.message.content.indexOf(Config.searchInfoByPic.toString()) >= 0){
                 Trace().searchInfoByPic(event, logger)
+            }
+
+            if (event.message.content.indexOf(Config.setu.toString()) >= 0){
+                SexyCenter().init(event, logger)
+            }
+
+            if (event.message.content.indexOf(Config.tag.toString()) >= 0){
+                Tag().init(event, logger)
             }
 
         }

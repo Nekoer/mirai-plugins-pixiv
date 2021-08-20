@@ -8,7 +8,7 @@ import com.hcyacg.config.Config.groups
 import com.hcyacg.config.Config.recall
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
-import com.hcyacg.utils.RequestUtil.Companion.request
+import com.hcyacg.utils.RequestUtil.Companion.requestObject
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 
@@ -70,7 +70,7 @@ class PicDetails {
             page = "1"
         }
 
-        data = request(
+        data = requestObject(
             Companion.Method.GET,
             "https://api.acgmx.com/illusts/detail?illustId=$id&reduction=true",
             requestBody,
