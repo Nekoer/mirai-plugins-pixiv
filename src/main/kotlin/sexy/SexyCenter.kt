@@ -32,10 +32,8 @@ class SexyCenter {
     val sdf = SimpleDateFormat("yyyy-MM-dd")
 
     suspend fun init(event: GroupMessageEvent, logger: MiraiLogger){
-        val list = arrayOf(yande(event,logger),konachan(event,logger),pixiv(event,logger))
-        val randoms : Int = (0 until (list.size - 1)).random()
-
-        if (Config.groups.indexOf(event.group.id.toString()) < 0){
+        val randoms : Int = (0 until 2).random()
+        if (!Config.groups.contains(event.group.id.toString())){
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
