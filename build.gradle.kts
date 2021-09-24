@@ -7,8 +7,8 @@ plugins {
 }
 
 group = "com.hcyacg"
-//version = "1.5.2"
-version = "1.5.2-FFmpeg"
+//version = "1.5.3"
+version = "1.5.3-FFmpeg"
 
 repositories {
     mavenLocal()

@@ -118,7 +118,7 @@ class PicDetails {
             JSONObject.parseObject(tempData.getString("meta_single_page")).getString("original_image_url")
         }
 
-        val toExternalResource = ImageUtil.getImage(large).toByteArray().toExternalResource()
+        val toExternalResource = ImageUtil.getImage(large.replace("i.pximg.net","i.acgmx.com")).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
         toExternalResource.closeQuietly()
 

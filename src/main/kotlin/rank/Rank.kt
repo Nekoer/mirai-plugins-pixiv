@@ -45,6 +45,14 @@ class Rank {
             page = 1
         }
 
+
+        var num = 0
+        if (page % 3 != 0){
+            num = page % 3 * 10
+        }else{
+            num = 30
+        }
+
         if (null == mode){
             try {
                 mode = event.message.content.replace(showRank!!,"").replace(" ","").split("-")[0]
@@ -96,20 +104,18 @@ class Rank {
             return
         }
 
-        val total = JSONObject.parseObject(data.getString("pagination")).getIntValue("total")
-        val pages = JSONObject.parseObject(data.getString("pagination")).getIntValue("pages")
-        val response = JSONObject.parseObject(JSONArray.parseArray(data.getString("response"))[0].toString())
-        val works = JSONArray.parseArray(response.getString("works"))
+
         var message : Message = At(event.sender).plus("\n").plus("======插画排行榜($mode)======").plus("\n")
+        val illusts = data.getJSONArray("illusts")
 
-        for ((index,o) in works.withIndex()){
-            val id = JSONObject.parseObject(JSONObject.parseObject(o.toString()).getString("work")).getString("id")
-            val title = JSONObject.parseObject(JSONObject.parseObject(o.toString()).getString("work")).getString("title")
-            val user = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(o.toString()).getString("work")).getString("user")).getString("name")
+        for (i in (num-10) until num){
+            val id = JSONObject.parseObject(illusts[i].toString()).getString("id")
+            val title = JSONObject.parseObject(illusts[i].toString()).getString("title")
+            val user = JSONObject.parseObject(JSONObject.parseObject(illusts[i].toString()).getString("user")).getString("name")
 
-            message = message.plus("${((perPage * page) - perPage)+(index+1)}. $title - $user - $id").plus("\n")
+            message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
         }
-        event.subject.sendMessage(message.plus("本排行榜共 $pages 页，当前处在 $page 页"))
+        event.subject.sendMessage(message)
     }
 
 }

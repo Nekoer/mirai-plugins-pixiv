@@ -50,7 +50,7 @@ class Trace {
 
             data = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
-                "https://api.trace.moe/search?url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri.replace("-", "")}/0?",
+                "https://api.trace.moe/search?cutBorders&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri.replace("-", "")}/0?",
                 requestBody,
                 headers.build(),
                 logger
