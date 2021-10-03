@@ -13,9 +13,11 @@ import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
+
 import okhttp3.Headers
 import okhttp3.RequestBody
 import okhttp3.internal.closeQuietly
+import okio.ByteString.Companion.toByteString
 import org.apache.commons.lang3.RandomUtils
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
@@ -69,9 +71,10 @@ class SexyCenter {
             val num: Int = (0 until (obj!!.size - 1)).random()
             val id = JSONObject.parseObject(obj[num].toString()).getString("id")
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+
             val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            toExternalResource.closeQuietly()
+            toExternalResource.close()
             val quoteReply: QuoteReply = QuoteReply(event.message)
             /**
              * 判断是否配置了撤回时间
@@ -83,6 +86,7 @@ class SexyCenter {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
             }
         } catch (e: Exception) {
+            logger.warning(e)
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -103,7 +107,8 @@ class SexyCenter {
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
             val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            toExternalResource.closeQuietly()
+            toExternalResource.close()
+
             val quoteReply: QuoteReply = QuoteReply(event.message)
 
             if (!StringUtils.isBlank(Config.recall.toString())) {
@@ -113,6 +118,7 @@ class SexyCenter {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
             }
         } catch (e: Exception) {
+            logger.warning(e)
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -131,10 +137,10 @@ class SexyCenter {
             val tempData = JSONObject.parseObject(illusts?.get(randoms)?.toString())
             val id = tempData.getString("id")
             val image = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
-
             val toExternalResource = ImageUtil.getImage(image.replace("i.pximg.net","i.acgmx.com")).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            toExternalResource.closeQuietly()
+            toExternalResource.close()
+
             val quoteReply: QuoteReply = QuoteReply(event.message)
             if (!StringUtils.isBlank(Config.recall.toString())) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Config.recall)
@@ -142,6 +148,7 @@ class SexyCenter {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
         } catch (e: Exception) {
+            logger.warning(e)
             event.subject.sendMessage("发送图片失败")
         }
     }

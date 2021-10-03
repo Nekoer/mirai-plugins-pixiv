@@ -52,12 +52,12 @@ class ImageUtil {
         fun getImage(imageUri: String): ByteArrayOutputStream {
 
             try{
-                val request = if (isChange){
-                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
-                }else{
-                    Request.Builder().url(imageUri).headers(headers.build()).get().build()
-                }
-
+//                val request = if (isChange){
+//                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
+//                }else{
+//                    Request.Builder().url(imageUri).get().build()
+//                }
+                val request = Request.Builder().url(imageUri).get().build()
                 val infoStream = ByteArrayOutputStream()
                 val response: Response = client.build().newCall(request).execute();
 
