@@ -3,12 +3,12 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.7-RC-dev-3"
+    id("net.mamoe.mirai-console") version "2.8.0-M1"
 }
 
 group = "com.hcyacg"
-//version = "1.5.3"
-version = "1.5.3-FFmpeg"
+//version = "1.5.4"
+version = "1.5.4-FFmpeg"
 
 repositories {
     mavenLocal()

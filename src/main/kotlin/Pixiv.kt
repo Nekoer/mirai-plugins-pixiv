@@ -28,7 +28,7 @@ object Pixiv : KotlinPlugin(
     }
 ) {
     override fun onEnable() {
-        logger.info { "pixiv插画 loaded" }
+//        logger.info { "pixiv插画 loaded" }
         GlobalEventChannel.subscribeAlways<GroupMessageEvent> { event ->
 
 

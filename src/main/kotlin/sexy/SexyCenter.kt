@@ -82,7 +82,7 @@ class SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
             }
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -112,7 +112,7 @@ class SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
             }
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -141,7 +141,7 @@ class SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             event.subject.sendMessage("发送图片失败")
         }
     }
