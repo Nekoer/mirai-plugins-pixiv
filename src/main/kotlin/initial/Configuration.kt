@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.config.Config.acgmx
 import com.hcyacg.config.Config.admins
+import com.hcyacg.config.Config.ascii2d
 import com.hcyacg.config.Config.findUserWorksById
 import com.hcyacg.config.Config.getDetailOfId
 import com.hcyacg.config.Config.groups
@@ -87,7 +88,7 @@ class Configuration {
                 searchInfoByPic = command.getString("searchInfoByPic")
                 setu = command.getString("setu")
                 tag = command.getString("tag")
-
+                ascii2d = command.getString("ascii2d")
             }
         }
     }

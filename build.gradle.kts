@@ -3,12 +3,12 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.8.0-M1"
+    id("net.mamoe.mirai-console") version "2.8.0"
 }
 
 group = "com.hcyacg"
 //version = "1.5.4"
-version = "1.5.4-FFmpeg"
+version = "1.5.5"
 
 repositories {
     mavenLocal()
@@ -18,11 +18,12 @@ repositories {
 }
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.2.2")
-    implementation("com.alibaba:fastjson:1.2.76")
+    implementation("com.alibaba:fastjson:1.2.78")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.jsoup:jsoup:1.14.3")
 
-    implementation("com.madgag:animated-gif-lib:1.4")
-    implementation("org.bytedeco:javacv-platform:1.5.5")
+    compileOnly("com.madgag:animated-gif-lib:1.4")
+    compileOnly("org.bytedeco:javacv-platform:1.5.5")
 //    compileOnly
 }

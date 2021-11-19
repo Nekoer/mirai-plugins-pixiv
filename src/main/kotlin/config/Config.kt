@@ -9,6 +9,7 @@ object Config {
     var admins: JSONArray = JSONArray.parseArray("[]")
     var groups: JSONArray = JSONArray.parseArray("[]")
 
+    var state : Int = 1
 
     var acgmx : String? = null
     var saucenao : String? = null
@@ -27,4 +28,5 @@ object Config {
     var searchInfoByPic : String? = null
     var setu : String? = null
     var tag : String? = null
+    var ascii2d : String? = null
 }

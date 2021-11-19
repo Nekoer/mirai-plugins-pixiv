@@ -21,7 +21,8 @@
     "findUserWorksById": "user-",
     "searchInfoByPic": "ptsf-",
     "setu": "setu",
-    "tag":"tag-"
+    "tag":"tag-",
+    "ascii2d": "ascii2d-"
   },
   "groups": [
     123456,548795
