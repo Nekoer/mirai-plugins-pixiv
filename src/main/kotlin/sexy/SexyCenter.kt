@@ -80,8 +80,8 @@ class SexyCenter {
              * 判断是否配置了撤回时间
              */
 
-            if (!StringUtils.isBlank(Config.recall.toString())) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)")).recallIn(Config.recall)
+            if (null != Config.recall) {
+                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)")).recallIn(Config.recall!!)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
             }
@@ -111,9 +111,9 @@ class SexyCenter {
 
             val quoteReply: QuoteReply = QuoteReply(event.message)
 
-            if (!StringUtils.isBlank(Config.recall.toString())) {
+            if (null != Config.recall) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
-                    .recallIn(Config.recall)
+                    .recallIn(Config.recall!!)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
             }
@@ -142,8 +142,8 @@ class SexyCenter {
             toExternalResource.close()
 
             val quoteReply: QuoteReply = QuoteReply(event.message)
-            if (!StringUtils.isBlank(Config.recall.toString())) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Config.recall)
+            if (null != Config.recall) {
+                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Config.recall!!)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }

@@ -16,7 +16,7 @@ object Config {
     var trace : String? = null
 
 
-    var recall : Long = 5000
+    var recall : Long? = 5000
 
     var host : String? = null
     var port : Int? = null

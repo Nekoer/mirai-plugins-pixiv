@@ -142,7 +142,7 @@ class PicDetails {
          */
 
         if (sanityLevel == 6 && !StringUtils.isBlank(recall.toString())){
-            event.subject.sendMessage(message).recallIn(recall)
+            recall?.let { event.subject.sendMessage(message).recallIn(it) }
         }else{
             event.subject.sendMessage(message)
         }

@@ -74,7 +74,12 @@ class Configuration {
                 acgmx = token.getString("acgmx")
                 saucenao = token.getString("saucenao")
 
-                recall = config.getLong("recall")
+                recall = if (null == config.getLong("recall")) {
+                    null
+                }else{
+                    config.getLong("recall")
+                }
+
                 //设置http请求代理
                 val proxy: JSONObject = JSONObject.parseObject(config.getString("proxy"))
                 host = proxy.getString("host")
