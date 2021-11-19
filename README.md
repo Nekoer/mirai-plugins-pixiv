@@ -31,7 +31,8 @@
     "findUserWorksById": "user-", #查看作者作品
     "searchInfoByPic": "ptsf-", #以图搜番
     "setu": "setu",
-    "tag": "tag-" #搜标签 tag-xxx-页码
+    "tag": "tag-", #搜标签 tag-xxx-页码
+    "ascii2d": "ascii2d-" #ascii2d引擎搜索 ascii2d-图片 隐藏命令：更改图片搜索
   },
   "groups": [
     123456,548795 #有涩图权限的群
