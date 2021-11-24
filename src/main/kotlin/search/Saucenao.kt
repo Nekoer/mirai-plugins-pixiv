@@ -34,75 +34,89 @@ class Saucenao {
 
     private val tracePath: File =
         File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
+
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent, logger: MiraiLogger) {
+    suspend fun picToSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String): List<Message> {
         var data: JSONObject? = null
         val messageChain: MessageChain = event.message
-        val dataList = HashMap<Int,JSONObject?>()
+        val dataList = HashMap<Int, JSONObject?>()
         var header: Any? = null
+        val list = mutableListOf<Message>()
 
-        try{
+        try {
 
             /**
              * 未配置key通知用户
              */
-            if (null == saucenao){
+            if (null == saucenao) {
                 event.subject.sendMessage(At(event.sender).plus("您还未配置saucenao的api_key,申请网址为https://saucenao.com/user.php?page=search-api"))
-                return
+                return list
             }
 
             /**
              * 获取图片的代码
              */
-            val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
-                .replace("-", "")
+//            val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
+//                .replace("-", "")
 
             //旋转三次
             val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
-            val rotate90 = rotate(ImageIO.read(URL(url)),90).toByteArray().toExternalResource()
-            val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""),"{","}")
+            val rotate90 = rotate(ImageIO.read(URL(url)), 90).toByteArray().toExternalResource()
+            val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             rotate90.closeQuietly()
 
-            val rotate180 = rotate(ImageIO.read(URL(url)),180).toByteArray().toExternalResource()
-            val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""),"{","}")
+            val rotate180 = rotate(ImageIO.read(URL(url)), 180).toByteArray().toExternalResource()
+            val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             rotate180.closeQuietly()
 
-            val rotate270 = rotate(ImageIO.read(URL(url)),270).toByteArray().toExternalResource()
-            val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""),"{","}")
+            val rotate270 = rotate(ImageIO.read(URL(url)), 270).toByteArray().toExternalResource()
+            val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             rotate270.closeQuietly()
 
 
-            val imageData = getInfo(picUri,logger)
-            val imageData90 = getInfo(code90!!,logger)
-            val imageData180 = getInfo(code180!!,logger)
-            val imageData270 = getInfo(code270!!,logger)
+            val imageData = getInfo(picUri, logger)
+            val imageData90 = getInfo(code90!!, logger)
+            val imageData180 = getInfo(code180!!, logger)
+            val imageData270 = getInfo(code270!!, logger)
 
 
             /**
              * 进行相似度对比，取最大值
              */
-            header = JSONObject.parseObject(imageData.toString())["header"]
-            val similarity = JSONObject.parseObject(header.toString()).getDouble("similarity")
+            var similarity: Double = 0.0
+            var similarity90: Double = 0.0
+            var similarity180: Double = 0.0
+            var similarity270: Double = 0.0
 
-            header = JSONObject.parseObject(imageData90.toString())["header"]
-            val similarity90 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+            var double = mutableListOf<Double>()
 
-            header = JSONObject.parseObject(imageData180.toString())["header"]
-            val similarity180 = JSONObject.parseObject(header.toString()).getDouble("similarity")
-
-            header = JSONObject.parseObject(imageData270.toString())["header"]
-            val similarity270 = JSONObject.parseObject(header.toString()).getDouble("similarity")
-
-            val double = arrayOf(similarity,similarity90,similarity180,similarity270)
-//            double.sort()
-
-            for (i in double.indices){
-                if (null == double[i]){
-                    double[i] = 0.0
-                }
+            if (null != imageData) {
+                header = JSONObject.parseObject(imageData.toString())["header"]
+                similarity = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                double.add(similarity)
             }
+
+            if (null != imageData90) {
+                header = JSONObject.parseObject(imageData90.toString())["header"]
+                similarity90 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                double.add(similarity90)
+            }
+
+            if (null != imageData180) {
+                header = JSONObject.parseObject(imageData180.toString())["header"]
+                similarity180 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                double.add(similarity180)
+            }
+
+            if (null != imageData270) {
+                header = JSONObject.parseObject(imageData270.toString())["header"]
+                similarity270 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                double.add(similarity270)
+            }
+
+//            double.sort()
 
 
             var temp: Double = 0.0
@@ -116,24 +130,26 @@ class Saucenao {
                 }
             }
 
-            when(temp){
+            when (temp) {
                 similarity -> {
-                    imageData?.let { mate(event, it,logger) }
+                    imageData?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity90 -> {
-                    imageData90?.let { mate(event, it,logger) }
+                    imageData90?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity180 -> {
-                    imageData180?.let { mate(event, it,logger) }
+                    imageData180?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity270 -> {
-                    imageData270?.let { mate(event, it,logger) }
+                    imageData270?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
             }
-
-        }catch (e:Exception){
+            return list
+        } catch (e: Exception) {
             e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
+            list.clear()
+            return list
         }
 
     }
@@ -141,75 +157,75 @@ class Saucenao {
     /**
      * 匹配数据格式
      */
-    suspend fun mate(event: GroupMessageEvent, data:Any, logger: MiraiLogger){
+    suspend fun mate(event: GroupMessageEvent, data: Any, logger: MiraiLogger): Message? {
 
-        try{
-                var message: Message? = pixivSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+        try {
+            var message: Message? = pixivSearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-                message = danBooRuSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+            message = danBooRuSearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-                message = seiGaSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+            message = seiGaSearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-                message = daSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+            message = daSearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-                message = bcySearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+            message = bcySearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-                message = maSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-                message = niJieSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
-                message = drawrSearch(event, data)
-                if (null != message) {
-                    event.subject.sendMessage(message)
-                    return
-                }
+            message = maSearch(event, data)
+            if (null != message) {
+                return message
+            }
+            message = niJieSearch(event, data)
+            if (null != message) {
+                return message
+            }
+            message = drawrSearch(event, data)
+            if (null != message) {
+                return message
+            }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
+            return null
         }
+        return null
     }
 
     /**
      * 获取四张照片的第一个搜索数据
      */
-    fun getInfo(picUri:String,logger: MiraiLogger) : JSONObject? {
+    fun getInfo(picUri: String, logger: MiraiLogger): JSONObject? {
         var data: JSONObject? = null
-        try{
-            data = RequestUtil.requestObject(RequestUtil.Companion.Method.GET, "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?", requestBody, headers.build(), logger)
+        try {
+            data = RequestUtil.requestObject(
+                RequestUtil.Companion.Method.GET,
+                "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                requestBody,
+                headers.build(),
+                logger
+            )
             val header = JSONObject.parseObject(data!!.getString("header"))
             val status = header.getIntValue("status")
             if (status != 0) {
                 return null
             }
             return JSONObject.parseObject(JSONArray.parseArray(data.getString("results"))[0].toString())
-        }catch (e:Exception){
+        } catch (e: Exception) {
             return null
         }
     }

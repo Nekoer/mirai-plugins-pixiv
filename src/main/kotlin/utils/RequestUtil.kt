@@ -96,7 +96,7 @@ class RequestUtil {
                 return JSONObject.parseObject(response!!.body?.string())
             }
 
-            response!!.closeQuietly()
+            response!!.close()
             return null
         }
 
@@ -113,7 +113,7 @@ class RequestUtil {
             if (response!!.isSuccessful) {
                 return JSONArray.parseArray(response!!.body?.string())
             }
-            response!!.closeQuietly()
+            response!!.close()
             return null
         }
 

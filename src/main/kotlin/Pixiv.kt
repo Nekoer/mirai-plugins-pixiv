@@ -8,6 +8,7 @@ import com.hcyacg.rank.Rank
 import com.hcyacg.rank.Tag
 import com.hcyacg.search.Ascii2d
 import com.hcyacg.search.Saucenao
+import com.hcyacg.search.SearchPicCenter
 import com.hcyacg.search.Trace
 import com.hcyacg.sexy.SexyCenter
 import net.mamoe.mirai.console.extension.PluginComponentStorage
@@ -15,6 +16,8 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.ForwardMessage
+import net.mamoe.mirai.message.data.RawForwardMessage
 import net.mamoe.mirai.message.data.content
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -30,17 +33,12 @@ object Pixiv : KotlinPlugin(
 ) {
 
     override fun onEnable() {
-//        logger.info { "pixiv插画 loaded" }
-
         GlobalEventChannel.subscribeAlways<GroupMessageEvent> { event ->
 
             if (event.message.content.indexOf(Config.getDetailOfId.toString())>= 0){
                 PicDetails().getDetailOfId(event, logger)
             }
 
-            if (event.message.toString().indexOf(Config.picToSearch.toString())>= 0){
-                Saucenao().picToSearch(event, logger)
-            }
 
             if (event.message.content.indexOf(Config.showRank.toString()) >= 0){
                 Rank().showRank(event, logger)
@@ -62,12 +60,11 @@ object Pixiv : KotlinPlugin(
                 Tag().init(event, logger)
             }
 
-            if (event.message.content.indexOf(Config.ascii2d.toString()) >= 0){
-                Ascii2d().picToHtmlSearch(event, logger)
+            if (event.message.toString().indexOf(Config.picToSearch.toString())>= 0){
+                SearchPicCenter().forward(event, logger)
             }
-            if (event.message.content.indexOf("更换图片搜索") >= 0){
-                Ascii2d().changeState(event, logger)
-            }
+
+
         }
 
     }

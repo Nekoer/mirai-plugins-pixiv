@@ -75,7 +75,6 @@ class Trace {
 //        val imageId: String = externalResource?.uploadAsImage(event.group)!!.imageId
             headers.add("Content-Type", "application/json")
 
-//        requestBody = "query(\$id :Int) {Media(id: \$id, type: ANIME) {id title { native}}}".toRequestBody()
             requestBody = JSONObject.toJSON("{\"query\": \"query{Media(id: $anilist, type: ANIME) {id title { native} coverImage {extraLarge}}}\"}")
                 .toString().toRequestBody()
             val tempData = RequestUtil.requestObject(
