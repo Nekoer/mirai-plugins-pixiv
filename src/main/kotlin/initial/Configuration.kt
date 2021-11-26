@@ -2,6 +2,7 @@ package com.hcyacg.initial
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
+import com.hcyacg.anime.Agefans
 import com.hcyacg.config.Config.acgmx
 import com.hcyacg.config.Config.admins
 import com.hcyacg.config.Config.findUserWorksById
@@ -93,6 +94,7 @@ class Configuration {
                 setu = command.getString("setu")
                 tag = command.getString("tag")
             }
+//            Agefans().ready()
         }
     }
 }

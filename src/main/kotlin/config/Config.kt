@@ -1,6 +1,8 @@
 package com.hcyacg.config
 
 import com.alibaba.fastjson.JSONArray
+import com.hcyacg.entity.AgefansItem
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 配置文件中各键值对参数
@@ -8,6 +10,9 @@ import com.alibaba.fastjson.JSONArray
 object Config {
     var admins: JSONArray = JSONArray.parseArray("[]")
     var groups: JSONArray = JSONArray.parseArray("[]")
+
+    val agefans: CopyOnWriteArrayList<AgefansItem> = CopyOnWriteArrayList()
+    val isSend: CopyOnWriteArrayList<AgefansItem> = CopyOnWriteArrayList()
 
 
     var acgmx : String? = null

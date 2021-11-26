@@ -1,5 +1,6 @@
 package com.hcyacg
 
+import com.hcyacg.anime.Agefans
 import com.hcyacg.config.Config
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
@@ -64,7 +65,7 @@ object Pixiv : KotlinPlugin(
                 SearchPicCenter().forward(event, logger)
             }
 
-
+//            Agefans().startTask(event, logger)
         }
 
     }

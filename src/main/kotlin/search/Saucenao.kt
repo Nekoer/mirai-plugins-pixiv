@@ -65,15 +65,15 @@ class Saucenao {
             val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
             val rotate90 = rotate(ImageIO.read(URL(url)), 90).toByteArray().toExternalResource()
             val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate90.closeQuietly()
+            rotate90.close()
 
             val rotate180 = rotate(ImageIO.read(URL(url)), 180).toByteArray().toExternalResource()
             val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate180.closeQuietly()
+            rotate180.close()
 
             val rotate270 = rotate(ImageIO.read(URL(url)), 270).toByteArray().toExternalResource()
             val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate270.closeQuietly()
+            rotate270.close()
 
 
             val imageData = getInfo(picUri, logger)
