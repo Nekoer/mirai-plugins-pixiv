@@ -64,7 +64,6 @@ class ImageUtil {
                 val `in` = response.body?.byteStream()
                 val buffer = ByteArray(2048)
                 var len = 0
-                val data = ""
                 if (`in` != null) {
                     while (`in`.read(buffer).also { len = it } > 0) {
                         infoStream.write(buffer, 0, len)

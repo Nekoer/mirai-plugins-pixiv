@@ -94,7 +94,7 @@ class Configuration {
                 setu = command.getString("setu")
                 tag = command.getString("tag")
             }
-//            Agefans().ready()
+            Agefans().ready()
         }
     }
 }

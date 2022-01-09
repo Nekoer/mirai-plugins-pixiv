@@ -10,6 +10,7 @@ import com.hcyacg.plugin.utils.DataUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.mamoe.mirai.Bot
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.utils.MiraiLogger
 import org.jsoup.Jsoup
@@ -32,7 +33,7 @@ class Agefans {
             }
         }
 
-        agefans.addAll(animeInfo)
+//        agefans.addAll(animeInfo)
     }
 
     fun getAnimeInfo():MutableList<AgefansItem>{
@@ -57,7 +58,7 @@ class Agefans {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun startTask(event: GroupMessageEvent, logger: MiraiLogger){
+    fun startTask(){
 
         Timer().schedule(object:  TimerTask(){
              override  fun run() {
@@ -82,7 +83,11 @@ class Agefans {
 
 
                                 GlobalScope.launch{
-                                    event.bot.getGroup(77708393)?.sendMessage("${info.name} ${info.namefornew} 更新了")
+                                    Bot.instances.forEach { bot ->
+                                        bot.getGroup(77708393)?.sendMessage("${info.name} ${info.namefornew} 更新了")
+                                        bot.getGroup(960879198)?.sendMessage("${info.name} ${info.namefornew} 更新了")
+                                    }
+//                                    event.bot.getGroup(77708393)?.sendMessage("${info.name} ${info.namefornew} 更新了")
                                 }
                                 isSend.add(info)
                             }

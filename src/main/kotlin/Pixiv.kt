@@ -7,6 +7,7 @@ import com.hcyacg.details.UserDetails
 import com.hcyacg.initial.Configuration.Companion.init
 import com.hcyacg.rank.Rank
 import com.hcyacg.rank.Tag
+import com.hcyacg.science.Style2paints
 import com.hcyacg.search.Ascii2d
 import com.hcyacg.search.Saucenao
 import com.hcyacg.search.SearchPicCenter
@@ -15,6 +16,7 @@ import com.hcyacg.sexy.SexyCenter
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.file.AbsoluteFolder
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.ForwardMessage
@@ -65,7 +67,11 @@ object Pixiv : KotlinPlugin(
                 SearchPicCenter().forward(event, logger)
             }
 
-//            Agefans().startTask(event, logger)
+//            if (event.message.toString().indexOf("上色")>= 0){
+//                Style2paints().coloring(event, logger)
+//            }
+
+//            Agefans().startTask()
         }
 
     }

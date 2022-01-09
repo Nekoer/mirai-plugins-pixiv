@@ -33,8 +33,11 @@ class Ascii2d {
 //            .replace("-", "")
         val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
         val ascii2d = "https://ascii2d.net/search/url/$url"
+        val headers = mutableMapOf<String,String>()
+        headers["User-Agent"] = "PostmanRuntime/7.28.4"
 
-        val doc: Document = Jsoup.connect(ascii2d).timeout(60000).get()
+        val doc: Document = Jsoup.connect(ascii2d).timeout(60000).headers(headers).get()
+
         val elementsByClass = doc.select(".item-box")
         val list = mutableListOf<Message>()
 
@@ -42,7 +45,7 @@ class Ascii2d {
             val link = it.select(".detail-box a")
             if (link.size == 0) {
                 md5 = it.selectFirst(".image-box img")?.attr("alt").toString().toLowerCase()
-            } else if (link.size != 0) {
+            } else {
                 list.add(color(elementsByClass,event, logger))
                 list.add(bovw(event, logger))
                 return list
@@ -83,7 +86,10 @@ class Ascii2d {
 
     private suspend fun bovw(event: GroupMessageEvent, logger: MiraiLogger): Message {
         val bovwUri = "https://ascii2d.net/search/bovw/$md5"
-        val doc: Document = Jsoup.connect(bovwUri).timeout(60000).get()
+        val headers = mutableMapOf<String,String>()
+        headers["User-Agent"] = "PostmanRuntime/7.28.4"
+
+        val doc: Document = Jsoup.connect(bovwUri).headers(headers).timeout(60000).get()
         val elements = doc.select(".item-box")
         val message: Message = At(event.sender).plus("\n")
         elements.forEach {

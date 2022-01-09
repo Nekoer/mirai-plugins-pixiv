@@ -120,7 +120,7 @@ class PicDetails {
 
         val toExternalResource = ImageUtil.getImage(large.replace("i.pximg.net","i.acgmx.com")).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-        toExternalResource.closeQuietly()
+        toExternalResource.close()
 
         val message : Message = At(event.sender)
             .plus(Image(imageId)).plus("\n")
