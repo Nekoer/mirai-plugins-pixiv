@@ -86,6 +86,7 @@ class Agefans {
                                     Bot.instances.forEach { bot ->
                                         bot.getGroup(77708393)?.sendMessage("${info.name} ${info.namefornew} 更新了")
                                         bot.getGroup(960879198)?.sendMessage("${info.name} ${info.namefornew} 更新了")
+                                        bot.getGroup(834014382)?.sendMessage("${info.name} ${info.namefornew} 更新了")
                                     }
 //                                    event.bot.getGroup(77708393)?.sendMessage("${info.name} ${info.namefornew} 更新了")
                                 }
