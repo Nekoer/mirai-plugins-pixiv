@@ -63,9 +63,10 @@ class Ascii2d {
             val link = it.select(".detail-box a")
             if (link.size > 1) {
                 val title = link[0].html()
-                val author = link[1].html()
+
                 val thumbnail = baseUrl + it.select(".image-box img").attr("src")
                 val uri = link[0].attr("href")
+                val author = link[1].html()
                 val authorUrl = link[1].attr("href")
 
                 val externalResource = ImageUtil.getImage(thumbnail).toByteArray().toExternalResource()
@@ -96,23 +97,30 @@ class Ascii2d {
             val link = it.select(".detail-box a")
             if (link.size != 0) {
                 val title = link[0].html()
-                val author = link[1].html()
+
                 val thumbnail = baseUrl + it.select(".image-box img").attr("src")
                 val uri = link[0].attr("href")
-                val authorUrl = link[1].attr("href")
+
+
 
                 val externalResource = ImageUtil.getImage(thumbnail).toByteArray().toExternalResource()
                 val imageId: String = externalResource.uploadAsImage(event.group).imageId
                 externalResource.close()
-
-                return message.plus(Image(imageId)).plus("\n")
-                    .plus("当前为Ascii2D 特征检索").plus("\n")
-                    .plus("标题：${title}").plus("\n")
-                    .plus("作者：${author}").plus("\n")
-                    .plus("网址：${uri}").plus("\n")
-                    .plus("作者网址：${authorUrl}")
-
-
+                return if (link.size > 1){
+                    val author = link[1].html()
+                    val authorUrl = link[1].attr("href")
+                    message.plus(Image(imageId)).plus("\n")
+                        .plus("当前为Ascii2D 特征检索").plus("\n")
+                        .plus("标题：${title}").plus("\n")
+                        .plus("网址：${uri}").plus("\n")
+                        .plus("作者：${author}").plus("\n")
+                        .plus("作者网址：${authorUrl}")
+                }else{
+                    message.plus(Image(imageId)).plus("\n")
+                        .plus("当前为Ascii2D 特征检索").plus("\n")
+                        .plus("标题：${title}").plus("\n")
+                        .plus("网址：${uri}").plus("\n")
+                }
             }
         }
         return message.plus("程序出现一些问题~请稍后再尝试")
