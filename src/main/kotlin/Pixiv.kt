@@ -69,46 +69,12 @@ object Pixiv : KotlinPlugin(
             val picToSearch: Pattern = Pattern.compile("(?i)^(${Config.picToSearch}).+$")
             content { picToSearch.matcher(message.contentToString()).find() } quoteReply { SearchPicCenter.forward(this, pluginLogger) }
 
-        }
 
-
-//        GlobalEventChannel.subscribeAlways<GroupMessageEvent> { event ->
-
-//            if (event.message.content.indexOf(Config.getDetailOfId.toString())>= 0){
-//                PicDetails.getDetailOfId(event, logger)
-//            }
+//            val coloring: Pattern = Pattern.compile("(?i)^(上色)$")
+//            content { coloring.matcher(message.contentToString()).find() } quoteReply { Style2paints.coloring(this, pluginLogger) }
 //
-//
-//            if (event.message.content.indexOf(Config.showRank.toString()) >= 0){
-//                Rank.showRank(event, logger)
-//            }
-
-//            if (event.message.content.indexOf(Config.findUserWorksById.toString()) >= 0){
-//                UserDetails.findUserWorksById(event, logger)
-//            }
-
-//            if (event.message.content.indexOf(Config.searchInfoByPic.toString()) >= 0){
-//                Trace.searchInfoByPic(event, logger)
-//            }
-
-//            if (event.message.content.indexOf(Config.setu.toString()) >= 0){
-//                SexyCenter.init(event, logger)
-//            }
-//
-//            if (event.message.content.indexOf(Config.tag.toString()) >= 0){
-//                Tag.init(event, logger)
-//            }
-//
-//            if (event.message.toString().indexOf(Config.picToSearch.toString())>= 0){
-//                SearchPicCenter.forward(event, logger)
-//            }
-
-//            if (event.message.toString().indexOf("上色")>= 0){
-//                Style2paints().coloring(event, logger)
-//            }
-
 //            Agefans().startTask()
-//        }
+        }
 
     }
 
