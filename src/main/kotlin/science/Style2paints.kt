@@ -19,7 +19,7 @@ import java.io.FileInputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class Style2paints {
+object Style2paints {
 
     private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS)

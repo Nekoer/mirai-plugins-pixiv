@@ -12,7 +12,7 @@ import net.mamoe.mirai.utils.MiraiLogger
 /**
  * 搜索二次元图片转发中心
  */
-class SearchPicCenter {
+object SearchPicCenter {
     private val nodes = mutableListOf<ForwardMessage.Node>()
 
     suspend fun forward(event: GroupMessageEvent, logger:MiraiLogger){
@@ -23,7 +23,7 @@ class SearchPicCenter {
         val picUri = DataUtil.getSubString(event.message.toString().replace(" ",""), "[mirai:image:{", "}.")!!
             .replace("-", "")
 
-        val picToHtmlSearch = Ascii2d().picToHtmlSearch(event, logger, picUri)
+        val picToHtmlSearch = Ascii2d.picToHtmlSearch(event, logger, picUri)
         //Ascii2d 搜索
         picToHtmlSearch.forEach {
             nodes.add(
@@ -37,7 +37,7 @@ class SearchPicCenter {
         }
 
         //Saucenao 搜索
-        val picToSearch = Saucenao().picToSearch(event, logger, picUri)
+        val picToSearch = Saucenao.picToSearch(event, logger, picUri)
         picToSearch.forEach {
             nodes.add(
                 ForwardMessage.Node(
@@ -50,7 +50,7 @@ class SearchPicCenter {
         }
 
         //iqdb搜索
-        val iqdb = Iqdb().picToHtmlSearch(event, logger, picUri)
+        val iqdb = Iqdb.picToHtmlSearch(event, logger, picUri)
         iqdb.forEach {
             nodes.add(
                 ForwardMessage.Node(

@@ -19,7 +19,7 @@ import org.jsoup.select.Elements
 import java.util.*
 
 
-class Ascii2d {
+object Ascii2d {
 
     private var md5: String = ""
     private val baseUrl: String = "https://ascii2d.net"

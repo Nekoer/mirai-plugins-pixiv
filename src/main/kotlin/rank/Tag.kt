@@ -18,7 +18,7 @@ import kotlin.math.log
  * @Desc: TODO
  * @Date: 2021/8/20 21:52
  */
-class Tag {
+object Tag {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
 

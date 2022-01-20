@@ -18,7 +18,7 @@ import org.jsoup.nodes.Document
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
-class Agefans {
+object Agefans {
 
 
     //将所有番剧数据缓存下来

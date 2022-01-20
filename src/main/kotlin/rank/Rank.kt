@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class Rank {
+object Rank {
     val sdf = SimpleDateFormat("yyyy-MM-dd")
 
     suspend fun showRank(event: GroupMessageEvent, logger: MiraiLogger){

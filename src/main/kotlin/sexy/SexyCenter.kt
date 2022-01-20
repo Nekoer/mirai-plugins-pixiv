@@ -10,6 +10,7 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.QuoteReply
+import net.mamoe.mirai.utils.ExternalResource.Companion.sendAsImageTo
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
@@ -28,7 +29,7 @@ import java.util.*
  * @Desc: TODO
  * @Date: 2021/8/20 19:05
  */
-class SexyCenter {
+object SexyCenter {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
     val sdf = SimpleDateFormat("yyyy-MM-dd")
@@ -75,6 +76,7 @@ class SexyCenter {
             val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             toExternalResource.close()
+
             val quoteReply: QuoteReply = QuoteReply(event.message)
             /**
              * 判断是否配置了撤回时间
@@ -105,10 +107,10 @@ class SexyCenter {
             val num: Int = (0 until (obj!!.size - 1)).random()
             val id = JSONObject.parseObject(obj[num].toString()).getString("id")
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+
             val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             toExternalResource.close()
-
             val quoteReply: QuoteReply = QuoteReply(event.message)
 
             if (null != Config.recall) {
@@ -136,11 +138,12 @@ class SexyCenter {
 
             val tempData = JSONObject.parseObject(illusts?.get(randoms)?.toString())
             val id = tempData.getString("id")
+
+
             val image = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
             val toExternalResource = ImageUtil.getImage(image.replace("i.pximg.net","i.acgmx.com")).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             toExternalResource.close()
-
             val quoteReply: QuoteReply = QuoteReply(event.message)
             if (null != Config.recall) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Config.recall!!)

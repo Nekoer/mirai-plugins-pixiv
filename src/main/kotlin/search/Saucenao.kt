@@ -27,7 +27,7 @@ import java.io.File
 import java.net.URL
 import javax.imageio.ImageIO
 
-class Saucenao {
+object Saucenao {
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
     private val jsonObject: JSONObject? = null

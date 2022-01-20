@@ -30,7 +30,7 @@ class Configuration {
         private val tracePath: File =
             File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
         var projectJson: JSONObject = JSONObject.parseObject("{}")
-        private val logger = MiraiLogger.create("Bot")
+        private val logger = MiraiLogger.create("Pixiv")
 
 
         /**

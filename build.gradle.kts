@@ -11,12 +11,11 @@ version = "1.6.0"
 
 repositories {
 //    mavenLocal()
-    maven("https://maven.aliyun.com/repository/gradle-plugin")
-    maven("https://maven.aliyun.com/repository/public")
+//    maven("https://maven.aliyun.com/repository/gradle-plugin")
+//    maven("https://maven.aliyun.com/repository/central")
     mavenCentral()
 }
 dependencies {
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.alibaba:fastjson:1.2.79")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")

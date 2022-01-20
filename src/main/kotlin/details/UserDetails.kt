@@ -14,7 +14,7 @@ import okhttp3.Headers
 import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
 
-class UserDetails {
+object UserDetails {
     private val headers = Headers.Builder().add("token", "$acgmx")
     private val requestBody: RequestBody? = null
 

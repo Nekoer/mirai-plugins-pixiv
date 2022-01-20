@@ -31,7 +31,7 @@ import java.util.*
 /**
  * 以图片搜番剧
  */
-class Trace {
+object Trace {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
 

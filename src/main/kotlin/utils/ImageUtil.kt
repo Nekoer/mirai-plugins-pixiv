@@ -36,7 +36,6 @@ class ImageUtil {
                 "user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
-            .add("Referer", "https://www.pixiv.net")
         private var isChange:Boolean = false
 
 
@@ -50,15 +49,15 @@ class ImageUtil {
          * 将图片链接读取到内存转换成ByteArrayOutputStream，方便操作
          */
         fun getImage(imageUri: String): ByteArrayOutputStream {
-
+            val infoStream = ByteArrayOutputStream()
             try{
 //                val request = if (isChange){
 //                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
 //                }else{
 //                    Request.Builder().url(imageUri).get().build()
 //                }
-                val request = Request.Builder().url(imageUri).get().build()
-                val infoStream = ByteArrayOutputStream()
+                val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
+
                 val response: Response = client.build().newCall(request).execute();
 
                 val `in` = response.body?.byteStream()
@@ -71,11 +70,10 @@ class ImageUtil {
                 }
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
-                isChange = false
                 return infoStream
             }catch (e:Exception){
-                isChange = true
-                return getImage(imageUri)
+                e.printStackTrace()
+                return infoStream
             }
         }
 

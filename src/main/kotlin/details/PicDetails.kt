@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils
 import java.io.ByteArrayInputStream
 import java.lang.Exception
 
-class PicDetails {
+object PicDetails {
     private val headers = Headers.Builder().add("token", "$acgmx")
     private val requestBody: RequestBody? = null
     private var isChange:Boolean = false

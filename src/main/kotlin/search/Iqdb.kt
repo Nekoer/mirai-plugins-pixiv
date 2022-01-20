@@ -11,7 +11,7 @@ import net.mamoe.mirai.utils.MiraiLogger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-class Iqdb {
+object Iqdb {
 
 
     suspend fun picToHtmlSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String) :List<Message>{
