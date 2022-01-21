@@ -1,7 +1,7 @@
 package com.hcyacg.rank
 
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config
+import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -11,7 +11,6 @@ import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
-import kotlin.math.log
 
 /**
  * @Author: Nekoer
@@ -24,8 +23,8 @@ object Tag {
 
     suspend fun init(event: GroupMessageEvent, logger: MiraiLogger){
 
-        val q = event.message.content.replace(Config.tag!!,"").replace(" ","").split("-")[0]
-        val page = event.message.content.replace(Config.tag!!,"").replace(" ","").split("-")[1].toInt()
+        val q = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[0]
+        val page = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[1].toInt()
         var offset = 0
         var num = 0
         if (page % 3 != 0){

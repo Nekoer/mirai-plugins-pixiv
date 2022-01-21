@@ -1,26 +1,18 @@
 package com.hcyacg.sexy
 
-import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config
+import com.hcyacg.initial.Setting
 import com.hcyacg.rank.TotalProcessing
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.QuoteReply
-import net.mamoe.mirai.utils.ExternalResource.Companion.sendAsImageTo
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
-
 import okhttp3.Headers
 import okhttp3.RequestBody
-import okhttp3.internal.closeQuietly
-import okio.ByteString.Companion.toByteString
-import org.apache.commons.lang3.RandomUtils
-import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,7 +28,7 @@ object SexyCenter {
 
     suspend fun init(event: GroupMessageEvent, logger: MiraiLogger) {
         val randoms: Int = (0 until 2).random()
-        if (!Config.groups.contains(event.group.id.toString())) {
+        if (!Setting.groups.contains(event.group.id.toString())) {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
@@ -82,8 +74,8 @@ object SexyCenter {
              * 判断是否配置了撤回时间
              */
 
-            if (null != Config.recall) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)")).recallIn(Config.recall!!)
+            if (Setting.config.recall != 0L) {
+                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)")).recallIn(Setting.config.recall)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
             }
@@ -113,9 +105,9 @@ object SexyCenter {
             toExternalResource.close()
             val quoteReply: QuoteReply = QuoteReply(event.message)
 
-            if (null != Config.recall) {
+            if (Setting.config.recall != 0L) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
-                    .recallIn(Config.recall!!)
+                    .recallIn(Setting.config.recall)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
             }
@@ -145,8 +137,8 @@ object SexyCenter {
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             toExternalResource.close()
             val quoteReply: QuoteReply = QuoteReply(event.message)
-            if (null != Config.recall) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Config.recall!!)
+            if (Setting.config.recall != 0L) {
+                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)")).recallIn(Setting.config.recall)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }

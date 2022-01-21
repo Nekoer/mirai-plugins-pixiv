@@ -2,8 +2,8 @@ package com.hcyacg.utils
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config.host
-import com.hcyacg.config.Config.port
+import com.hcyacg.initial.Setting
+
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.internal.closeQuietly
@@ -81,10 +81,11 @@ class RequestUtil {
          * 发送http请求，返回数据（其中根据proxy是否配置加入代理机制）
          */
         private fun httpObject(request: Request, logger: MiraiLogger): JSONObject? {
+            val host = Setting.config.proxy.host
+            val port = Setting.config.proxy.port
 
 
-
-            response = if (null == host || null == port) {
+            response = if (host.isBlank() || port == -1) {
                 client.build().newCall(request).execute()
             } else {
                 val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port!!))
@@ -101,11 +102,13 @@ class RequestUtil {
         }
 
         private fun httpArray(request: Request, logger: MiraiLogger): JSONArray? {
+            val host = Setting.config.proxy.host
+            val port = Setting.config.proxy.port
 
-            response = if (null == host || null == port) {
+            response = if (host.isBlank() || port == -1) {
                 client.build().newCall(request).execute()
             } else {
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port!!))
+                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
                 client.proxy(proxy).build().newCall(request).execute()
             }
 

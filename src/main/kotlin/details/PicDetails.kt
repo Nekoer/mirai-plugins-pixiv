@@ -2,33 +2,22 @@ package com.hcyacg.details
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config.getDetailOfId
-import com.hcyacg.config.Config.acgmx
-import com.hcyacg.config.Config.groups
-import com.hcyacg.config.Config.recall
+import com.hcyacg.initial.Setting
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
 import com.hcyacg.utils.RequestUtil.Companion.requestObject
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.Contact.Companion.sendImage
-
-import net.mamoe.mirai.contact.Contact.Companion.uploadImage
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
-import net.mamoe.mirai.utils.ExternalResource
-import net.mamoe.mirai.utils.ExternalResource.Companion.sendAsImageTo
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
-import okhttp3.internal.closeQuietly
 import org.apache.commons.lang3.StringUtils
-import java.io.ByteArrayInputStream
 import java.lang.Exception
 
 object PicDetails {
-    private val headers = Headers.Builder().add("token", "$acgmx")
+    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
     private val requestBody: RequestBody? = null
     private var isChange:Boolean = false
 
@@ -42,23 +31,23 @@ object PicDetails {
         var id: String? = null
         var page: String?
         try {
-            page = getDetailOfId?.let { messageChain.content.replace(it, "").replace(" ","").split("-")[1] }
+            page = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ","").split("-")[1]
         } catch (e: Exception) {
-            id = messageChain.content.replace(getDetailOfId!!, "").replace(" ","")
+            id = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ","")
             page = "1"
         }
 
         if(null == id){
             try {
-                id = messageChain.content.replace(getDetailOfId!!, "").replace(" ","").split("-")[0]
+                id = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ","").split("-")[0]
             } catch (e: Exception) {
-                event.subject.sendMessage("请输入正确的插画id  ${getDetailOfId}id")
+                event.subject.sendMessage("请输入正确的插画id  ${Setting.command.getDetailOfId}id")
                 return
             }
         }
 
         if (StringUtils.isBlank(id)){
-            event.subject.sendMessage("请输入正确的插画id ${getDetailOfId}id")
+            event.subject.sendMessage("请输入正确的插画id ${Setting.command.getDetailOfId}id")
             return
         }
 
@@ -93,7 +82,7 @@ object PicDetails {
         var large = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
         val pageCount = tempData.getIntValue("page_count")
         val sanityLevel = tempData.getIntValue("sanity_level")
-        if (sanityLevel == 6 && groups.indexOf(event.group.id.toString()) < 0){
+        if (sanityLevel == 6 && Setting.groups.indexOf(event.group.id.toString()) < 0){
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
@@ -133,7 +122,7 @@ object PicDetails {
         /**
          * 判断key是否配置，未配置提醒用户
          */
-        if (null == acgmx){
+        if (Setting.config.token.acgmx.isBlank()){
             message.plus("\n").plus("您未配置acgmx_token,请到https://www.acgmx.com/account申请")
         }
 
@@ -141,8 +130,8 @@ object PicDetails {
          * 判断是否配置了撤回时间
          */
 
-        if (sanityLevel == 6 && !StringUtils.isBlank(recall.toString())){
-            recall?.let { event.subject.sendMessage(message).recallIn(it) }
+        if (sanityLevel == 6 && !StringUtils.isBlank(Setting.config.recall.toString())){
+            event.subject.sendMessage(message).recallIn(Setting.config.recall)
         }else{
             event.subject.sendMessage(message)
         }

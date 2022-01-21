@@ -1,10 +1,7 @@
 package com.hcyacg.rank
 
-import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config
-import com.hcyacg.config.Config.groups
-import com.hcyacg.config.Config.showRank
+import com.hcyacg.initial.Setting
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Message
@@ -12,8 +9,6 @@ import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.MiraiLogger
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -35,9 +30,9 @@ object Rank {
          * 对接收到到的命令进行分析获取
          */
         try{
-            page = event.message.content.replace(showRank!!,"").replace(" ","").split("-")[1].toInt()
+            page = event.message.content.replace(Setting.command.showRank,"").replace(" ","").split("-")[1].toInt()
         }catch (e:Exception){
-            mode = event.message.content.replace(showRank!!,"").replace(" ","")
+            mode = event.message.content.replace(Setting.command.showRank,"").replace(" ","")
             page = 1
         }
 
@@ -55,9 +50,9 @@ object Rank {
 
         if (null == mode){
             try {
-                mode = event.message.content.replace(showRank!!,"").replace(" ","").split("-")[0]
+                mode = event.message.content.replace(Setting.command.showRank,"").replace(" ","").split("-")[0]
             } catch (e: java.lang.Exception) {
-                event.subject.sendMessage("请输入正确的排行榜命令 ${showRank}[day|week|month|setu]-页码")
+                event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[day|week|month|setu]-页码")
                 return
             }
         }
@@ -65,7 +60,7 @@ object Rank {
          * 判断是否为已有参数
          */
         if(!mode.contains("day") && !mode.contains("week") && !mode.contains("month") && !mode.contains("setu")){
-            event.subject.sendMessage("请输入正确的排行榜命令 ${showRank}[day|week|month|setu]-页码")
+            event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[day|week|month|setu]-页码")
             return
         }
 
@@ -88,7 +83,7 @@ object Rank {
             /**
              * 判断该群是否有权查看涩图
              */
-            if(groups.indexOf(event.group.id.toString()) >= 0){
+            if(Setting.groups.indexOf(event.group.id.toString()) >= 0){
                 data =  TotalProcessing().dealWith("illust", "daily_r18",page,perPage,date,logger)
             }else{
                 event.subject.sendMessage("该群暂时无权限查看涩图排行榜")

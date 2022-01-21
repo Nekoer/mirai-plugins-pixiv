@@ -2,7 +2,6 @@ package com.hcyacg.anime
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.Pixiv
 import com.hcyacg.config.Config.agefans
 import com.hcyacg.config.Config.isSend
 import com.hcyacg.entity.AgefansItem
@@ -11,12 +10,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.utils.MiraiLogger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.util.*
-import java.util.concurrent.locks.ReentrantLock
 
 object Agefans {
 

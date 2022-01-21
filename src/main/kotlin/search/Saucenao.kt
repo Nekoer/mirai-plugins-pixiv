@@ -2,8 +2,7 @@ package com.hcyacg.search
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config.saucenao
-import com.hcyacg.config.Config.picToSearch
+import com.hcyacg.initial.Setting
 import com.hcyacg.plugin.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.ImageUtil.Companion.getImage
@@ -20,9 +19,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
-import okhttp3.internal.closeQuietly
 import org.apache.commons.lang3.StringUtils
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.net.URL
 import javax.imageio.ImageIO
@@ -50,7 +47,7 @@ object Saucenao {
             /**
              * 未配置key通知用户
              */
-            if (null == saucenao) {
+            if (Setting.config.token.saucenao.isBlank()) {
                 event.subject.sendMessage(At(event.sender).plus("您还未配置saucenao的api_key,申请网址为https://saucenao.com/user.php?page=search-api"))
                 return list
             }
@@ -147,7 +144,7 @@ object Saucenao {
             return list
         } catch (e: Exception) {
             e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
+            event.subject.sendMessage("请输入正确的命令 ${Setting.command.picToSearch}图片")
             list.clear()
             return list
         }
@@ -200,7 +197,7 @@ object Saucenao {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${picToSearch}图片")
+            event.subject.sendMessage("请输入正确的命令 ${Setting.command.picToSearch}图片")
             return null
         }
         return null
@@ -214,7 +211,7 @@ object Saucenao {
         try {
             data = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
-                "https://saucenao.com/search.php?db=999&output_type=2&api_key=$saucenao&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Setting.config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
                 requestBody,
                 headers.build(),
                 logger

@@ -3,7 +3,6 @@ package com.hcyacg.search
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.plugin.utils.DataUtil
-import com.hcyacg.utils.DateUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import com.madgag.gif.fmsware.AnimatedGifEncoder
@@ -15,16 +14,13 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
-
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.closeQuietly
-import org.apache.commons.lang3.StringUtils
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 

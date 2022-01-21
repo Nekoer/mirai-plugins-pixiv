@@ -1,22 +1,17 @@
 package com.hcyacg.search
 
-
-import com.hcyacg.config.Config
-import com.hcyacg.plugin.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
-
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.util.*
+
 
 
 object Ascii2d {
@@ -25,35 +20,35 @@ object Ascii2d {
     private val baseUrl: String = "https://ascii2d.net"
 
     suspend fun picToHtmlSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String) :List<Message>{
-
-        /**
-         * 获取图片的代码
-         */
-//        val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
-//            .replace("-", "")
-        val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
-        val ascii2d = "https://ascii2d.net/search/url/$url"
-        val headers = mutableMapOf<String,String>()
-        headers["User-Agent"] = "PostmanRuntime/7.28.4"
-
-        val doc: Document = Jsoup.connect(ascii2d).timeout(60000).headers(headers).get()
-
-        val elementsByClass = doc.select(".item-box")
         val list = mutableListOf<Message>()
+        try{
+            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+            val ascii2d = "https://ascii2d.net/search/url/$url"
+            val headers = mutableMapOf<String,String>()
+            headers["User-Agent"] = "PostmanRuntime/7.28.4"
 
-        elementsByClass.forEach {
-            val link = it.select(".detail-box a")
-            if (link.size == 0) {
-                md5 = it.selectFirst(".image-box img")?.attr("alt").toString().toLowerCase()
-            } else {
-                list.add(color(elementsByClass,event, logger))
-                list.add(bovw(event, logger))
-                return list
+            val doc: Document = Jsoup.connect(ascii2d).timeout(60000).headers(headers).get()
+
+            val elementsByClass = doc.select(".item-box")
+
+
+            elementsByClass.forEach {
+                val link = it.select(".detail-box a")
+                if (link.size == 0) {
+                    md5 = it.selectFirst(".image-box img")?.attr("alt").toString().toLowerCase()
+                } else {
+                    list.add(color(elementsByClass,event, logger))
+                    list.add(bovw(event, logger))
+                    return list
+                }
             }
-        }
 
-        list.clear()
-        return list
+            list.clear()
+            return list
+        }catch (e:Exception){
+            logger.error(e)
+            return list
+        }
 
     }
 

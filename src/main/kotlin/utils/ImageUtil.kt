@@ -1,17 +1,9 @@
 package com.hcyacg.utils
 
-import com.alibaba.fastjson.JSONObject
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.apache.http.HttpResponse
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory
-import org.apache.http.conn.ssl.TrustStrategy
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.ssl.SSLContextBuilder
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Image
@@ -20,8 +12,6 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.security.cert.CertificateException
-import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import javax.net.ssl.*
@@ -37,12 +27,6 @@ class ImageUtil {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
         private var isChange:Boolean = false
-
-
-
-
-
-
 
 
         /**

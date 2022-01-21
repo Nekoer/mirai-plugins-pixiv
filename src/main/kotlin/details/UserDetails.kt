@@ -2,8 +2,8 @@ package com.hcyacg.details
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config.acgmx
-import com.hcyacg.config.Config.findUserWorksById
+import com.hcyacg.initial.Setting
+
 import com.hcyacg.utils.RequestUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -15,17 +15,17 @@ import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
 
 object UserDetails {
-    private val headers = Headers.Builder().add("token", "$acgmx")
+    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
     private val requestBody: RequestBody? = null
 
     suspend fun findUserWorksById(event: GroupMessageEvent, logger: MiraiLogger){
         var data: JSONObject? = null
         var authorData: JSONObject? = null
         try{
-            val authorId = findUserWorksById?.let { event.message.content.replace(it,"").replace(" ","") }
+            val authorId = event.message.content.replace(Setting.command.findUserWorksById,"").replace(" ","")
 
             if (StringUtils.isBlank(authorId)){
-                event.subject.sendMessage("请输入正确的命令 ${findUserWorksById}作者Id")
+                event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id")
                 return
             }
 
@@ -68,7 +68,7 @@ object UserDetails {
 
             event.subject.sendMessage(message.plus("作品共 $totalIllusts 个,目前只显示10个"))
         }catch (e:Exception){
-            event.subject.sendMessage("请输入正确的命令 ${findUserWorksById}id")
+            event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}id")
         }
     }
 }

@@ -2,20 +2,14 @@ package com.hcyacg.science
 
 import com.hcyacg.plugin.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
-import com.hcyacg.utils.RequestUtil
-import io.ktor.client.utils.EmptyContent.headers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.http.client.methods.RequestBuilder.post
 import java.io.File
-import java.io.FileInputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
 

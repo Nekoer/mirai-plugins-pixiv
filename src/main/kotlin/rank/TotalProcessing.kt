@@ -1,19 +1,17 @@
 package com.hcyacg.rank
 
 import com.alibaba.fastjson.JSONObject
-import com.hcyacg.config.Config
+import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
-import java.util.*
-import kotlin.math.log
 
 /**
  * 排行榜总处理中心
  */
 class TotalProcessing {
-    private val headers = Headers.Builder().add("token", "${com.hcyacg.config.Config.acgmx}")
+    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
     private val requestBody: RequestBody? = null
 
     /**
