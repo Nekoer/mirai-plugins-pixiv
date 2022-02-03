@@ -11,10 +11,8 @@ import net.mamoe.mirai.utils.MiraiLogger
  * 搜索二次元图片转发中心
  */
 object SearchPicCenter {
-    private val nodes = mutableListOf<ForwardMessage.Node>()
-
     suspend fun forward(event: GroupMessageEvent, logger:MiraiLogger){
-
+        val nodes = mutableListOf<ForwardMessage.Node>()
         /**
          * 获取图片的代码
          */

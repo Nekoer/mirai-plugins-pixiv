@@ -23,47 +23,51 @@ object Tag {
 
     suspend fun init(event: GroupMessageEvent, logger: MiraiLogger){
 
-        val q = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[0]
-        val page = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[1].toInt()
-        var offset = 0
-        var num = 0
-        if (page % 3 != 0){
-            offset = ((page - (page % 3)) / 3) * 30 + 30
-            num = page % 3 * 10
-        }else{
-            offset = (page / 3) * 30
-            num = 30
+        try{
+            val q = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[0]
+            val page = event.message.content.replace(Setting.command.tag,"").replace(" ","").split("-")[1].toInt()
+            var offset = 0
+            var num = 0
+            if (page % 3 != 0){
+                offset = ((page - (page % 3)) / 3) * 30 + 30
+                num = page % 3 * 10
+            }else{
+                offset = (page / 3) * 30
+                num = 30
+            }
+
+
+            val data = RequestUtil.requestObject(
+                RequestUtil.Companion.Method.GET,
+                "https://api.acgmx.com/public/search?q=$q&offset=$offset",
+                requestBody,
+                headers.build(),
+                logger
+            )
+            logger.info(data.toString())
+            /**
+             * 针对数据为空进行通知
+             */
+            if (null == data || StringUtils.isNotBlank(data.getString("errors"))){
+                event.subject.sendMessage("当前排行榜暂无数据")
+                return
+            }
+
+            var message : Message = At(event.sender).plus("\n").plus("======标签排行榜($q)======").plus("\n")
+            val illusts = data.getJSONArray("illusts")
+
+
+            for (i in (num-10) until num){
+                val id = JSONObject.parseObject(illusts[i].toString()).getString("id")
+                val title = JSONObject.parseObject(illusts[i].toString()).getString("title")
+                val user = JSONObject.parseObject(JSONObject.parseObject(illusts[i].toString()).getString("user")).getString("name")
+
+                message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
+            }
+            event.subject.sendMessage(message)
+        }catch (e :Exception){
+            e.printStackTrace()
         }
-
-
-        val data = RequestUtil.requestObject(
-            RequestUtil.Companion.Method.GET,
-            "https://api.acgmx.com/public/search?q=$q&offset=$offset",
-            requestBody,
-            headers.build(),
-            logger
-        )
-        logger.info(data.toString())
-        /**
-         * 针对数据为空进行通知
-         */
-        if (null == data || StringUtils.isNotBlank(data.getString("errors"))){
-            event.subject.sendMessage("当前排行榜暂无数据")
-            return
-        }
-
-        var message : Message = At(event.sender).plus("\n").plus("======标签排行榜($q)======").plus("\n")
-        val illusts = data.getJSONArray("illusts")
-
-
-        for (i in (num-10) until num){
-            val id = JSONObject.parseObject(illusts[i].toString()).getString("id")
-            val title = JSONObject.parseObject(illusts[i].toString()).getString("title")
-            val user = JSONObject.parseObject(JSONObject.parseObject(illusts[i].toString()).getString("user")).getString("name")
-
-            message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
-        }
-        event.subject.sendMessage(message)
     }
 
 }

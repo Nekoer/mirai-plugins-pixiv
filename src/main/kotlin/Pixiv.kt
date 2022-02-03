@@ -36,13 +36,13 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.6.1",
+        version = "1.6.2",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
     }
 ) {
-    private val pluginLogger = MiraiLogger.create("Pixiv")
+    private val pluginLogger = MiraiLogger.Factory.create(this::class.java)
     override fun onEnable() {
         Setting.reload()
         Setting.save()
