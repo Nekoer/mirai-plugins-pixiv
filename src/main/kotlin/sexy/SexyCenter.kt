@@ -27,7 +27,7 @@ object SexyCenter {
     val sdf = SimpleDateFormat("yyyy-MM-dd")
 
     suspend fun init(event: GroupMessageEvent, logger: MiraiLogger) {
-        val randoms: Int = (0 until 2).random()
+        val randoms: Int = (0 .. 2).random()
         if (!Setting.groups.contains(event.group.id.toString())) {
             event.subject.sendMessage("该群无权限查看涩图")
             return
@@ -64,6 +64,7 @@ object SexyCenter {
             val num: Int = (0 until (obj!!.size - 1)).random()
             val id = JSONObject.parseObject(obj[num].toString()).getString("id")
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+
 
             val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId

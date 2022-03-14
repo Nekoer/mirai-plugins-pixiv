@@ -46,6 +46,7 @@ object PicDetails {
             }
         }
 
+
         if (StringUtils.isBlank(id)){
             event.subject.sendMessage("请输入正确的插画id ${Setting.command.getDetailOfId}id")
             return
@@ -58,6 +59,8 @@ object PicDetails {
         if (null == page || page.toInt() <= 0) {
             page = "1"
         }
+
+
 
         data = requestObject(
             Companion.Method.GET,
@@ -130,7 +133,7 @@ object PicDetails {
          * 判断是否配置了撤回时间
          */
 
-        if (sanityLevel == 6 && !StringUtils.isBlank(Setting.config.recall.toString())){
+        if (sanityLevel == 6 && StringUtils.isNotBlank(Setting.config.recall.toString()) && Setting.config.recall != 0L){
             event.subject.sendMessage(message).recallIn(Setting.config.recall)
         }else{
             event.subject.sendMessage(message)

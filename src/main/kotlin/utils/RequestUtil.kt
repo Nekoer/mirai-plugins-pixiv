@@ -88,7 +88,7 @@ class RequestUtil {
             response = if (host.isBlank() || port == -1) {
                 client.build().newCall(request).execute()
             } else {
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port!!))
+                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
                 client.proxy(proxy).build().newCall(request).execute()
             }
 

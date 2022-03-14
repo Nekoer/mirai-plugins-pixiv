@@ -1,5 +1,6 @@
 package com.hcyacg.utils
 
+import com.hcyacg.initial.Setting
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -12,6 +13,8 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import javax.net.ssl.*
@@ -34,15 +37,21 @@ class ImageUtil {
          */
         fun getImage(imageUri: String): ByteArrayOutputStream {
             val infoStream = ByteArrayOutputStream()
+            val host = Setting.config.proxy.host
+            val port = Setting.config.proxy.port
             try{
+                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
 //                val request = if (isChange){
 //                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
 //                }else{
 //                    Request.Builder().url(imageUri).get().build()
 //                }
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
-
-                val response: Response = client.build().newCall(request).execute();
+                val response: Response  = if (host.isBlank() || port == -1){
+                    client.build().newCall(request).execute();
+                }else{
+                    client.proxy(proxy).build().newCall(request).execute();
+                }
 
                 val `in` = response.body?.byteStream()
                 val buffer = ByteArray(2048)

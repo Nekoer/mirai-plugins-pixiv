@@ -36,7 +36,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.6.2",
+        version = "1.6.3",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -49,7 +49,7 @@ object Pixiv : KotlinPlugin(
 
         globalEventChannel().subscribeGroupMessages {
             //测试成功
-            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)\$")
+            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() } quoteReply { PicDetails.getDetailOfId(this, pluginLogger) }
 
             //测试成功

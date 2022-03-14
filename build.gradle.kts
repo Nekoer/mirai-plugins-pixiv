@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     val kotlinVersion = "1.5.10"
     kotlin("jvm") version kotlinVersion
@@ -9,7 +11,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.6.2"
+version = "1.6.3"
 
 repositories {
 //    mavenLocal()
@@ -27,6 +29,7 @@ dependencies {
     compileOnly("com.madgag:animated-gif-lib:1.4")
     compileOnly("org.bytedeco:javacv-platform:1.5.5")
 //    compileOnly
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 noArg {
@@ -35,4 +38,12 @@ noArg {
 
 allOpen{
     annotation("com.hcyacg.anno.NoArgOpenDataClass")
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }
