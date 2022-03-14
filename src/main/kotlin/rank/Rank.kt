@@ -41,11 +41,10 @@ object Rank {
         }
 
 
-        var num = 0
-        if (page % 3 != 0){
-            num = page % 3 * 10
+        val num  = if (page % 3 != 0){
+            page % 3 * 10
         }else{
-            num = 30
+            30
         }
 
         if (null == mode){

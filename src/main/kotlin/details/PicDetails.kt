@@ -25,15 +25,19 @@ object PicDetails {
         val data: JSONObject?
         val messageChain: MessageChain = event.message
 
+        if (!event.message.contentToString().contains(Setting.command.getDetailOfId)){
+            return
+        }
+
         /**
          * 获取要查询的id和图片的张数，通过分割获取
          */
         var id: String? = null
         var page: String?
         try {
-            page = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ","").split("-")[1]
+            page = messageChain.contentToString().replace(Setting.command.getDetailOfId, "").replace(" ","").split("-")[1]
         } catch (e: Exception) {
-            id = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ","")
+            id = messageChain.contentToString().replace(Setting.command.getDetailOfId, "").replace(" ","")
             page = "1"
         }
 

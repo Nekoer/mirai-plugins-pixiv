@@ -44,7 +44,7 @@ object Tag {
                 headers.build(),
                 logger
             )
-            logger.info(data.toString())
+
             /**
              * 针对数据为空进行通知
              */

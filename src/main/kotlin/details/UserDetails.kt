@@ -22,10 +22,30 @@ object UserDetails {
         var data: JSONObject? = null
         var authorData: JSONObject? = null
         try{
-            val authorId = event.message.content.replace(Setting.command.findUserWorksById,"").replace(" ","")
+            if (!event.message.contentToString().contains(Setting.command.findUserWorksById)){
+                return
+            }
+
+            val authorId = event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-")[0]
+
+
+            val page = if(event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-").size == 2){
+                event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-")[1].toInt()
+            }else{
+                1
+            }
+            var offset = 0
+            var num = 0
+            if (page % 3 != 0){
+                offset = ((page - (page % 3)) / 3) * 30 + 30
+                num = page % 3 * 10
+            }else{
+                offset = (page / 3) * 30
+                num = 30
+            }
 
             if (StringUtils.isBlank(authorId)){
-                event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id")
+                event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id-页码")
                 return
             }
 
@@ -42,14 +62,14 @@ object UserDetails {
 
             //作者插画作品数量
             val totalIllusts = JSONObject.parseObject(authorData!!.getString("profile")).getIntValue("total_illusts")
-            val author = JSONObject.parseObject(authorData!!.getString("user")).getString("name")
+            val author = JSONObject.parseObject(authorData.getString("user")).getString("name")
 
             /**
              * 获取作者作品信息
              */
             data = RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,
-                "https://api.acgmx.com/public/search/users/illusts?id=$authorId&offset=30",
+                "https://api.acgmx.com/public/search/users/illusts?id=$authorId&offset=$offset",
                 requestBody,
                 headers.build(),
                 logger
@@ -57,18 +77,37 @@ object UserDetails {
 
             val tempData = JSONArray.parseArray(data!!.getString("illusts"))
             var message : Message = At(event.sender).plus("\n").plus("======${author}作品======").plus("\n")
-            loop@ for ((index,o) in tempData.withIndex()){
-                if(index > 9){
-                    break@loop
-                }
-                val id = JSONObject.parseObject(o.toString()).getString("id")
-                val title = JSONObject.parseObject(o.toString()).getString("title")
-                message = message.plus("${index +1 }. $title - $id").plus("\n")
+
+
+            if (tempData.size == 0){
+                event.subject.sendMessage(message.plus("当前页为空"))
+                return
             }
 
-            event.subject.sendMessage(message.plus("作品共 $totalIllusts 个,目前只显示10个"))
+
+            for (i in (num-10) until num){
+                if (tempData.size - 1 < num){
+                    event.subject.sendMessage(message.plus("当前页为空"))
+                    return
+                }
+                val id = JSONObject.parseObject(tempData[i].toString()).getString("id")
+                val title = JSONObject.parseObject(tempData[i].toString()).getString("title")
+
+                message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $id").plus("\n")
+            }
+//            loop@ for ((index,o) in tempData.withIndex()){
+//                if(index > 9){
+//                    break@loop
+//                }
+//                val id = JSONObject.parseObject(o.toString()).getString("id")
+//                val title = JSONObject.parseObject(o.toString()).getString("title")
+//                message = message.plus("${index +1 }. $title - $id").plus("\n")
+//            }
+
+            event.subject.sendMessage(message.plus("作品共 ${if(totalIllusts % 10 != 0){ (totalIllusts/10) +1 }else{totalIllusts/10}} 页,目前处于${page}页"))
         }catch (e:Exception){
-            event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}id")
+            e.printStackTrace()
+            event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id-页码")
         }
     }
 }

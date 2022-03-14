@@ -36,7 +36,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.6.3",
+        version = "1.6.4",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -49,7 +49,7 @@ object Pixiv : KotlinPlugin(
 
         globalEventChannel().subscribeGroupMessages {
             //测试成功
-            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)-([0-9]*[1-9][0-9]*)\$")
+            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() } quoteReply { PicDetails.getDetailOfId(this, pluginLogger) }
 
             //测试成功
@@ -57,7 +57,7 @@ object Pixiv : KotlinPlugin(
             content { rank.matcher(message.contentToString()).find() } quoteReply { Rank.showRank(this, pluginLogger) }
 
             //测试成功
-            val findUserWorksById: Pattern = Pattern.compile("(?i)^(${Setting.command.findUserWorksById})([0-9]*[1-9][0-9]*)\$")
+            val findUserWorksById: Pattern = Pattern.compile("(?i)^(${Setting.command.findUserWorksById})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { findUserWorksById.matcher(message.contentToString()).find() } quoteReply { UserDetails.findUserWorksById(this, pluginLogger) }
             //测试成功
             val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Setting.command.searchInfoByPic}).+$")

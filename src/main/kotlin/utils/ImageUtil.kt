@@ -40,7 +40,7 @@ class ImageUtil {
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
             try{
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
+
 //                val request = if (isChange){
 //                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
 //                }else{
@@ -50,6 +50,7 @@ class ImageUtil {
                 val response: Response  = if (host.isBlank() || port == -1){
                     client.build().newCall(request).execute();
                 }else{
+                    val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
                     client.proxy(proxy).build().newCall(request).execute();
                 }
 
