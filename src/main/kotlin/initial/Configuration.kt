@@ -14,7 +14,7 @@ class Configuration {
 
 
         /**
-         * 初始化插件各项配置
+         * 老版本JSON配置--自动转换--初始化插件各项配置
          */
         fun init() {
 

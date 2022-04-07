@@ -36,7 +36,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.6.4",
+        version = "1.6.5",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -63,7 +63,7 @@ object Pixiv : KotlinPlugin(
             val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Setting.command.searchInfoByPic}).+$")
             content { searchInfoByPic.matcher(message.contentToString()).find() } quoteReply { Trace.searchInfoByPic(this, pluginLogger) }
 
-            val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})$")
+            val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]?[\\S]*[ ]?(r18)?\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this, pluginLogger) }
 
             //测试成功

@@ -10,7 +10,9 @@ data class Config(
     @SerialName("proxy")
     var proxy: Proxy = Proxy(),
     @SerialName("recall")
-    var recall: Long = 5000
+    var recall: Long = 5000,
+    @SerialName("tlsVersion")
+    var tlsVersion: String = "TLSv1.2"
 )
 
 @NoArgOpenDataClass
