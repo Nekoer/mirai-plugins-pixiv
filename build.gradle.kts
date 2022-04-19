@@ -26,7 +26,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.jsoup:jsoup:1.14.3")
 
-    compileOnly("com.madgag:animated-gif-lib:1.4")
+    implementation("com.madgag:animated-gif-lib:1.4")
     compileOnly("org.bytedeco:javacv-platform:1.5.7")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))

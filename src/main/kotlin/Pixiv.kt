@@ -73,6 +73,7 @@ object Pixiv : KotlinPlugin(
             val picToSearch: Pattern = Pattern.compile("(?i)^(${Setting.command.picToSearch}).+$")
             content { picToSearch.matcher(message.contentToString()).find() } quoteReply { SearchPicCenter.forward(this, pluginLogger) }
 
+//            content { "test".contentEquals(message.contentToString()) } quoteReply {PicDetails.getUgoira()}
 
 //            val coloring: Pattern = Pattern.compile("(?i)^(上色)$")
 //            content { coloring.matcher(message.contentToString()).find() } quoteReply { Style2paints.coloring(this, pluginLogger) }
