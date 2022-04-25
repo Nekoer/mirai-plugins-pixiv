@@ -25,6 +25,12 @@ command:
   setu: setu
   tag: 'tag-' #搜标签 tag-xxx-页码
 config: 
+  setuEnable: 
+    pixiv: true
+    yande: true
+    konachan: true
+    lolicon: true
+    localImage: true #本地图库
   token: 
     acgmx: # https://www.acgmx.com/account申请
     saucenao:  #saucenao.com注册账号后能看到api_key
@@ -32,6 +38,11 @@ config:
     host: 127.0.0.1
     port: 7890
   recall: 5000 # 涩图经过多少秒撤回 设置为0即可不撤回
+  tlsVersion: TLSv1.2
+  cache: 
+    enable: false                    #缓存开关
+    directory: 'Mirai根目录\image'    #图片缓存路径
+  localImagePath: 'Mirai根目录\image' #本地图库路径 默认和缓存路径一致
 ```
 ## 鸣谢
 
