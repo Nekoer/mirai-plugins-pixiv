@@ -17,8 +17,9 @@ object Style2paints {
 
     private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS)
+    private val logger = MiraiLogger.Factory.create(this::class.java)
 
-    suspend fun coloring(event: GroupMessageEvent, logger: MiraiLogger) {
+    suspend fun coloring(event: GroupMessageEvent) {
         /**
          * 获取图片的代码
          */

@@ -12,9 +12,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 object Iqdb {
+    private val logger = MiraiLogger.Factory.create(this::class.java)
 
-
-    suspend fun picToHtmlSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String) :List<Message>{
+    suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String) :List<Message>{
         val list = mutableListOf<Message>()
 
         try{

@@ -20,8 +20,8 @@ import org.apache.commons.lang3.StringUtils
 object Tag {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
-
-    suspend fun init(event: GroupMessageEvent, logger: MiraiLogger) {
+    private val logger = MiraiLogger.Factory.create(this::class.java)
+    suspend fun init(event: GroupMessageEvent) {
 
         try {
             val q = event.message.content.replace(Setting.command.tag, "").replace(" ", "").split("-")[0]

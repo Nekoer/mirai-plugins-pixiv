@@ -29,7 +29,7 @@ object PicDetails {
     private var isChange: Boolean = false
     private val logger = MiraiLogger.Factory.create(this::class.java)
 
-    suspend fun getDetailOfId(event: GroupMessageEvent, logger: MiraiLogger) {
+    suspend fun getDetailOfId(event: GroupMessageEvent) {
         val data: JSONObject?
         val messageChain: MessageChain = event.message
 

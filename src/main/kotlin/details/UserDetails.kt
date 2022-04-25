@@ -17,8 +17,8 @@ import org.apache.commons.lang3.StringUtils
 object UserDetails {
     private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
     private val requestBody: RequestBody? = null
-
-    suspend fun findUserWorksById(event: GroupMessageEvent, logger: MiraiLogger){
+    private val logger = MiraiLogger.Factory.create(this::class.java)
+    suspend fun findUserWorksById(event: GroupMessageEvent){
         var data: JSONObject? = null
         var authorData: JSONObject? = null
         try{

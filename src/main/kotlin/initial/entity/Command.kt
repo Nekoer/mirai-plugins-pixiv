@@ -17,6 +17,8 @@ data class Command(
     var searchInfoByPic: String = "ptsf-",
     @SerialName("setu")
     var setu: String =  "来点色图",
+    @SerialName("lolicon")
+    var lolicon: String =  "loli",
     @SerialName("tag")
     var tag: String = "tag-"
 )

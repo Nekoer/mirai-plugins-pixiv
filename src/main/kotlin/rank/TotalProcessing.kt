@@ -13,11 +13,11 @@ import okhttp3.RequestBody
 class TotalProcessing {
     private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
     private val requestBody: RequestBody? = null
-
+    private val logger = MiraiLogger.Factory.create(this::class.java)
     /**
      * 动态拼接参数并返回数据
      */
-    fun dealWith(type: String, mode: String, page: Int, perPage: Int, date: String,logger:MiraiLogger) : JSONObject? {
+    fun dealWith(type: String, mode: String, page: Int, perPage: Int, date: String) : JSONObject? {
         return try{
             RequestUtil.requestObject(
                 RequestUtil.Companion.Method.GET,

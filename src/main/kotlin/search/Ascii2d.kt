@@ -27,8 +27,9 @@ object Ascii2d {
 
     private var md5: String = ""
     private val baseUrl: String = "https://ascii2d.net"
+    private val logger = MiraiLogger.Factory.create(this::class.java)
 
-    suspend fun picToHtmlSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String) :List<Message>{
+    suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String) :List<Message>{
         val list = mutableListOf<Message>()
         try{
 

@@ -30,9 +30,9 @@ import java.util.*
 object Trace {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
+    private val logger = MiraiLogger.Factory.create(this::class.java)
 
-
-    suspend fun searchInfoByPic(event: GroupMessageEvent, logger: MiraiLogger) {
+    suspend fun searchInfoByPic(event: GroupMessageEvent) {
         var data: JSONObject? = null
         // https://api.trace.moe/search?url=
 
@@ -111,11 +111,9 @@ object Trace {
             /**
              * 发送视频文件
              */
-            externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!,logger).toByteArray().toExternalResource()
+            externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!).toByteArray().toExternalResource()
             event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
-        }catch (e:IllegalStateException){
-//            e.printStackTrace()
-//            event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
+
         }catch (e:IllegalStateException){
             e.printStackTrace()
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
@@ -123,7 +121,7 @@ object Trace {
     }
 
     @Throws(Exception::class)
-    private fun video2Gif(videoPath: InputStream,logger:MiraiLogger): ByteArrayOutputStream {
+    private fun video2Gif(videoPath: InputStream): ByteArrayOutputStream {
         val infoStream = ByteArrayOutputStream()
 
         try{

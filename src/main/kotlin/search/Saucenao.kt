@@ -28,14 +28,14 @@ object Saucenao {
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
     private val jsonObject: JSONObject? = null
-
+    private val logger = MiraiLogger.Factory.create(this::class.java)
     private val tracePath: File =
         File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
 
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent, logger: MiraiLogger, picUri: String): List<Message> {
+    suspend fun picToSearch(event: GroupMessageEvent,  picUri: String): List<Message> {
         var data: JSONObject? = null
         val messageChain: MessageChain = event.message
         val dataList = HashMap<Int, JSONObject?>()

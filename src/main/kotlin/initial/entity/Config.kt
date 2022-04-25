@@ -1,10 +1,13 @@
 package com.hcyacg.initial.entity
 import com.hcyacg.anno.NoArgOpenDataClass
 import kotlinx.serialization.*
+import java.io.File
 
 @NoArgOpenDataClass
 @Serializable
 data class Config(
+    @SerialName("setuEnable")
+    var setuEnable: Enable = Enable(),
     @SerialName("token")
     var token: Token = Token(),
     @SerialName("proxy")
@@ -12,7 +15,11 @@ data class Config(
     @SerialName("recall")
     var recall: Long = 5000,
     @SerialName("tlsVersion")
-    var tlsVersion: String = "TLSv1.2"
+    var tlsVersion: String = "TLSv1.2",
+    @SerialName("cache")
+    var cache: Cache = Cache(),
+    @SerialName("localImagePath")
+    val localImagePath:String = System.getProperty("user.dir") + File.separator + "image"
 )
 
 @NoArgOpenDataClass

@@ -13,9 +13,9 @@ import java.util.*
 
 
 object Rank {
-    val sdf = SimpleDateFormat("yyyy-MM-dd")
-
-    suspend fun showRank(event: GroupMessageEvent, logger: MiraiLogger){
+    private val sdf = SimpleDateFormat("yyyy-MM-dd")
+    private val logger = MiraiLogger.Factory.create(this::class.java)
+    suspend fun showRank(event: GroupMessageEvent){
         var data :JSONObject? = null
         val perPage = 10
         //获取日本排行榜时间，当前天数-2
@@ -67,15 +67,15 @@ object Rank {
          * 进行数据分发请求
          */
         if(mode.contains("day")){
-            data =  TotalProcessing().dealWith("illust", "daily",page,perPage,date,logger)
+            data =  TotalProcessing().dealWith("illust", "daily",page,perPage,date)
         }
 
         if(mode.contains("week")){
-            data =  TotalProcessing().dealWith("illust", "weekly",page,perPage,date,logger)
+            data =  TotalProcessing().dealWith("illust", "weekly",page,perPage,date)
         }
 
         if(mode.contains("month")){
-            data =  TotalProcessing().dealWith("illust", "monthly",page,perPage,date,logger)
+            data =  TotalProcessing().dealWith("illust", "monthly",page,perPage,date)
         }
 
         if(mode.contains("setu")){
@@ -83,7 +83,7 @@ object Rank {
              * 判断该群是否有权查看涩图
              */
             if(Setting.groups.indexOf(event.group.id.toString()) >= 0){
-                data =  TotalProcessing().dealWith("illust", "daily_r18",page,perPage,date,logger)
+                data =  TotalProcessing().dealWith("illust", "daily_r18",page,perPage,date)
             }else{
                 event.subject.sendMessage("该群暂时无权限查看涩图排行榜")
                 return

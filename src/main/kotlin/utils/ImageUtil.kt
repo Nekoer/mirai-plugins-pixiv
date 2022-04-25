@@ -11,11 +11,14 @@ import java.awt.Image
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 import javax.imageio.ImageIO
 import javax.net.ssl.*
 
@@ -39,13 +42,17 @@ class ImageUtil {
             val infoStream = ByteArrayOutputStream()
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
+
+
             try{
 
-//                val request = if (isChange){
-//                    Request.Builder().url(imageUri.replace("i.pximg.net","i.pixiv.cat")).headers(headers.build()).get().build()
-//                }else{
-//                    Request.Builder().url(imageUri).get().build()
-//                }
+                val temp = imageUri.split("/").last()
+                val fileName = temp[0]
+                val fileType = temp[1]
+
+
+
+
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){
                     client.build().newCall(request).execute();
@@ -55,6 +62,8 @@ class ImageUtil {
                 }
 
                 val `in` = response.body?.byteStream()
+
+
                 val buffer = ByteArray(2048)
                 var len = 0
                 if (`in` != null) {
@@ -64,6 +73,17 @@ class ImageUtil {
                 }
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
+
+                if (Setting.config.cache.enable){
+                    val directory = File(Setting.config.cache.directory)
+                    if (!directory.exists()){
+                        directory.mkdirs()
+                    }
+                    val out = FileOutputStream(directory.path + File.separator + temp)
+                    out.write(infoStream.toByteArray())
+                    out.close()
+                }
+
                 return infoStream
             }catch (e:Exception){
                 e.printStackTrace()
