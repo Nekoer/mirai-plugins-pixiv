@@ -75,7 +75,8 @@ object Helper {
         }
 
         var message = event.message.contentToString()
-        val state = message.contentEquals("开启")
+        val state = message.contains("开启")
+        println(state)
         message = message.replace("开启","").replace("关闭","")
         event.subject.sendMessage(changeSetu(state,message))
     }
