@@ -46,7 +46,11 @@ class ImageUtil {
 
             try{
 
-                val temp = imageUri.split("/").last()
+                val temp = if(imageUri.indexOf("?") > -1){
+                    imageUri.substring(0, imageUri.indexOf("?")).split("/").last()
+                }else{
+                    imageUri.split("/").last()
+                }
                 val fileName = temp[0]
                 val fileType = temp[1]
 

@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.6.7"
+version = "1.6.8"
 
 repositories {
 //    mavenLocal()
@@ -42,10 +42,12 @@ noArg {
 allOpen{
     annotation("com.hcyacg.anno.NoArgOpenDataClass")
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
+
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
@@ -61,4 +63,8 @@ mavenCentralPublish {
     useCentralS01()
     singleDevGithubProject("Nekoer", "mirai-plugins-pixiv")
     licenseFromGitHubProject("AGPL-3.0", "master")
+
+//    publication {
+//        artifact(tasks.getByName("buildPlugin"))
+//    }
 }
