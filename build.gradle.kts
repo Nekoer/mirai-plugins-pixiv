@@ -6,15 +6,15 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("net.mamoe.mirai-console") version "2.11.0-M2.2"
+    id("net.mamoe.mirai-console") version "2.11.0-RC"
+    id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 }
 
 group = "com.hcyacg"
-version = "1.6.8"
+version = "1.6.9"
 
 repositories {
 //    mavenLocal()
@@ -57,14 +57,16 @@ mavenCentralPublish {
     artifactId = "pixiv"
     groupId = "com.hcyacg"
     projectName = "mirai plugins pixiv"
+    workingDir = rootProject.buildDir.resolve("pub").apply { mkdirs() }
+
     // description from project.description by default
     githubProject("Nekoer", "mirai-plugins-pixiv")
 
     useCentralS01()
-    singleDevGithubProject("Nekoer", "mirai-plugins-pixiv")
-    licenseFromGitHubProject("AGPL-3.0", "master")
+    licenseFromGitHubProject("licenseAGPL-3.0", "master")
 
-//    publication {
-//        artifact(tasks.getByName("buildPlugin"))
-//    }
+    publication {
+        artifact(tasks.getByName("buildPlugin"))
+        artifact(tasks.getByName("buildPluginLegacy"))
+    }
 }

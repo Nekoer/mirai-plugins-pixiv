@@ -43,7 +43,6 @@ object SexyCenter {
 
         val keys = event.message.content.split(" ")
         if (keys.size >= 2) {
-            println(event.message)
             yandeTagSearch(event, keys[1], keys.equals("r18"))
             return
         }
@@ -66,9 +65,11 @@ object SexyCenter {
             list.add("localImage")
         }
 
+        if (list.size <= 0){
+            event.subject.sendMessage("该群涩图来源已全部关闭")
+            return
+        }
         val num = (0 until  list.size).random()
-
-
 
         when (list[num]) {
             "yande" -> {
