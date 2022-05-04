@@ -90,7 +90,7 @@ object LoliconCenter {
 
 
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!,true).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

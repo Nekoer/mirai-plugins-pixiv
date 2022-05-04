@@ -1,6 +1,8 @@
 package com.hcyacg.sexy
 
+import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
+import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Setting
 import com.hcyacg.rank.TotalProcessing
 import com.hcyacg.utils.ImageUtil
@@ -65,6 +67,10 @@ object SexyCenter {
             list.add("localImage")
         }
 
+        if (Setting.config.setuEnable.lolicon){
+            list.add("lolicon")
+        }
+
         if (list.size <= 0){
             event.subject.sendMessage("该群涩图来源已全部关闭")
             return
@@ -86,6 +92,10 @@ object SexyCenter {
             }
             "localImage" -> {
                 localImage(event)
+                return
+            }
+            "lolicon" -> {
+                lolicon(event)
                 return
             }
         }
@@ -111,7 +121,7 @@ object SexyCenter {
                 val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
 
-                val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
+                val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -157,7 +167,7 @@ object SexyCenter {
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
+            val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -174,6 +184,56 @@ object SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
             }
+        } catch (e: Exception) {
+            logger.warning(e)
+            event.subject.sendMessage("发送图片失败")
+        }
+    }
+
+    private suspend fun lolicon(event: GroupMessageEvent) {
+        val message = QuoteReply(event.message)
+        if (!Setting.config.setuEnable.lolicon) {
+            return
+        }
+        try {
+            val data: JSONObject?
+            val url = "https://api.lolicon.app/setu/v2?proxy=i.acgmx.com&size=original&r18=2"
+            data = RequestUtil.requestObject(
+                RequestUtil.Companion.Method.GET,
+                url,
+                requestBody,
+                headers.build(),
+                logger
+            )
+
+            val lolicon = JSON.parseObject(data.toString(), Lolicon::class.java)
+
+
+            if (lolicon.data.isNullOrEmpty()) {
+                event.subject.sendMessage(message.plus("Lolicon数据为空"))
+                return
+            }
+
+
+            if (null == lolicon.data[0].urls) {
+                event.subject.sendMessage(message.plus("Lolicon数据为空"))
+                return
+            }
+
+
+            val toExternalResource =
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!,true).toByteArray().toExternalResource()
+            val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
+
+            if (Setting.config.recall != 0L){
+                event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Setting.config.recall)
+            }else{
+                event.subject.sendMessage(message.plus(Image(imageId)))
+            }
+
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
@@ -198,7 +258,7 @@ object SexyCenter {
             val id = JSONObject.parseObject(obj[num].toString()).getString("id")
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl).toByteArray().toExternalResource()
+            val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -237,7 +297,7 @@ object SexyCenter {
 
             val image = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
             val toExternalResource =
-                ImageUtil.getImage(image.replace("i.pximg.net", "i.acgmx.com")).toByteArray().toExternalResource()
+                ImageUtil.getImage(image.replace("i.pximg.net", "i.acgmx.com"),true).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

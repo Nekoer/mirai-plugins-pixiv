@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
 import com.hcyacg.plugin.utils.DataUtil
-import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
 import com.hcyacg.utils.RequestUtil
-import net.mamoe.mirai.event.events.GroupMemberEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
@@ -35,7 +35,7 @@ object Saucenao {
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent,  picUri: String): List<Message> {
+    suspend fun picToSearch(event: GroupMessageEvent, picUri: String): List<Message> {
         var data: JSONObject? = null
         val messageChain: MessageChain = event.message
         val dataList = HashMap<Int, JSONObject?>()
@@ -60,17 +60,29 @@ object Saucenao {
 
             //旋转三次
             val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
-            val rotate90 = rotate(ImageIO.read(URL(url)), 90).toByteArray().toExternalResource()
+            val rotate90 = rotate(withContext(Dispatchers.IO) {
+                ImageIO.read(URL(url))
+            }, 90).toByteArray().toExternalResource()
             val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate90.close()
+            withContext(Dispatchers.IO) {
+                rotate90.close()
+            }
 
-            val rotate180 = rotate(ImageIO.read(URL(url)), 180).toByteArray().toExternalResource()
+            val rotate180 = rotate(withContext(Dispatchers.IO) {
+                ImageIO.read(URL(url))
+            }, 180).toByteArray().toExternalResource()
             val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate180.close()
+            withContext(Dispatchers.IO) {
+                rotate180.close()
+            }
 
-            val rotate270 = rotate(ImageIO.read(URL(url)), 270).toByteArray().toExternalResource()
+            val rotate270 = rotate(withContext(Dispatchers.IO) {
+                ImageIO.read(URL(url))
+            }, 270).toByteArray().toExternalResource()
             val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            rotate270.close()
+            withContext(Dispatchers.IO) {
+                rotate270.close()
+            }
 
 
             val imageData = getInfo(picUri, logger)
@@ -252,8 +264,12 @@ object Saucenao {
                 throw RuntimeException("搜索到的插画id为空")
             }
 
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
+
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
                 At(event.sender).plus("\r\n").plus(Image(imageId)).plus("\r\n")
                     .plus("Title: $title").plus("\r\n")
@@ -296,8 +312,11 @@ object Saucenao {
             if (StringUtils.isBlank(danbooruId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -340,8 +359,11 @@ object Saucenao {
             if (StringUtils.isBlank(seigaId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
@@ -390,8 +412,11 @@ object Saucenao {
             if (StringUtils.isBlank(daId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
@@ -439,8 +464,11 @@ object Saucenao {
             if (StringUtils.isBlank(bcyId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
@@ -488,8 +516,11 @@ object Saucenao {
             if (StringUtils.isBlank(mdId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
@@ -535,8 +566,11 @@ object Saucenao {
             if (StringUtils.isBlank(nijieId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
@@ -586,8 +620,11 @@ object Saucenao {
             if (StringUtils.isBlank(drawrID)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val imageId: String = ImageUtil.getImage(thumbnail)?.toByteArray()?.toExternalResource()
-                ?.uploadAsImage(event.group)!!.imageId
+            val toExternalResource = getImage(thumbnail, false).toByteArray().toExternalResource()
+            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
             if (!thumbnail.contains("https://img3.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
