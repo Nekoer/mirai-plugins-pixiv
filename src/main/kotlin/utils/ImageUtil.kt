@@ -43,9 +43,9 @@ class ImageUtil {
          *
          * 1为lolicon
          *
-         * 3为pixiv
-         *
          * 2为不需要缓存的图片
+         *
+         * 3为pixiv
          *
          * 5 yande
          *
