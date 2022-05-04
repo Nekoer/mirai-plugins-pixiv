@@ -2,6 +2,7 @@ package com.hcyacg.search
 
 import com.hcyacg.initial.Setting
 import com.hcyacg.initial.entity.Config
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -84,7 +85,6 @@ object Ascii2d {
             val httpEntity = httpResponse.entity
             val result = EntityUtils.toString(httpEntity,"UTF-8")
 
-            println(httpResponse.statusLine.statusCode)
             val doc: Document = Jsoup.parse(result)
             val elementsByClass = doc.select(".item-box")
 
@@ -120,7 +120,7 @@ object Ascii2d {
                 val author = link[1].html()
                 val authorUrl = link[1].attr("href")
 
-                val externalResource = ImageUtil.getImage(thumbnail,false).toByteArray().toExternalResource()
+                val externalResource = ImageUtil.getImage(thumbnail,CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
                 val imageId: String = externalResource.uploadAsImage(event.group).imageId
                 externalResource.close()
 
@@ -154,7 +154,7 @@ object Ascii2d {
 
 
 
-                val externalResource = ImageUtil.getImage(thumbnail,false).toByteArray().toExternalResource()
+                val externalResource = ImageUtil.getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
                 val imageId: String = externalResource.uploadAsImage(event.group).imageId
                 externalResource.close()
                 return if (link.size > 1){

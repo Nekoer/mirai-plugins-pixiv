@@ -1,5 +1,6 @@
 package com.hcyacg.search
 
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -38,7 +39,7 @@ object Iqdb {
 
                         val similarity = it.select("td").eq(3).text().replace(" similarity","")
 
-                        val externalResource = ImageUtil.getImage(pic,false).toByteArray().toExternalResource()
+                        val externalResource = ImageUtil.getImage(pic, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
                         val imageId: String = externalResource.uploadAsImage(event.group).imageId
                         externalResource.close()
                         list.add(message.plus(Image(imageId)).plus("\n")

@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.statistics.ReportStatisticsToElasticSearch.url
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,7 +13,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.6.9"
+version = "1.7.0"
 
 repositories {
 //    mavenLocal()

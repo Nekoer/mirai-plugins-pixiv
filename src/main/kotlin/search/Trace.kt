@@ -3,6 +3,7 @@ package com.hcyacg.search
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.plugin.utils.DataUtil
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import com.madgag.gif.fmsware.AnimatedGifEncoder
@@ -86,7 +87,7 @@ object Trace {
 //            val cn = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("chinese")
             val jp = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("native")
             val coverImage = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData.getString("data")).getString("Media")).getString("coverImage")).getString("extraLarge")
-            var externalResource = ImageUtil.getImage(coverImage,false).toByteArray().toExternalResource()
+            var externalResource = ImageUtil.getImage(coverImage, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId: String = externalResource.uploadAsImage(event.group).imageId
 
 

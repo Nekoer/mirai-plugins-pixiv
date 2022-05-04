@@ -1,6 +1,7 @@
 package com.hcyacg.science
 
 import com.hcyacg.plugin.utils.DataUtil
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -27,7 +28,7 @@ object Style2paints {
             .replace("-", "")
         val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
 
-        val base64 = Base64.getEncoder().encodeToString(ImageUtil.getImage(url,false).toByteArray())
+        val base64 = Base64.getEncoder().encodeToString(ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray())
 
 
         var requestBody: RequestBody = FormBody.Builder()

@@ -38,7 +38,7 @@ class ImageUtil {
         /**
          * 将图片链接读取到内存转换成ByteArrayOutputStream，方便操作
          */
-        fun getImage(imageUri: String,enable:Boolean): ByteArrayOutputStream {
+        fun getImage(imageUri: String, type: CacheUtil.Type): ByteArrayOutputStream {
             val infoStream = ByteArrayOutputStream()
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
@@ -78,14 +78,8 @@ class ImageUtil {
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
 
-                if (Setting.config.cache.enable && enable){
-                    val directory = File(Setting.config.cache.directory)
-                    if (!directory.exists()){
-                        directory.mkdirs()
-                    }
-                    val out = FileOutputStream(directory.path + File.separator + temp)
-                    out.write(infoStream.toByteArray())
-                    out.close()
+                if (Setting.config.cache.enable){
+                    CacheUtil.saveToLocal(infoStream,type,temp)
                 }
 
                 return infoStream

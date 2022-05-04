@@ -3,6 +3,7 @@ package com.hcyacg.details
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
 import com.hcyacg.utils.RequestUtil.Companion.requestObject
@@ -150,7 +151,7 @@ object PicDetails {
         }
 
         val toExternalResource =
-            ImageUtil.getImage(large.replace("i.pximg.net", "i.acgmx.com"),true).toByteArray().toExternalResource()
+            ImageUtil.getImage(large.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
         toExternalResource.close()
 

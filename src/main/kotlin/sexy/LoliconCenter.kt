@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Setting
+import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import kotlinx.coroutines.Dispatchers
@@ -89,17 +90,18 @@ object LoliconCenter {
             }
 
 
+
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!,true).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
 
             if (r18 == 1 && Setting.config.recall != 0L){
-                event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Setting.config.recall)
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")).recallIn(Setting.config.recall)
             }else{
-                event.subject.sendMessage(message.plus(Image(imageId)))
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
