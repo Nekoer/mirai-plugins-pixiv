@@ -100,7 +100,7 @@ class ImageUtil {
                             out.close()
                         }
                         3 -> {
-                            val directory = File(fileRoot + File.separator + "setu")
+                            val directory = File(fileRoot + File.separator + "pixiv")
                             if (!directory.exists()) {
                                 directory.mkdirs()
                             }
