@@ -264,7 +264,7 @@ object Saucenao {
                 throw RuntimeException("搜索到的插画id为空")
             }
 
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -412,7 +412,7 @@ object Saucenao {
             if (StringUtils.isBlank(daId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -464,7 +464,7 @@ object Saucenao {
             if (StringUtils.isBlank(bcyId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -516,7 +516,7 @@ object Saucenao {
             if (StringUtils.isBlank(mdId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -566,7 +566,7 @@ object Saucenao {
             if (StringUtils.isBlank(nijieId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -620,7 +620,7 @@ object Saucenao {
             if (StringUtils.isBlank(drawrID)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, 2).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail, 4).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

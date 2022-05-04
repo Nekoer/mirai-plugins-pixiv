@@ -47,6 +47,8 @@ class ImageUtil {
          *
          * 3为pixiv
          *
+         * 4为ptst
+         *
          * 5 yande
          *
          * 6 konachan
