@@ -38,7 +38,7 @@ object Iqdb {
 
                         val similarity = it.select("td").eq(3).text().replace(" similarity","")
 
-                        val externalResource = ImageUtil.getImage(pic,false).toByteArray().toExternalResource()
+                        val externalResource = ImageUtil.getImage(pic,2).toByteArray().toExternalResource()
                         val imageId: String = externalResource.uploadAsImage(event.group).imageId
                         externalResource.close()
                         list.add(message.plus(Image(imageId)).plus("\n")

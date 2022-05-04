@@ -150,7 +150,7 @@ object PicDetails {
         }
 
         val toExternalResource =
-            ImageUtil.getImage(large.replace("i.pximg.net", "i.acgmx.com"),true).toByteArray().toExternalResource()
+            ImageUtil.getImage(large.replace("i.pximg.net", "i.acgmx.com"),4).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
         toExternalResource.close()
 

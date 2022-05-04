@@ -120,7 +120,7 @@ object Ascii2d {
                 val author = link[1].html()
                 val authorUrl = link[1].attr("href")
 
-                val externalResource = ImageUtil.getImage(thumbnail,false).toByteArray().toExternalResource()
+                val externalResource = ImageUtil.getImage(thumbnail,2).toByteArray().toExternalResource()
                 val imageId: String = externalResource.uploadAsImage(event.group).imageId
                 externalResource.close()
 
@@ -154,7 +154,7 @@ object Ascii2d {
 
 
 
-                val externalResource = ImageUtil.getImage(thumbnail,false).toByteArray().toExternalResource()
+                val externalResource = ImageUtil.getImage(thumbnail,2).toByteArray().toExternalResource()
                 val imageId: String = externalResource.uploadAsImage(event.group).imageId
                 externalResource.close()
                 return if (link.size > 1){

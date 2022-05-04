@@ -38,7 +38,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.6.9",
+        version = "1.7.0",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -50,7 +50,7 @@ object Pixiv : KotlinPlugin(
         Setting.save()
 
         globalEventChannel().subscribeGroupMessages {
-            //测试成功
+            //测试成功 根据id显示图片
             val getDetailOfId: Pattern =
                 Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() } quoteReply {
@@ -59,18 +59,18 @@ object Pixiv : KotlinPlugin(
                 )
             }
 
-            //测试成功
+            //测试成功 查看排行榜
             val rank: Pattern =
                 Pattern.compile("(?i)^(${Setting.command.showRank})(day|week|month|setu)-([0-9]*[1-9][0-9]*)\$")
             content { rank.matcher(message.contentToString()).find() } quoteReply { Rank.showRank(this) }
 
-            //测试成功
+            //测试成功 查询作者信息
             val findUserWorksById: Pattern =
                 Pattern.compile("(?i)^(${Setting.command.findUserWorksById})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content {
                 findUserWorksById.matcher(message.contentToString()).find()
             } quoteReply { UserDetails.findUserWorksById(this) }
-            //测试成功
+            //测试成功 根据图片查找番剧
             val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Setting.command.searchInfoByPic}).+$")
             content { searchInfoByPic.matcher(message.contentToString()).find() } quoteReply {
                 Trace.searchInfoByPic(
@@ -81,15 +81,15 @@ object Pixiv : KotlinPlugin(
             val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]?[\\S]*[ ]?(r18)?\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }
 
-            //测试成功
+            //测试成功 tag查图
             val tag: Pattern = Pattern.compile("(?i)^(${Setting.command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
             content { tag.matcher(message.contentToString()).find() } quoteReply { Tag.init(this) }
-            //测试成功
+            //测试成功 图片查找
             val picToSearch: Pattern = Pattern.compile("(?i)^(${Setting.command.picToSearch}).+$")
             content {
                 picToSearch.matcher(message.contentToString()).find()
             } quoteReply { SearchPicCenter.forward(this) }
-
+            //各种开关
             val lolicon: Pattern = Pattern.compile("(?i)^(${Setting.command.lolicon})( ([^ ]*)( (r18))?)?\$")
             content { lolicon.matcher(message.contentToString()).find() } quoteReply { LoliconCenter.load(this) }
 

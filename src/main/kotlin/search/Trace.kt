@@ -86,7 +86,7 @@ object Trace {
 //            val cn = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("chinese")
             val jp = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData!!.getString("data")).getString("Media")).getString("title")).getString("native")
             val coverImage = JSONObject.parseObject(JSONObject.parseObject(JSONObject.parseObject(tempData.getString("data")).getString("Media")).getString("coverImage")).getString("extraLarge")
-            var externalResource = ImageUtil.getImage(coverImage,false).toByteArray().toExternalResource()
+            var externalResource = ImageUtil.getImage(coverImage,2).toByteArray().toExternalResource()
             val imageId: String = externalResource.uploadAsImage(event.group).imageId
 
 

@@ -27,7 +27,7 @@ object Style2paints {
             .replace("-", "")
         val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
 
-        val base64 = Base64.getEncoder().encodeToString(ImageUtil.getImage(url,false).toByteArray())
+        val base64 = Base64.getEncoder().encodeToString(ImageUtil.getImage(url,2).toByteArray())
 
 
         var requestBody: RequestBody = FormBody.Builder()

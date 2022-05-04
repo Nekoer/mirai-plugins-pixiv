@@ -18,7 +18,6 @@ import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 import javax.imageio.ImageIO
 import javax.net.ssl.*
 
@@ -37,8 +36,24 @@ class ImageUtil {
 
         /**
          * 将图片链接读取到内存转换成ByteArrayOutputStream，方便操作
+         *
+         * imageUri 图片链接
+         *
+         * type 图片类型：
+         *
+         * 1为lolicon
+         *
+         * 3为pixiv
+         *
+         * 2为不需要缓存的图片
+         *
+         * 5 yande
+         *
+         * 6 konachan
+         *
+         * 可添加其他需要分文件夹的图片
          */
-        fun getImage(imageUri: String,enable:Boolean): ByteArrayOutputStream {
+        fun getImage(imageUri: String ,type: Int): ByteArrayOutputStream {
             val infoStream = ByteArrayOutputStream()
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
@@ -51,12 +66,6 @@ class ImageUtil {
                 }else{
                     imageUri.split("/").last()
                 }
-                val fileName = temp[0]
-                val fileType = temp[1]
-
-
-
-
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){
                     client.build().newCall(request).execute();
@@ -77,15 +86,56 @@ class ImageUtil {
                 }
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
-
-                if (Setting.config.cache.enable && enable){
-                    val directory = File(Setting.config.cache.directory)
-                    if (!directory.exists()){
-                        directory.mkdirs()
+                if (Setting.config.cache.enable){
+                    val fileRoot = Setting.config.cache.directory
+                    //lolicon的图片与色图的图片分开放置，在这里添加其他可能需要的图片类型以及缓存文件夹
+                    when (type) {
+                        1 -> {
+                            val directory = File(fileRoot + File.separator + "loli")
+                            if (!directory.exists()) {
+                                directory.mkdirs()
+                            }
+                            val out = FileOutputStream(directory.path + File.separator + temp)
+                            out.write(infoStream.toByteArray())
+                            out.close()
+                        }
+                        3 -> {
+                            val directory = File(fileRoot + File.separator + "setu")
+                            if (!directory.exists()) {
+                                directory.mkdirs()
+                            }
+                            val out = FileOutputStream(directory.path + File.separator + temp)
+                            out.write(infoStream.toByteArray())
+                            out.close()
+                        }
+                        4 -> {
+                            val directory = File(fileRoot + File.separator + "ptst")
+                            if (!directory.exists()) {
+                                directory.mkdirs()
+                            }
+                            val out = FileOutputStream(directory.path + File.separator + temp)
+                            out.write(infoStream.toByteArray())
+                            out.close()
+                        }
+                        5 -> {
+                            val directory = File(fileRoot + File.separator + "yande")
+                            if (!directory.exists()) {
+                                directory.mkdirs()
+                            }
+                            val out = FileOutputStream(directory.path + File.separator + temp)
+                            out.write(infoStream.toByteArray())
+                            out.close()
+                        }
+                        6 -> {
+                            val directory = File(fileRoot + File.separator + "konachan")
+                            if (!directory.exists()) {
+                                directory.mkdirs()
+                            }
+                            val out = FileOutputStream(directory.path + File.separator + temp)
+                            out.write(infoStream.toByteArray())
+                            out.close()
+                        }
                     }
-                    val out = FileOutputStream(directory.path + File.separator + temp)
-                    out.write(infoStream.toByteArray())
-                    out.close()
                 }
 
                 return infoStream

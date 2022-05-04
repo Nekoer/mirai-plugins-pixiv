@@ -121,7 +121,7 @@ object SexyCenter {
                 val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
 
-                val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
+                val toExternalResource = ImageUtil.getImage(jpegUrl,5).toByteArray().toExternalResource()
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -167,7 +167,7 @@ object SexyCenter {
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
+            val toExternalResource = ImageUtil.getImage(jpegUrl,5).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -222,7 +222,7 @@ object SexyCenter {
 
 
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!,true).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!,1).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -258,7 +258,7 @@ object SexyCenter {
             val id = JSONObject.parseObject(obj[num].toString()).getString("id")
             val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl,true).toByteArray().toExternalResource()
+            val toExternalResource = ImageUtil.getImage(jpegUrl,6).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -297,7 +297,7 @@ object SexyCenter {
 
             val image = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
             val toExternalResource =
-                ImageUtil.getImage(image.replace("i.pximg.net", "i.acgmx.com"),true).toByteArray().toExternalResource()
+                ImageUtil.getImage(image.replace("i.pximg.net", "i.acgmx.com"),2).toByteArray().toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

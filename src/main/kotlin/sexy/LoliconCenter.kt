@@ -60,7 +60,7 @@ object LoliconCenter {
 
 
         if (temp.size == 2){
-            r18 = if(temp[1].contentEquals("r18")){1}else{0}
+            r18 = if(temp[1].contentEquals("r18")||temp[1].contentEquals("R18")){1}else{0}
         }
         url = url.plus("&r18=$r18")
 
@@ -90,16 +90,23 @@ object LoliconCenter {
 
 
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!,true).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!,1).toByteArray().toExternalResource()
+            val imageUri = lolicon.data[0].urls?.original!!
+            val imagePixivId = if(imageUri.indexOf("?") > -1){
+                imageUri.substring(0, imageUri.indexOf("?")).split("/").last().split("_")[0]
+            }else{
+                imageUri.split("/").last().split("_")[0]
+            }
+
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
 
             if (r18 == 1 && Setting.config.recall != 0L){
-                event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Setting.config.recall)
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("\n图片链接：\nhttps://www.pixiv.net/artworks/$imagePixivId")).recallIn(Setting.config.recall)
             }else{
-                event.subject.sendMessage(message.plus(Image(imageId)))
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("\n图片链接：\nhttps://www.pixiv.net/artworks/$imagePixivId"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
