@@ -1,7 +1,5 @@
 package com.hcyacg.sexy
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
@@ -9,11 +7,11 @@ import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.MessageSource.Key.recallIn
 import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
@@ -37,7 +35,7 @@ object LoliconCenter {
             event.subject.sendMessage(message.plus("已关闭lolicon"))
             return
         }
-        val data: JSONObject?
+        val data: JsonElement?
 
         val temp = event.message.contentToString().replace("${Setting.command.lolicon} ", "").split(" ")
         //https://api.lolicon.app/setu/v2?r18=2&proxy=i.acgmx.com&size=original&keyword=loli
@@ -67,16 +65,20 @@ object LoliconCenter {
 
 
         try {
-            data = RequestUtil.requestObject(
+            data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 url,
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
 
-            val lolicon = JSON.parseObject(data.toString(), Lolicon::class.java)
 
+            val lolicon = data?.let { Json.decodeFromJsonElement<Lolicon>(it) }
+
+            if (null == lolicon){
+                event.subject.sendMessage(message.plus("Lolicon数据为空"))
+                return
+            }
 
             if (lolicon.data.isNullOrEmpty()) {
                 event.subject.sendMessage(message.plus("Lolicon数据为空"))

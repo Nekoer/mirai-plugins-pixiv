@@ -1,8 +1,10 @@
 package com.hcyacg.rank
 
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Message
@@ -37,32 +39,36 @@ object Tag {
             }
 
 
-            val data = RequestUtil.requestObject(
+            val data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://api.acgmx.com/public/search?q=$q&offset=$offset",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
 
             /**
              * 针对数据为空进行通知
              */
-            if (null == data || StringUtils.isNotBlank(data.getString("errors"))) {
+            if (null == data || data.jsonObject["errors"].toString().isEmpty()) {
                 event.subject.sendMessage("当前排行榜暂无数据")
                 return
             }
 
             var message: Message = At(event.sender).plus("\n").plus("======标签排行榜($q)======").plus("\n")
-            val illusts = data.getJSONArray("illusts")
+            val illusts = data.jsonObject["illusts"]?.jsonArray
 
+            if (null == illusts){
+                event.subject.sendMessage("tag数据为空")
+                return
+            }
 
             for (i in (num - 10) until num) {
                 if (illusts.size > i ) {
-                    val id = JSONObject.parseObject(illusts[i].toString()).getString("id")
-                    val title = JSONObject.parseObject(illusts[i].toString()).getString("title")
-                    val user = JSONObject.parseObject(JSONObject.parseObject(illusts[i].toString()).getString("user"))
-                        .getString("name")
+                    val id = illusts[i].jsonObject["id"]?.jsonPrimitive?.content
+                    val title = illusts[i].jsonObject["title"]?.jsonPrimitive?.content
+
+                    val user = illusts[i].jsonObject["user"]?.jsonObject?.get("name")?.jsonPrimitive?.content
+
 
                     message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
                 }

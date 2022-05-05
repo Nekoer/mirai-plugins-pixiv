@@ -1,16 +1,18 @@
 package com.hcyacg.details
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
-import com.hcyacg.utils.RequestUtil.Companion.requestObject
+import com.hcyacg.utils.RequestUtil.Companion.request
 import com.hcyacg.utils.ZipUtil
 import com.madgag.gif.fmsware.AnimatedGifEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -30,8 +32,9 @@ object PicDetails {
     private var isChange: Boolean = false
     private val logger = MiraiLogger.Factory.create(this::class.java)
 
+
     suspend fun getDetailOfId(event: GroupMessageEvent) {
-        val data: JSONObject?
+        val data: JsonElement?
         val messageChain: MessageChain = event.message
 
         if (!event.message.contentToString().contains(Setting.command.getDetailOfId)) {
@@ -76,15 +79,20 @@ object PicDetails {
 
 
 
-        data = requestObject(
+        data = request(
             Companion.Method.GET,
             "https://api.acgmx.com/illusts/detail?illustId=$id&reduction=true",
             requestBody,
-            headers.build(),
-            logger
+            headers.build()
         )
+        if (null == data){
+            event.subject.sendMessage("数据为空")
+            return
+        }
 
-        val tempData = JSONObject.parseObject(JSONObject.parseObject(data!!.getString("data")).getString("illust"))
+
+
+        val tempData = data.jsonObject["data"]?.jsonObject?.get("illust")
         /**
          * 判断该id是否有数据
          */
@@ -92,21 +100,23 @@ object PicDetails {
             event.subject.sendMessage("该作品是被删除或不存在的作品ID.")
             return
         }
-        val picId = tempData.getString("id")
-        val title = tempData.getString("title")
-        val type = tempData.getString("type")
-        val author = JSONObject.parseObject(tempData.getString("user")).getString("name")
-        val authorId = JSONObject.parseObject(tempData.getString("user")).getString("id")
-        var large = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
-        val pageCount = tempData.getIntValue("page_count")
-        val sanityLevel = tempData.getIntValue("sanity_level")
+
+        val picId = tempData.jsonObject["id"]?.jsonPrimitive?.content
+        val title = tempData.jsonObject["title"]?.jsonPrimitive?.content
+        val type = tempData.jsonObject["type"]?.jsonPrimitive?.content
+
+        val author = tempData.jsonObject["user"]?.jsonObject?.get("name")?.jsonPrimitive?.content
+        val authorId = tempData.jsonObject["user"]?.jsonObject?.get("id")?.jsonPrimitive?.content
+        var large = tempData.jsonObject["image_urls"]?.jsonObject?.get("large")?.jsonPrimitive?.content
+        val pageCount = tempData.jsonObject["page_count"]?.jsonPrimitive?.content!!.toInt()
+        val sanityLevel = tempData.jsonObject["sanity_level"]?.jsonPrimitive?.content?.toInt()
         if (sanityLevel == 6 && Setting.groups.indexOf(event.group.id.toString()) < 0) {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
 
         if ("ugoira".contentEquals(type)) {
-            val imageId = getUgoira(picId.toLong(), event)
+            val imageId = getUgoira(picId!!.toLong(), event)
             if (null != imageId) {
                 val message: Message = At(event.sender)
                     .plus(Image(imageId)).plus("\n")
@@ -142,16 +152,14 @@ object PicDetails {
          * 通过张数判断读取哪个json数据
          */
         large = if (pageCount > 1) {
-            JSONObject.parseObject(
-                JSONObject.parseObject(JSONArray.parseArray(tempData.getString("meta_pages"))[page.toInt() - 1].toString())
-                    .getString("image_urls")
-            ).getString("original")
+            tempData.jsonObject["meta_pages"]?.jsonArray?.get(page.toInt() - 1)?.jsonObject?.get("image_urls")?.jsonObject?.get("original")
+                ?.jsonPrimitive?.content
         } else {
-            JSONObject.parseObject(tempData.getString("meta_single_page")).getString("original_image_url")
+            tempData.jsonObject["meta_single_page"]?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content
         }
 
         val toExternalResource =
-            ImageUtil.getImage(large.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+            ImageUtil.getImage(large!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
         toExternalResource.close()
 
@@ -188,19 +196,23 @@ object PicDetails {
             .readTimeout(60000, TimeUnit.MILLISECONDS)
         val headers = Headers.Builder()
         val dir = File(System.getProperty("user.dir") + File.separator + "cache" + File.separator + ugoiraId)
-        val data: JSONObject?
+        val data: JsonElement?
         try {
-            data = requestObject(
+            data = request(
                 Companion.Method.GET,
                 "https://api.acgmx.com/illusts/ugoira_metadata?illustId=$ugoiraId",
                 requestBody,
                 headers.build(),
-                logger
             )
-            val tempData =
-                JSONObject.parseObject(JSONObject.parseObject(data!!.getString("data")).getString("ugoira_metadata"))
-            val zipUrl = JSONObject.parseObject(tempData.getString("zip_urls")).getString("medium")
-                .replace("i.pximg.net", "i.acgmx.com")
+            if (null == data){
+                return null
+            }
+
+            data.jsonObject["data"]?.jsonObject?.get("ugoira_metadata")
+            val tempData = data.jsonObject["data"]?.jsonObject?.get("ugoira_metadata")
+            val zipUrl = tempData?.jsonObject?.get("zip_urls")?.jsonObject?.get("medium")
+                .toString().replace("i.pximg.net", "i.acgmx.com")
+
 
 
             if (!dir.exists()) {

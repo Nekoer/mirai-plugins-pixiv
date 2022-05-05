@@ -1,7 +1,5 @@
 package com.hcyacg.sexy
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Setting
 import com.hcyacg.rank.TotalProcessing
@@ -10,6 +8,7 @@ import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.*
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
@@ -51,32 +50,32 @@ object SexyCenter {
         }
 
         val list = mutableListOf<String>()
-        if (Setting.config.setuEnable.pixiv){
+        if (Setting.config.setuEnable.pixiv) {
             list.add("pixiv")
         }
 
-        if (Setting.config.setuEnable.yande){
+        if (Setting.config.setuEnable.yande) {
             list.add("yande")
         }
 
-        if (Setting.config.setuEnable.konachan){
+        if (Setting.config.setuEnable.konachan) {
             list.add("konachan")
         }
 
 
-        if (Setting.config.setuEnable.localImage){
+        if (Setting.config.setuEnable.localImage) {
             list.add("localImage")
         }
 
-        if (Setting.config.setuEnable.lolicon){
+        if (Setting.config.setuEnable.lolicon) {
             list.add("lolicon")
         }
 
-        if (list.size <= 0){
+        if (list.size <= 0) {
             event.subject.sendMessage("该群涩图来源已全部关闭")
             return
         }
-        val num = (0 until  list.size).random()
+        val num = (0 until list.size).random()
 
         when (list[num]) {
             "yande" -> {
@@ -108,21 +107,21 @@ object SexyCenter {
             if (!Setting.config.setuEnable.yande) {
                 return
             }
-            val obj = RequestUtil.requestArray(
+            val obj = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://yande.re/post.json?limit=500&tags=${tag}",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
 
-            if (null != obj && obj.size > 0) {
-                val num: Int = (0 until (obj.size - 1)).random()
-                val id = JSONObject.parseObject(obj[num].toString()).getString("id")
-                val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+            if (null != obj && obj.jsonArray.size > 0) {
+                val num: Int = (0 until (obj.jsonArray.size - 1)).random()
 
+                val id = obj.jsonArray[num].jsonObject["id"]?.jsonPrimitive?.content
+                val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
 
-                val toExternalResource = ImageUtil.getImage(jpegUrl, CacheUtil.Type.YANDE).toByteArray().toExternalResource()
+                val toExternalResource =
+                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray().toExternalResource()
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -156,34 +155,39 @@ object SexyCenter {
         try {
             val list = arrayOf("topless", "nipples", "no_bra")
             val randoms: Int = (0 until (list.size - 1)).random()
-            val obj = RequestUtil.requestArray(
+            val obj = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://yande.re/post.json?limit=500&tags=${list[randoms]}",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
-            val num: Int = (0 until (obj!!.size - 1)).random()
-            val id = JSONObject.parseObject(obj[num].toString()).getString("id")
-            val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+            if (null != obj && obj.jsonArray.size > 0) {
+                val num: Int = (0 until (obj.jsonArray.size - 1)).random()
+
+                val id = obj.jsonArray[num].jsonObject["id"]?.jsonPrimitive?.content
+                val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
 
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl,CacheUtil.Type.YANDE).toByteArray().toExternalResource()
-            val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            withContext(Dispatchers.IO) {
-                toExternalResource.close()
-            }
+                val toExternalResource =
+                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray().toExternalResource()
+                val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+                withContext(Dispatchers.IO) {
+                    toExternalResource.close()
+                }
 
-            val quoteReply: QuoteReply = QuoteReply(event.message)
-            /**
-             * 判断是否配置了撤回时间
-             */
+                val quoteReply: QuoteReply = QuoteReply(event.message)
+                /**
+                 * 判断是否配置了撤回时间
+                 */
 
-            if (Setting.config.recall != 0L) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
-                    .recallIn(Setting.config.recall)
+                if (Setting.config.recall != 0L) {
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
+                        .recallIn(Setting.config.recall)
+                } else {
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
+                }
             } else {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
+                event.subject.sendMessage("内容为空")
             }
         } catch (e: Exception) {
             logger.warning(e)
@@ -197,18 +201,20 @@ object SexyCenter {
             return
         }
         try {
-            val data: JSONObject?
+            val data: JsonElement?
             val url = "https://api.lolicon.app/setu/v2?proxy=i.acgmx.com&size=original&r18=2"
-            data = RequestUtil.requestObject(
+            data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 url,
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
 
-            val lolicon = JSON.parseObject(data.toString(), Lolicon::class.java)
-
+            val lolicon = data?.let { Json.decodeFromJsonElement<Lolicon>(it) }
+            if (null == lolicon){
+                event.subject.sendMessage(message.plus("Lolicon数据为空"))
+                return
+            }
 
             if (lolicon.data.isNullOrEmpty()) {
                 event.subject.sendMessage(message.plus("Lolicon数据为空"))
@@ -223,15 +229,16 @@ object SexyCenter {
 
 
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!,CacheUtil.Type.LOLICON).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
+                    .toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
 
-            if (Setting.config.recall != 0L){
+            if (Setting.config.recall != 0L) {
                 event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Setting.config.recall)
-            }else{
+            } else {
                 event.subject.sendMessage(message.plus(Image(imageId)))
             }
 
@@ -248,29 +255,33 @@ object SexyCenter {
         try {
             val list = arrayOf("topless", "nipples", "no_bra")
             val randoms: Int = (0 until (list.size - 1)).random()
-            val obj = RequestUtil.requestArray(
+            val obj = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://konachan.com/post.json?limit=500&tags=${list[randoms]}",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
-            val num: Int = (0 until (obj!!.size - 1)).random()
-            val id = JSONObject.parseObject(obj[num].toString()).getString("id")
-            val jpegUrl = JSONObject.parseObject(obj[num].toString()).getString("jpeg_url")
+            if (null != obj && obj.jsonArray.size > 0) {
+                val num: Int = (0 until (obj.jsonArray.size - 1)).random()
 
-            val toExternalResource = ImageUtil.getImage(jpegUrl,CacheUtil.Type.KONACHAN).toByteArray().toExternalResource()
-            val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            withContext(Dispatchers.IO) {
-                toExternalResource.close()
-            }
-            val quoteReply: QuoteReply = QuoteReply(event.message)
+                val id = obj.jsonArray[num].jsonObject["id"]?.jsonPrimitive?.content
+                val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
+                val toExternalResource =
+                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray().toExternalResource()
+                val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+                withContext(Dispatchers.IO) {
+                    toExternalResource.close()
+                }
+                val quoteReply: QuoteReply = QuoteReply(event.message)
 
-            if (Setting.config.recall != 0L) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
-                    .recallIn(Setting.config.recall)
+                if (Setting.config.recall != 0L) {
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
+                        .recallIn(Setting.config.recall)
+                } else {
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
+                }
             } else {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
+                event.subject.sendMessage("内容为空")
             }
         } catch (e: Exception) {
             logger.warning(e)
@@ -289,16 +300,18 @@ object SexyCenter {
             val date: String = sdf.format(calendar.time)
             val obj = TotalProcessing().dealWith("illust", "daily_r18", 3, 30, date)
 
-            val illusts = JSONObject.parseArray(obj?.getString("illusts"))
+
+            val illusts = obj?.jsonObject?.get("illusts")?.jsonArray ?: return
+
             val randoms: Int = (0 until (illusts.size - 1)).random()
 
-            val tempData = JSONObject.parseObject(illusts?.get(randoms)?.toString())
-            val id = tempData.getString("id")
+            val tempData = illusts[randoms].jsonObject
+            val id = tempData["id"]?.jsonPrimitive?.content
 
-
-            val image = JSONObject.parseObject(tempData.getString("image_urls")).getString("large")
+            val image = tempData["image_urls"]?.jsonObject?.get("large")?.jsonPrimitive?.content
             val toExternalResource =
-                ImageUtil.getImage(image.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+                ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
+                    .toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -345,9 +358,10 @@ object SexyCenter {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (Setting.config.recall != 0L){
-                event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId))).recallIn(Setting.config.recall)
-            }else{
+            if (Setting.config.recall != 0L) {
+                event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
+                    .recallIn(Setting.config.recall)
+            } else {
                 event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
             }
 

@@ -1,37 +1,19 @@
 package com.hcyacg
 
-import com.hcyacg.anime.Agefans
-import com.hcyacg.config.Config
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
-import com.hcyacg.initial.Configuration.Companion.init
 import com.hcyacg.initial.Setting
 import com.hcyacg.rank.Rank
 import com.hcyacg.rank.Tag
-import com.hcyacg.science.Style2paints
-import com.hcyacg.search.Ascii2d
-import com.hcyacg.search.Saucenao
 import com.hcyacg.search.SearchPicCenter
 import com.hcyacg.search.Trace
 import com.hcyacg.sexy.LoliconCenter
 import com.hcyacg.sexy.SexyCenter
 import net.mamoe.mirai.console.extension.PluginComponentStorage
-import net.mamoe.mirai.console.plugin.PluginManager.INSTANCE.load
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.file.AbsoluteFolder
-import net.mamoe.mirai.event.GlobalEventChannel
-import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeGroupMessages
-import net.mamoe.mirai.message.data.At
-import net.mamoe.mirai.message.data.ForwardMessage
-import net.mamoe.mirai.message.data.RawForwardMessage
-import net.mamoe.mirai.message.data.content
-import net.mamoe.mirai.utils.MiraiLogger
-import net.mamoe.mirai.utils.MiraiLoggerPlatformBase
-import net.mamoe.mirai.utils.MiraiLoggerWithSwitch
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.regex.Pattern
 
 object Pixiv : KotlinPlugin(
@@ -106,16 +88,8 @@ object Pixiv : KotlinPlugin(
 //            val coloring: Pattern = Pattern.compile("(?i)^(上色)$")
 //            content { coloring.matcher(message.contentToString()).find() } quoteReply { Style2paints.coloring(this, pluginLogger) }
 //
-//            Agefans().startTask()
         }
 
-    }
-
-    override fun PluginComponentStorage.onLoad() {
-        /**
-         * 初始化插件
-         */
-        init()
     }
 
 }

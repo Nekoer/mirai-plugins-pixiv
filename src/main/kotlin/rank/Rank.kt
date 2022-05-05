@@ -1,7 +1,10 @@
 package com.hcyacg.rank
 
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Message
@@ -16,7 +19,7 @@ object Rank {
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private val logger = MiraiLogger.Factory.create(this::class.java)
     suspend fun showRank(event: GroupMessageEvent){
-        var data :JSONObject? = null
+        var data :JsonElement? = null
         val perPage = 10
         //获取日本排行榜时间，当前天数-2
         val calendar = Calendar.getInstance()
@@ -90,22 +93,26 @@ object Rank {
             }
         }
 
+        println(data?.jsonObject)
         /**
          * 针对数据为空进行通知
          */
-        if (null == data || !StringUtils.isBlank(data.getString("errors"))){
+        if (null == data || data.jsonObject["errors"].toString().isEmpty()){
             event.subject.sendMessage("当前排行榜暂无数据")
             return
         }
 
 
         var message : Message = At(event.sender).plus("\n").plus("======插画排行榜($mode)======").plus("\n")
-        val illusts = data.getJSONArray("illusts")
+        val illusts = data.jsonObject["illusts"]?.jsonArray
+
 
         for (i in (num-10) until num){
-            val id = JSONObject.parseObject(illusts[i].toString()).getString("id")
-            val title = JSONObject.parseObject(illusts[i].toString()).getString("title")
-            val user = JSONObject.parseObject(JSONObject.parseObject(illusts[i].toString()).getString("user")).getString("name")
+
+            val id = illusts?.get(i)?.jsonObject?.get("id")?.jsonPrimitive?.content
+            val title = illusts?.get(i)?.jsonObject?.getValue("title")?.jsonPrimitive?.content
+
+            val user = illusts?.get(i)?.jsonObject?.get("user")?.jsonObject?.get("name")?.jsonPrimitive?.content
 
             message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
         }

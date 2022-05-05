@@ -1,42 +1,47 @@
 package com.hcyacg.entity
-import com.alibaba.fastjson.annotation.JSONField
+import kotlinx.serialization.Serializable
+
+import kotlinx.serialization.SerialName
 
 
+@Serializable
 data class Lolicon(
-    @JSONField(name = "data")
+    @SerialName("data")
     val `data`: List<Data>? = listOf(),
-    @JSONField(name = "error")
+    @SerialName("error")
     val error: String? = ""
 )
 
+@Serializable
 data class Data(
-    @JSONField(name = "author")
+    @SerialName("author")
     val author: String? = "",
-    @JSONField(name = "ext")
+    @SerialName("ext")
     val ext: String? = "",
-    @JSONField(name = "height")
+    @SerialName("height")
     val height: Int? = 0,
-    @JSONField(name = "p")
+    @SerialName("p")
     val p: Int? = 0,
-    @JSONField(name = "pid")
+    @SerialName("pid")
     val pid: Int? = 0,
-    @JSONField(name = "r18")
+    @SerialName("r18")
     val r18: Boolean? = false,
-    @JSONField(name = "tags")
+    @SerialName("tags")
     val tags: List<String>? = listOf(),
-    @JSONField(name = "title")
+    @SerialName("title")
     val title: String? = "",
-    @JSONField(name = "uid")
+    @SerialName("uid")
     val uid: Int? = 0,
-    @JSONField(name = "uploadDate")
+    @SerialName("uploadDate")
     val uploadDate: Long? = 0,
-    @JSONField(name = "urls")
+    @SerialName("urls")
     val urls: Urls? = Urls(),
-    @JSONField(name = "width")
+    @SerialName("width")
     val width: Int? = 0
 )
 
+@Serializable
 data class Urls(
-    @JSONField(name = "original")
+    @SerialName("original")
     val original: String? = ""
 )

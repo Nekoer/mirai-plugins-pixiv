@@ -43,7 +43,6 @@ class ImageUtil {
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
 
-
             try{
 
                 val temp = if(imageUri.indexOf("?") > -1){

@@ -1,6 +1,5 @@
 package com.hcyacg.utils
 
-import okhttp3.internal.closeQuietly
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile

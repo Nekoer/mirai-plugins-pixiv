@@ -15,8 +15,7 @@ object CacheUtil {
 
     fun saveToLocal(infoStream: ByteArrayOutputStream, type:Type,imageName:String){
         try{
-            var temp:String? = "temp"
-            temp = when (type){
+            val temp:String? = when (type){
                 Type.PIXIV -> {
                     "pixiv"
                 }

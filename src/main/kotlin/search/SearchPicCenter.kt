@@ -1,11 +1,10 @@
 package com.hcyacg.search
 
-import com.hcyacg.plugin.utils.DataUtil
+import com.hcyacg.utils.DataUtil
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.RawForwardMessage
-import net.mamoe.mirai.utils.MiraiLogger
 
 /**
  * 搜索二次元图片转发中心

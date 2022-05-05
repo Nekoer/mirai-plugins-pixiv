@@ -1,8 +1,9 @@
 package com.hcyacg.rank
 
-import com.alibaba.fastjson.JSONObject
+
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
+import kotlinx.serialization.json.JsonElement
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
@@ -17,14 +18,13 @@ class TotalProcessing {
     /**
      * 动态拼接参数并返回数据
      */
-    fun dealWith(type: String, mode: String, page: Int, perPage: Int, date: String) : JSONObject? {
+    fun dealWith(type: String, mode: String, page: Int, perPage: Int, date: String) : JsonElement? {
         return try{
-            RequestUtil.requestObject(
+            RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://api.acgmx.com/public/ranking?ranking_type=${type}&mode=${mode}&date=$date&per_page=$perPage&page=$page",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
         }catch (e:Exception){
             e.printStackTrace()

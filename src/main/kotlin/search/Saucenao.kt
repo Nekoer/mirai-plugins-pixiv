@@ -1,15 +1,15 @@
 package com.hcyacg.search
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
-import com.hcyacg.plugin.utils.DataUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
 import com.hcyacg.utils.RequestUtil
+import entity.SaucenaoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.*
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
@@ -28,19 +28,16 @@ import javax.imageio.ImageIO
 object Saucenao {
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
-    private val jsonObject: JSONObject? = null
+    private val jsonObject: JsonElement? = null
     private val logger = MiraiLogger.Factory.create(this::class.java)
     private val tracePath: File =
         File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
 
+    private val json = Json { ignoreUnknownKeys = true }
     /**
      * 通过图片来搜索信息
      */
     suspend fun picToSearch(event: GroupMessageEvent, picUri: String): List<Message> {
-        var data: JSONObject? = null
-        val messageChain: MessageChain = event.message
-        val dataList = HashMap<Int, JSONObject?>()
-        var header: Any? = null
         val list = mutableListOf<Message>()
 
         try {
@@ -86,10 +83,10 @@ object Saucenao {
             }
 
 
-            val imageData = getInfo(picUri, logger)
-            val imageData90 = getInfo(code90!!, logger)
-            val imageData180 = getInfo(code180!!, logger)
-            val imageData270 = getInfo(code270!!, logger)
+            val imageData = getInfo(picUri)
+            val imageData90 = getInfo(code90!!)
+            val imageData180 = getInfo(code180!!)
+            val imageData270 = getInfo(code270!!)
 
 
             /**
@@ -103,31 +100,24 @@ object Saucenao {
             var double = mutableListOf<Double>()
 
             if (null != imageData) {
-                header = JSONObject.parseObject(imageData.toString())["header"]
-                similarity = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()
                 double.add(similarity)
             }
 
             if (null != imageData90) {
-                header = JSONObject.parseObject(imageData90.toString())["header"]
-                similarity90 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                similarity90 = imageData90.results?.get(0)?.header?.similarity.toString().toDouble()
                 double.add(similarity90)
             }
 
             if (null != imageData180) {
-                header = JSONObject.parseObject(imageData180.toString())["header"]
-                similarity180 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                similarity180 = imageData180.results?.get(0)?.header?.similarity.toString().toDouble()
                 double.add(similarity180)
             }
 
             if (null != imageData270) {
-                header = JSONObject.parseObject(imageData270.toString())["header"]
-                similarity270 = JSONObject.parseObject(header.toString()).getDouble("similarity")
+                similarity270 = imageData270.results?.get(0)?.header?.similarity.toString().toDouble()
                 double.add(similarity270)
             }
-
-//            double.sort()
-
 
             var temp: Double = 0.0
             for (i in double.indices) {
@@ -142,16 +132,16 @@ object Saucenao {
 
             when (temp) {
                 similarity -> {
-                    imageData?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity90 -> {
-                    imageData90?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    imageData90?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity180 -> {
-                    imageData180?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    imageData180?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
                 similarity270 -> {
-                    imageData270?.let { mate(event, it, logger)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    imageData270?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                 }
             }
             return list
@@ -167,7 +157,7 @@ object Saucenao {
     /**
      * 匹配数据格式
      */
-    suspend fun mate(event: GroupMessageEvent, data: Any, logger: MiraiLogger): Message? {
+    private suspend fun mate(event: GroupMessageEvent, data: SaucenaoItem): Message? {
 
         try {
             var message: Message? = pixivSearch(event, data)
@@ -219,23 +209,29 @@ object Saucenao {
     /**
      * 获取四张照片的第一个搜索数据
      */
-    fun getInfo(picUri: String, logger: MiraiLogger): JSONObject? {
-        var data: JSONObject? = null
+    private fun getInfo(picUri: String): SaucenaoItem? {
+        var data: JsonElement? = null
+
         try {
-            data = RequestUtil.requestObject(
+            data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Setting.config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
                 requestBody,
-                headers.build(),
-                logger
+                headers.build()
             )
-            val header = JSONObject.parseObject(data!!.getString("header"))
-            val status = header.getIntValue("status")
-            if (status != 0) {
+
+            val saucenao = data?.let { json.decodeFromJsonElement<SaucenaoItem>(it) }
+
+            if (saucenao?.header?.status != 0) {
                 return null
             }
-            return JSONObject.parseObject(JSONArray.parseArray(data.getString("results"))[0].toString())
+
+            if (saucenao.results != null) {
+                return saucenao
+            }
+            return null
         } catch (e: Exception) {
+            e.printStackTrace()
             return null
         }
     }
@@ -244,35 +240,30 @@ object Saucenao {
      * 以下皆为各个网站的搭配，不详解
      */
 
-    private suspend fun pixivSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun pixivSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val pixivId = JSONObject.parseObject(data.toString()).getString("pixiv_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("member_name")
-            val memberId = JSONObject.parseObject(data.toString()).getString("member_id")
-            if (StringUtils.isBlank(pixivId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val pixivId = data?.pixivId
+            val memberName = data?.memberName
+            val memberId = data?.memberId
+            if (StringUtils.isBlank(pixivId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
 
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
-            val imageId = toExternalResource.uploadAsImage(event.group).imageId
+            val toExternalResource = thumbnail?.let { getImage(it, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource() }
+            val imageId = toExternalResource?.uploadAsImage(event.group)?.imageId
             withContext(Dispatchers.IO) {
-                toExternalResource.close()
+                toExternalResource?.close()
             }
 
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
-                At(event.sender).plus("\r\n").plus(Image(imageId)).plus("\r\n")
+            if (!thumbnail!!.contains("https://img3.saucenao.com/")) {
+                At(event.sender).plus("\r\n").plus(Image(imageId!!)).plus("\r\n")
                     .plus("Title: $title").plus("\r\n")
                     .plus("ID: $pixivId").plus("\r\n")
                     .plus("AuthorID: $memberId").plus("\r\n")
@@ -290,30 +281,27 @@ object Saucenao {
                     .plus(getExtUrls(extUrls))
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
             //return At(event.sender).plus(e.message.toString())
         }
     }
 
-    private suspend fun danBooRuSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun danBooRuSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
+
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val danbooruId = JSONObject.parseObject(data.toString()).getString("danbooru_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("creator")
-            if (StringUtils.isBlank(danbooruId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val danbooruId = data?.danbooruId
+            val memberName = data?.creator
+            if (StringUtils.isBlank(danbooruId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -336,31 +324,28 @@ object Saucenao {
                     .plus(getExtUrls(extUrls))
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun seiGaSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun seiGaSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
+
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val seigaId = JSONObject.parseObject(data.toString()).getString("seiga_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("member_name")
-            val memberId = JSONObject.parseObject(data.toString()).getString("member_id")
-            if (StringUtils.isBlank(seigaId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val seigaId = data?.seigaId
+            val memberName = data?.memberName
+            val memberId = data?.memberId
+            if (StringUtils.isBlank(seigaId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -390,30 +375,27 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun daSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun daSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
+
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val daId = JSONObject.parseObject(data.toString()).getString("da_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("author_name")
-            if (StringUtils.isBlank(daId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val daId = data?.daId
+            val memberName = data?.memberName
+            if (StringUtils.isBlank(daId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -441,31 +423,28 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun bcySearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun bcySearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
+
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val bcyId = JSONObject.parseObject(data.toString()).getString("bcy_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("member_name")
-            val memberId = JSONObject.parseObject(data.toString()).getString("member_id")
-            if (StringUtils.isBlank(bcyId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val bcyId = data?.bcyId
+            val memberName = data?.memberName
+            val memberId = data?.memberId
+            if (StringUtils.isBlank(bcyId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -495,29 +474,26 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun maSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun maSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
+
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val mdId = JSONObject.parseObject(data.toString()).getString("md_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("author")
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val mdId = data?.mdId
+            val memberName = data?.author
             if (StringUtils.isBlank(mdId)) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -543,31 +519,27 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun niJieSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun niJieSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val nijieId = JSONObject.parseObject(data.toString()).getString("nijie_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("member_name")
-            val memberId = JSONObject.parseObject(data.toString()).getString("member_id")
-            if (StringUtils.isBlank(nijieId)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val nijieId = data?.nijieId
+            val memberName = data?.memberName
+            val memberId = data?.memberId
+            if (StringUtils.isBlank(nijieId.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -597,31 +569,27 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
-    private suspend fun drawrSearch(event: GroupMessageEvent, everything: Any): Message? {
-        val jsonObject: JSONObject? = null
-        var header: Any? = null
-        var data: Any? = null
-        var similarity: String? = null
-        var thumbnail: String? = null
-        var extUrls: JSONArray? = null
+    private suspend fun drawrSearch(event: GroupMessageEvent, everything: SaucenaoItem): Message? {
         return try {
-            header = JSONObject.parseObject(everything.toString())["header"]
-            data = JSONObject.parseObject(everything.toString())["data"]
-            similarity = JSONObject.parseObject(header.toString()).getString("similarity")
-            thumbnail = JSONObject.parseObject(header.toString()).getString("thumbnail")
-            extUrls = JSONArray.parseArray(JSONObject.parseObject(data.toString()).getString("ext_urls"))
-            val title = JSONObject.parseObject(data.toString()).getString("title")
-            val drawrID = JSONObject.parseObject(data.toString()).getString("drawr_id")
-            val memberName = JSONObject.parseObject(data.toString()).getString("member_name")
-            val memberId = JSONObject.parseObject(data.toString()).getString("member_id")
-            if (StringUtils.isBlank(drawrID)) {
+            val header = everything.results?.get(0)?.header
+            val data = everything.results?.get(0)?.data
+            val similarity = header?.similarity
+            val thumbnail = header?.thumbnail
+            val extUrls = data?.extUrls
+
+            val title = data?.title
+            val drawrID = data?.drawrId
+            val memberName = data?.memberName
+            val memberId = data?.memberId
+            if (StringUtils.isBlank(drawrID.toString())) {
                 throw RuntimeException("搜索到的插画id为空")
             }
-            val toExternalResource = getImage(thumbnail, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
+            val toExternalResource = getImage(thumbnail!!, CacheUtil.Type.NONSUPPORT).toByteArray().toExternalResource()
             val imageId = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -651,12 +619,13 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
 
 
-    private fun getExtUrls(extUrls: JSONArray?): String {
+    private fun getExtUrls(extUrls: List<String>?): String {
         return try {
             val data = StringBuilder()
             for (extUrl in extUrls!!) {
@@ -669,7 +638,7 @@ object Saucenao {
         }
     }
 
-    private fun getExtOneUrls(extUrls: JSONArray?): String? {
+    private fun getExtOneUrls(extUrls: List<String>?): String? {
         return try {
             val data = StringBuilder()
             data.append(extUrls!![0]).toString().replace("\"", "")

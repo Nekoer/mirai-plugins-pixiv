@@ -1,4 +1,4 @@
-package com.hcyacg.plugin.utils;
+package com.hcyacg.utils;
 
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder

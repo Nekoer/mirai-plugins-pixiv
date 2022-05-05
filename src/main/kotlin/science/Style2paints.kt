@@ -1,6 +1,6 @@
 package com.hcyacg.science
 
-import com.hcyacg.plugin.utils.DataUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import kotlinx.coroutines.delay

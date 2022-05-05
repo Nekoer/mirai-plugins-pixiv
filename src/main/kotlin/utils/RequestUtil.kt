@@ -1,8 +1,9 @@
 package com.hcyacg.utils
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
 import com.hcyacg.initial.Setting
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
@@ -20,67 +21,39 @@ class RequestUtil {
             .readTimeout(60000, TimeUnit.MILLISECONDS)
         private var response: Response? = null
 
-        fun requestObject(
+        fun request(
             method: Method,
             uri: String,
             body: RequestBody?,
-            headers: Headers,
-            logger: MiraiLogger
-        ): JSONObject? {
+            headers: Headers
+        ): JsonElement? {
+
             /**
              * 进行请求转发
              */
             when (method) {
                 Method.GET -> {
-                    return httpObject(Request.Builder().url(uri).headers(headers).get().build(), logger)
+                    return httpObject(Request.Builder().url(uri).headers(headers).get().build())
                 }
                 Method.POST -> {
                     return body?.let { Request.Builder().url(uri).headers(headers).post(it).build() }
-                        ?.let { httpObject(it, logger) }
+                        ?.let { httpObject(it) }
                 }
                 Method.PUT -> {
                     return body?.let { Request.Builder().url(uri).headers(headers).put(it).build() }
-                        ?.let { httpObject(it, logger) }
+                        ?.let { httpObject(it) }
                 }
                 Method.DEL -> {
-                    return httpObject(Request.Builder().url(uri).headers(headers).delete(body).build(), logger)
+                    return httpObject(Request.Builder().url(uri).headers(headers).delete(body).build())
                 }
             }
         }
 
-        fun requestArray(
-            method: Method,
-            uri: String,
-            body: RequestBody?,
-            headers: Headers,
-            logger: MiraiLogger
-        ): JSONArray? {
-            /**
-             * 进行请求转发
-             */
-            when (method) {
-                Method.GET -> {
-                    return httpArray(Request.Builder().url(uri).headers(headers).get().build(), logger)
-                }
-                Method.POST -> {
-                    return body?.let { Request.Builder().url(uri).headers(headers).post(it).build() }
-                        ?.let { httpArray(it, logger) }
-                }
-                Method.PUT -> {
-                    return body?.let { Request.Builder().url(uri).headers(headers).put(it).build() }
-                        ?.let { httpArray(it, logger) }
-                }
-                Method.DEL -> {
-                    return httpArray(Request.Builder().url(uri).headers(headers).delete(body).build(), logger)
-                }
-            }
-
-        }
 
         /**
          * 发送http请求，返回数据（其中根据proxy是否配置加入代理机制）
          */
-        private fun httpObject(request: Request, logger: MiraiLogger): JSONObject? {
+        private fun httpObject(request: Request): JsonElement? {
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
 
@@ -94,28 +67,9 @@ class RequestUtil {
 
 
             if (response!!.isSuccessful) {
-                return JSONObject.parseObject(response!!.body?.string())
+                return response!!.body?.string()?.let { Json.parseToJsonElement(it) }
             }
 
-            response!!.close()
-            return null
-        }
-
-        private fun httpArray(request: Request, logger: MiraiLogger): JSONArray? {
-            val host = Setting.config.proxy.host
-            val port = Setting.config.proxy.port
-
-            response = if (host.isBlank() || port == -1) {
-                client.build().newCall(request).execute()
-            } else {
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-                client.proxy(proxy).build().newCall(request).execute()
-            }
-
-
-            if (response!!.isSuccessful) {
-                return JSONArray.parseArray(response!!.body?.string())
-            }
             response!!.close()
             return null
         }

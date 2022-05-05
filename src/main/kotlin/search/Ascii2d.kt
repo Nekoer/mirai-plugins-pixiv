@@ -1,7 +1,6 @@
 package com.hcyacg.search
 
 import com.hcyacg.initial.Setting
-import com.hcyacg.initial.entity.Config
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent

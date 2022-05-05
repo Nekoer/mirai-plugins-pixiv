@@ -22,8 +22,6 @@ repositories {
     mavenCentral()
 }
 dependencies {
-
-    implementation("com.alibaba:fastjson:1.2.80")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.jsoup:jsoup:1.14.3")
