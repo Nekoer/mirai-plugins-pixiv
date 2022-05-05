@@ -45,7 +45,7 @@ object LoliconCenter {
 
         if (temp.isNotEmpty()){
             keyword = temp[0]
-            val key = keyword.split("|")
+            val key = keyword.split("[\\&\\,\\@\\%\\$\\*\\，]".toRegex())
             if (key.size <= 3){
                 key.forEach {
                     url = url.plus("&tag=$it")
