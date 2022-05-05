@@ -237,9 +237,9 @@ object SexyCenter {
             }
 
             if (Setting.config.recall != 0L) {
-                event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Setting.config.recall)
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})")).recallIn(Setting.config.recall)
             } else {
-                event.subject.sendMessage(message.plus(Image(imageId)))
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
             }
 
         } catch (e: Exception) {
