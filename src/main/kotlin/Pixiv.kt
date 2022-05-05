@@ -12,7 +12,10 @@ import com.hcyacg.sexy.SexyCenter
 import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.event.events.BotLeaveEvent
+import net.mamoe.mirai.event.events.GroupAllowConfessTalkEvent
 import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeGroupMessages
 import java.util.regex.Pattern
 
@@ -88,6 +91,13 @@ object Pixiv : KotlinPlugin(
 //            val coloring: Pattern = Pattern.compile("(?i)^(上色)$")
 //            content { coloring.matcher(message.contentToString()).find() } quoteReply { Style2paints.coloring(this, pluginLogger) }
 //
+        }
+
+        //获取到退群事件，删除groups中的相同群号
+        globalEventChannel().subscribeAlways<BotLeaveEvent>{
+            Setting.groups.remove(it.groupId.toString())
+            Setting.save()
+            Setting.reload()
         }
 
     }
