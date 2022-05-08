@@ -208,10 +208,10 @@ object PicDetails {
                 return null
             }
 
-            data.jsonObject["data"]?.jsonObject?.get("ugoira_metadata")
+
             val tempData = data.jsonObject["data"]?.jsonObject?.get("ugoira_metadata")
             val zipUrl = tempData?.jsonObject?.get("zip_urls")?.jsonObject?.get("medium")
-                .toString().replace("i.pximg.net", "i.acgmx.com")
+                ?.jsonPrimitive?.content?.replace("i.pximg.net", "i.acgmx.com")
 
 
 
@@ -221,7 +221,7 @@ object PicDetails {
             val output = File(dir, "${ugoiraId}.zip")
 
             val response: Response = client.build().newCall(
-                Request.Builder().url(zipUrl)
+                Request.Builder().url(zipUrl!!)
                     .headers(headers.build()).get().build()
             ).execute()
 
