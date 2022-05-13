@@ -40,26 +40,35 @@ object LoliconCenter {
         val temp = event.message.contentToString().replace("${Setting.command.lolicon} ", "").split(" ")
         //https://api.lolicon.app/setu/v2?r18=2&proxy=i.acgmx.com&size=original&keyword=loli
         var r18 = 0
-        val keyword:String
+        val keyword: String
         var url = "https://api.lolicon.app/setu/v2?proxy=i.acgmx.com&size=original"
 
-        if (temp.isNotEmpty()){
+        if (temp.isNotEmpty()) {
             keyword = temp[0]
-            val key = keyword.split("[\\&\\,\\@\\%\\$\\*\\，]".toRegex())
-            if (key.size <= 3){
-                key.forEach {
-                    url = url.plus("&tag=$it")
-                }
+
+            if (keyword.contentEquals("r18")){
+                r18 = 1
             }else{
-                event.subject.sendMessage(message.plus("关联tag最多三个"))
-                return
+                val key = keyword.split("[\\&\\,\\@\\%\\$\\*\\，]".toRegex())
+                if (key.size <= 3) {
+                    key.forEach {
+                        url = url.plus("&tag=$it")
+                    }
+                } else {
+                    event.subject.sendMessage(message.plus("关联tag最多三个"))
+                    return
+                }
             }
         }
 
 
 
-        if (temp.size == 2){
-            r18 = if(temp[1].contentEquals("r18")){1}else{0}
+        if (temp.size == 2) {
+            r18 = if (temp[1].contentEquals("r18")) {
+                1
+            } else {
+                0
+            }
         }
         url = url.plus("&r18=$r18")
 
@@ -75,7 +84,7 @@ object LoliconCenter {
 
             val lolicon = data?.let { Json.decodeFromJsonElement<Lolicon>(it) }
 
-            if (null == lolicon){
+            if (null == lolicon) {
                 event.subject.sendMessage(message.plus("Lolicon数据为空"))
                 return
             }
@@ -92,18 +101,22 @@ object LoliconCenter {
             }
 
 
-
             val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray().toExternalResource()
+                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
+                    .toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
 
-            if (r18 == 1 && Setting.config.recall != 0L){
-                event.subject.sendMessage(message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")).recallIn(Setting.config.recall)
-            }else{
-                event.subject.sendMessage(message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}"))
+            if (r18 == 1 && Setting.config.recall != 0L) {
+                event.subject.sendMessage(
+                    message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")
+                ).recallIn(Setting.config.recall)
+            } else {
+                event.subject.sendMessage(
+                    message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")
+                )
             }
         } catch (e: Exception) {
             e.printStackTrace()

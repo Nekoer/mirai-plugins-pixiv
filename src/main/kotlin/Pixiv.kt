@@ -78,7 +78,7 @@ object Pixiv : KotlinPlugin(
             val lolicon: Pattern = Pattern.compile("(?i)^(${Setting.command.lolicon})( ([^ ]*)( (r18))?)?\$")
             content { lolicon.matcher(message.contentToString()).find() } quoteReply { LoliconCenter.load(this) }
 
-            content { "帮助".contentEquals(message.contentToString()) || "/help".contentEquals(message.contentToString()) } quoteReply { Helper.load(this) }
+            content { Setting.command.help.contentEquals(message.contentToString()) } quoteReply { Helper.load(this) }
 
             content { "切换涩图开关".contentEquals(message.contentToString()) } quoteReply { Helper.setuEnable(this) }
             content { "切换缓存开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableLocal(this) }

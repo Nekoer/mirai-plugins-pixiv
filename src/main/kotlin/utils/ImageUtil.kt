@@ -50,11 +50,6 @@ class ImageUtil {
                 }else{
                     imageUri.split("/").last()
                 }
-                val fileName = temp[0]
-                val fileType = temp[1]
-
-
-
 
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){

@@ -20,5 +20,7 @@ data class Command(
     @SerialName("lolicon")
     var lolicon: String =  "loli",
     @SerialName("tag")
-    var tag: String = "tag-"
+    var tag: String = "tag-",
+    @SerialName("help")
+    var help: String = "帮助"
 )

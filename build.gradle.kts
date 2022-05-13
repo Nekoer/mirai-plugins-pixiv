@@ -8,7 +8,7 @@ plugins {
 
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("net.mamoe.mirai-console") version "2.11.0-RC"
+    id("net.mamoe.mirai-console") version "2.11.0-RC2"
     id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 }
 
