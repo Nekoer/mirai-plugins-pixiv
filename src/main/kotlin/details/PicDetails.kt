@@ -1,6 +1,9 @@
 package com.hcyacg.details
 
+import com.hcyacg.entity.PixivImageDetail
+import com.hcyacg.entity.YandexImage
 import com.hcyacg.initial.Setting
+import com.hcyacg.search.Yandex
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
@@ -9,10 +12,7 @@ import com.hcyacg.utils.ZipUtil
 import com.madgag.gif.fmsware.AnimatedGifEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -31,9 +31,8 @@ object PicDetails {
     private val requestBody: RequestBody? = null
     private var isChange: Boolean = false
     private val logger = MiraiLogger.Factory.create(this::class.java)
-
-
-    suspend fun getDetailOfId(event: GroupMessageEvent) {
+    private val json = Json { ignoreUnknownKeys = true }
+    suspend fun load(event: GroupMessageEvent){
         val data: JsonElement?
         val messageChain: MessageChain = event.message
 
@@ -77,46 +76,37 @@ object PicDetails {
             page = "1"
         }
 
+        val detail = getDetailOfId(id)
 
 
-        data = request(
-            Companion.Method.GET,
-            "https://api.acgmx.com/illusts/detail?illustId=$id&reduction=true",
-            requestBody,
-            headers.build()
-        )
-        if (null == data){
-            event.subject.sendMessage("数据为空")
-            return
-        }
-
-
-
-        val tempData = data.jsonObject["data"]?.jsonObject?.get("illust")
         /**
          * 判断该id是否有数据
          */
-        if (null == tempData) {
+        if (null == detail) {
             event.subject.sendMessage("该作品是被删除或不存在的作品ID.")
             return
         }
 
-        val picId = tempData.jsonObject["id"]?.jsonPrimitive?.content
-        val title = tempData.jsonObject["title"]?.jsonPrimitive?.content
-        val type = tempData.jsonObject["type"]?.jsonPrimitive?.content
+        val picId = detail.id
+        val title = detail.title
+        val type = detail.type
 
-        val author = tempData.jsonObject["user"]?.jsonObject?.get("name")?.jsonPrimitive?.content
-        val authorId = tempData.jsonObject["user"]?.jsonObject?.get("id")?.jsonPrimitive?.content
-        var large = tempData.jsonObject["image_urls"]?.jsonObject?.get("large")?.jsonPrimitive?.content
-        val pageCount = tempData.jsonObject["page_count"]?.jsonPrimitive?.content!!.toInt()
-        val sanityLevel = tempData.jsonObject["sanity_level"]?.jsonPrimitive?.content?.toInt()
+        val author = detail.user!!.name
+        val authorId = detail.user.id
+        var large = detail.imageUrls?.large
+        val pageCount = detail.pageCount!!
+        val sanityLevel = detail.sanityLevel
         if (sanityLevel == 6 && Setting.groups.indexOf(event.group.id.toString()) < 0) {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
 
         if ("ugoira".contentEquals(type)) {
-            val imageId = getUgoira(picId!!.toLong(), event)
+            val toExternalResource = getUgoira(picId!!.toLong())?.toExternalResource()
+            val imageId: String? = toExternalResource?.uploadAsImage(event.group)?.imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource?.close()
+            }
             if (null != imageId) {
                 val message: Message = At(event.sender)
                     .plus(Image(imageId)).plus("\n")
@@ -152,10 +142,9 @@ object PicDetails {
          * 通过张数判断读取哪个json数据
          */
         large = if (pageCount > 1) {
-            tempData.jsonObject["meta_pages"]?.jsonArray?.get(page.toInt() - 1)?.jsonObject?.get("image_urls")?.jsonObject?.get("original")
-                ?.jsonPrimitive?.content
+            detail.metaPages!![page.toInt() - 1].imageUrls!!.original
         } else {
-            tempData.jsonObject["meta_single_page"]?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content
+            detail.metaSinglePage!!.originalImageUrl
         }
 
         val toExternalResource =
@@ -190,7 +179,37 @@ object PicDetails {
 
     }
 
-    suspend fun getUgoira(ugoiraId: Long, event: GroupMessageEvent): String? {
+    fun getDetailOfId(id:String): PixivImageDetail? {
+        try{
+            val data = request(
+                Companion.Method.GET,
+                "https://api.acgmx.com/illusts/detail?illustId=$id&reduction=true",
+                requestBody,
+                headers.build()
+            )
+
+            if (null == data){
+                return null
+            }
+
+            val tempData = data.jsonObject["data"]?.jsonObject?.get("illust")
+            val pixivImageDetail = tempData?.let { json.decodeFromJsonElement<PixivImageDetail>(it) }
+
+            /**
+             * 判断该id是否有数据
+             */
+            if (null == pixivImageDetail) {
+                return null
+            }
+
+            return pixivImageDetail
+        }catch (e:Exception){
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    suspend fun getUgoira(ugoiraId: Long): ByteArray? {
 //        val ugoiraId = 97727495
         val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
             .readTimeout(60000, TimeUnit.MILLISECONDS)
@@ -249,13 +268,7 @@ object PicDetails {
 
             val file = File(dir.path + File.separator +  "screenshot.gif")
 
-            val toExternalResource = file.readBytes().toExternalResource()
-            val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-            withContext(Dispatchers.IO) {
-                toExternalResource.close()
-            }
-
-            return imageId
+            return file.readBytes()
         } catch (e: Exception) {
             e.printStackTrace()
             return null

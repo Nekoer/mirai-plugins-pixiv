@@ -23,7 +23,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.0",
+        version = "1.7.1",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -39,7 +39,7 @@ object Pixiv : KotlinPlugin(
             val getDetailOfId: Pattern =
                 Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() } quoteReply {
-                PicDetails.getDetailOfId(
+                PicDetails.load(
                     this
                 )
             }
