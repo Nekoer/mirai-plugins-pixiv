@@ -82,6 +82,8 @@ object Pixiv : KotlinPlugin(
 
             content { "切换涩图开关".contentEquals(message.contentToString()) } quoteReply { Helper.setuEnable(this) }
             content { "切换缓存开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableLocal(this) }
+            content { "切换转发开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableForward(this) }
+
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")
             content { enableSetu.matcher(message.contentToString()).find() } quoteReply { Helper.enableSetu(this) }

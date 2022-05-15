@@ -12,7 +12,7 @@ data class Command(
     @SerialName("showRank")
     var showRank: String = "rank-",
     @SerialName("rankAndTagAndUserByForward")
-    val rankAndTagAndUserByForward:Boolean = false,
+    var rankAndTagAndUserByForward:Boolean = false,
     @SerialName("findUserWorksById")
     var findUserWorksById: String = "user-",
     @SerialName("searchInfoByPic")
