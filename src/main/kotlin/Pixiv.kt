@@ -2,6 +2,7 @@ package com.hcyacg
 
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
+import com.hcyacg.initial.Github
 import com.hcyacg.initial.Setting
 import com.hcyacg.rank.Rank
 import com.hcyacg.rank.Tag
@@ -30,9 +31,15 @@ object Pixiv : KotlinPlugin(
     }
 ) {
 
+    override fun onDisable() {
+        Setting.save()
+        Github.save()
+    }
+
     override fun onEnable() {
         Setting.reload()
-        Setting.save()
+        Github.reload()
+        AutoUpdate.load()
 
         globalEventChannel().subscribeGroupMessages {
             //测试成功

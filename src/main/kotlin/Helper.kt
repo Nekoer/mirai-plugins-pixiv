@@ -7,6 +7,9 @@ import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.PlainText
 
+/**
+ * 帮助列表以及开关设置
+ */
 object Helper {
 
     suspend fun load(event: GroupMessageEvent) {
@@ -43,6 +46,9 @@ object Helper {
         event.subject.sendMessage(message)
     }
 
+    /**
+     * 本群涩图权限设置
+     */
     suspend fun setuEnable(event: GroupMessageEvent) {
         if (!Setting.admins.contains(event.sender.id.toString())) {
             event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
@@ -69,6 +75,9 @@ object Helper {
     }
 
 
+    /**
+     * 本地缓存设置
+     */
     suspend fun enableLocal(event: GroupMessageEvent) {
         if (!Setting.admins.contains(event.sender.id.toString())) {
             event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
@@ -90,6 +99,9 @@ object Helper {
         )
     }
 
+    /**
+     * 涩图库开关
+     */
     suspend fun enableSetu(event: GroupMessageEvent) {
         if (!Setting.admins.contains(event.sender.id.toString())) {
             event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
@@ -102,6 +114,9 @@ object Helper {
         event.subject.sendMessage(changeSetu(state, message))
     }
 
+    /**
+     * 转发消息开关
+     */
     suspend fun enableForward(event: GroupMessageEvent) {
         if (!Setting.admins.contains(event.sender.id.toString())) {
             event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
@@ -124,6 +139,9 @@ object Helper {
 
     }
 
+    /**
+     * 根据状态来设置涩图库开关
+     */
     private fun changeSetu(state: Boolean, key: String): Message {
         when (key) {
             "pixiv" -> {
