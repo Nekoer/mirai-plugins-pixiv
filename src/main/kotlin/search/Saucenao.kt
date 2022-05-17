@@ -97,7 +97,7 @@ object Saucenao {
             var similarity180: Double = 0.0
             var similarity270: Double = 0.0
 
-            var double = mutableListOf<Double>()
+            val double = mutableListOf<Double>()
 
             if (null != imageData) {
                 similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()

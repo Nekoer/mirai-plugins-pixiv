@@ -1,6 +1,7 @@
 package com.hcyacg.utils
 
 import com.hcyacg.initial.Setting
+import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,6 +22,9 @@ import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import javax.imageio.ImageIO
 import javax.net.ssl.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class ImageUtil {
@@ -32,7 +36,7 @@ class ImageUtil {
                 "user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
-        private var isChange:Boolean = false
+        val logger = MiraiLogger.Factory.create(this::class.java)
 
 
         /**
@@ -78,6 +82,7 @@ class ImageUtil {
 
                 return infoStream
             }catch (e:Exception){
+                logger.warning("${imageUri}获取失败,请检查网络")
                 e.printStackTrace()
                 return infoStream
             }
@@ -104,12 +109,12 @@ class ImageUtil {
         {
             val srcWidth: Int = src.getWidth(null);
             val srcHeight : Int = src.getHeight (null);
-            val rectDes : Rectangle? = CalcRotatedSize ( Rectangle ( Dimension (
+            val rectDes : Rectangle = calcRotatedSize ( Rectangle ( Dimension (
                 srcWidth, srcHeight)), angel)
 
 
             var res: BufferedImage? = null
-            res = BufferedImage (rectDes!!.width, rectDes.height,BufferedImage.TYPE_INT_RGB);
+            res = BufferedImage (rectDes.width, rectDes.height,BufferedImage.TYPE_INT_RGB);
             val g2: Graphics2D = res.createGraphics ();
             // transform(这里先平移、再旋转比较方便处理；绘图时会采用这些变化，绘图默认从画布的左上顶点开始绘画，源图片的左上顶点与画布左上顶点对齐，然后开始绘画，修改坐标原点后，绘画对应的画布起始点改变，起到平移的效果；然后旋转图片即可)
 
@@ -141,7 +146,7 @@ class ImageUtil {
          * image格式字符串.如"gif","png"
          * @return byte数组
          */
-        fun imageToBytes(bImage:BufferedImage, format:String):ByteArrayOutputStream {
+        private fun imageToBytes(bImage:BufferedImage, format:String):ByteArrayOutputStream {
             val out : ByteArrayOutputStream = ByteArrayOutputStream();
 
             try {
@@ -158,12 +163,12 @@ class ImageUtil {
          * @param angel 角度
          * @return 目标矩形
          */
-        private fun CalcRotatedSize(src: Rectangle, angel: Int): Rectangle {
-            val cos = Math.abs(Math.cos(Math.toRadians(angel.toDouble())))
-            val sin = Math.abs(Math.sin(Math.toRadians(angel.toDouble())))
-            val des_width = (src.width * cos).toInt() + (src.height * sin).toInt()
-            val des_height = (src.height * cos).toInt() + (src.width * sin).toInt()
-            return Rectangle(Dimension(des_width, des_height))
+        private fun calcRotatedSize(src: Rectangle, angel: Int): Rectangle {
+            val cos = abs(cos(Math.toRadians(angel.toDouble())))
+            val sin = abs(sin(Math.toRadians(angel.toDouble())))
+            val desWidth = (src.width * cos).toInt() + (src.height * sin).toInt()
+            val desHeight = (src.height * cos).toInt() + (src.width * sin).toInt()
+            return Rectangle(Dimension(desWidth, desHeight))
         }
 
 

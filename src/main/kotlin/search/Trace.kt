@@ -1,11 +1,13 @@
 package com.hcyacg.search
 
 import com.hcyacg.entity.Anilist
-import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import com.madgag.gif.fmsware.AnimatedGifEncoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -13,6 +15,7 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
+import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
@@ -21,8 +24,13 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
+import org.jsoup.HttpStatusException
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.io.InputStream
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -111,14 +119,38 @@ object Trace {
                     .plus("出现在：${startTime} - $endTime").plus("\n")
                     .plus("相似度：${similarity?.let { DataUtil.getPercentFormat(it.toDouble(), 2, 2) }}")
             )
-            externalResource?.close()
+            withContext(Dispatchers.IO) {
+                externalResource?.close()
+            }
             /**
              * 发送视频文件
              */
-            externalResource = video2Gif(ImageUtil.getVideo("$video&size=l")!!).toByteArray().toExternalResource()
-            event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
+            val input = ImageUtil.getVideo("$video&size=l")
+            if (null != input){
+                externalResource = video2Gif(input).toByteArray().toExternalResource()
+                event.subject.sendMessage(Image(externalResource.uploadAsImage(event.group).imageId))
+            }
 
-        }catch (e:IllegalStateException){
+        } catch (e: IOException) {
+            logger.warning("连接至Trace出现异常，请检查网络")
+            event.subject.sendMessage("Trace网络异常")
+
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至Trace的网络超时，请检查网络")
+            event.subject.sendMessage("Trace网络异常")
+
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至Trace的网络超时，请检查网络")
+            event.subject.sendMessage("Trace网络异常")
+
+        } catch (e: ConnectException) {
+            logger.warning("连接至Trace的网络出现异常，请检查网络")
+            event.subject.sendMessage("Trace网络异常")
+
+        } catch (e: SocketException) {
+            logger.warning("连接至Trace的网络出现异常，请检查网络")
+            event.subject.sendMessage("Trace网络异常")
+        } catch (e:IllegalStateException){
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
         }
     }

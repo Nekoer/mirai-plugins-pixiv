@@ -18,6 +18,11 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
+import org.jsoup.HttpStatusException
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 
 object LoliconCenter {
     private val requestBody: RequestBody? = null
@@ -118,6 +123,21 @@ object LoliconCenter {
                     message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")
                 )
             }
+        } catch (e: IOException) {
+            logger.warning("连接至Lolicon出现异常，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
+        } catch (e: ConnectException) {
+            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
+        } catch (e: SocketException) {
+            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: Exception) {
             e.printStackTrace()
             event.subject.sendMessage(message.plus("服务错误"))

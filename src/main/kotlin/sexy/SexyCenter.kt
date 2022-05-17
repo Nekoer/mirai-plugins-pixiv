@@ -19,9 +19,14 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
+import org.jsoup.HttpStatusException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -142,6 +147,21 @@ object SexyCenter {
                 event.subject.sendMessage("内容为空")
             }
 
+        }catch (e: IOException) {
+            logger.warning("连接至yande出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至yande的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至yande的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: ConnectException) {
+            logger.warning("连接至yande的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketException) {
+            logger.warning("连接至yande的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
@@ -189,6 +209,21 @@ object SexyCenter {
             } else {
                 event.subject.sendMessage("内容为空")
             }
+        } catch (e: IOException) {
+            logger.warning("连接至yande出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至yande的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至yande的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: ConnectException) {
+            logger.warning("连接至yande的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketException) {
+            logger.warning("连接至yande的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
@@ -242,6 +277,21 @@ object SexyCenter {
                 event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
             }
 
+        } catch (e: IOException) {
+            logger.warning("连接至Lolicon出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: ConnectException) {
+            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketException) {
+            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
@@ -283,6 +333,21 @@ object SexyCenter {
             } else {
                 event.subject.sendMessage("内容为空")
             }
+        } catch (e: IOException) {
+            logger.warning("连接至konachan出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至konachan的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至konachan的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: ConnectException) {
+            logger.warning("连接至konachan的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketException) {
+            logger.warning("连接至konachan的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
@@ -323,12 +388,30 @@ object SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
+        }  catch (e: IOException) {
+            logger.warning("连接至pixiv出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至pixiv的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至pixiv的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: ConnectException) {
+            logger.warning("连接至pixiv的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SocketException) {
+            logger.warning("连接至pixiv的网络出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
             logger.warning(e)
             event.subject.sendMessage("发送图片失败")
         }
     }
 
+    /**
+     * 本地图库
+     */
     private suspend fun localImage(event: GroupMessageEvent) {
         if (!Setting.config.setuEnable.localImage) {
             return
@@ -365,11 +448,17 @@ object SexyCenter {
                 event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
             }
 
+        }  catch (e: IOException) {
+            logger.warning("连接至本地图库出现异常,请检查本地图库是否已经设置")
+            event.subject.sendMessage("本地图库出现异常")
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    /**
+     * 递归获取文件夹及其内部的文件
+     */
     private fun getAllImage(file: File): MutableList<String> {
         val imageList = mutableListOf<String>()
         try {

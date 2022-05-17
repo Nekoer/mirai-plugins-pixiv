@@ -1,12 +1,14 @@
 package com.hcyacg.search
 
 import com.hcyacg.initial.Setting
+import com.hcyacg.sexy.SexyCenter
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
+import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
@@ -14,9 +16,14 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
+import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
@@ -26,7 +33,7 @@ import javax.net.ssl.X509TrustManager
 object Ascii2d {
 
     private var md5: String = ""
-    private val baseUrl: String = "https://ascii2d.net"
+    private const val baseUrl: String = "https://ascii2d.net"
     private val logger = MiraiLogger.Factory.create(this::class.java)
 
     suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String) :List<Message>{
@@ -37,7 +44,7 @@ object Ascii2d {
              * 设置TLSv1.1
              */
 
-            val trustManager: X509TrustManager? = object : X509TrustManager {
+            val trustManager: X509TrustManager = object : X509TrustManager {
                 @Throws(CertificateException::class)
                 override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
                 }
@@ -56,20 +63,6 @@ object Ascii2d {
 
             val sslsf = SSLConnectionSocketFactory(sc)
             val httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
-
-
-//            val ctx:SSLContext = SSLContexts.createSystemDefault()
-//            val fac = SSLConnectionSocketFactory(
-//                ctx,
-//                arrayOf("TLSv1.1","TLSv1.2","TLSv1.3"),
-//                null,
-//                SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
-//            )
-//            val httpClientConnectionManager = PoolingHttpClientConnectionManager(RegistryBuilder.create<ConnectionSocketFactory>().register("http",PlainConnectionSocketFactory.getSocketFactory()).register("https",fac).build())
-//            httpClientConnectionManager.defaultMaxPerRoute = 100
-//            httpClientConnectionManager.maxTotal = 200
-//            val requestConfig:RequestConfig = RequestConfig.custom().setConnectionRequestTimeout(60000).setSocketTimeout(60000).build()
-//            val httpClient:CloseableHttpClient = HttpClientBuilder.create().setConnectionManager(httpClientConnectionManager).setDefaultRequestConfig(requestConfig).build()
 
             val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
             val ascii2d = "https://ascii2d.net/search/url/$url"
@@ -92,22 +85,42 @@ object Ascii2d {
                 if (link.size == 0) {
                     md5 = it.selectFirst(".image-box img")?.attr("alt").toString().toLowerCase()
                 } else {
-                    list.add(color(elementsByClass,event, logger))
-                    list.add(bovw(event, logger))
+                    list.add(color(elementsByClass,event))
+                    list.add(bovw(event))
                     return list
                 }
             }
 
             list.clear()
             return list
-        }catch (e:Exception){
+        } catch (e: IOException) {
+            logger.warning("连接至Ascii2d出现异常，请检查网络")
+            list.add(PlainText("Ascii2d网络异常"))
+            return list
+        } catch (e: HttpStatusException) {
+            logger.warning("连接至Ascii2d的网络超时，请检查网络")
+            list.add(PlainText("Ascii2d网络异常"))
+            return list
+        } catch (e: SocketTimeoutException) {
+            logger.warning("连接至Ascii2d的网络超时，请检查网络")
+            list.add(PlainText("Ascii2d网络异常"))
+            return list
+        } catch (e: ConnectException) {
+            logger.warning("连接至Ascii2d的网络出现异常，请检查网络")
+            list.add(PlainText("Ascii2d网络异常"))
+            return list
+        } catch (e: SocketException) {
+            logger.warning("连接至Ascii2d的网络出现异常，请检查网络")
+            list.add(PlainText("Ascii2d网络异常"))
+            return list
+        } catch (e:Exception){
             logger.error(e)
             return list
         }
 
     }
 
-    private suspend fun color(elements: Elements, event: GroupMessageEvent, logger: MiraiLogger): Message {
+    private suspend fun color(elements: Elements, event: GroupMessageEvent): Message {
         val message: Message = At(event.sender).plus("\n")
         elements.forEach {
             val link = it.select(".detail-box a")
@@ -135,7 +148,7 @@ object Ascii2d {
         return message.plus("程序出现一些问题~请稍后再尝试")
     }
 
-    private suspend fun bovw(event: GroupMessageEvent, logger: MiraiLogger): Message {
+    private suspend fun bovw(event: GroupMessageEvent): Message {
         val bovwUri = "https://ascii2d.net/search/bovw/$md5"
         val headers = mutableMapOf<String,String>()
         headers["User-Agent"] = "PostmanRuntime/7.28.4"

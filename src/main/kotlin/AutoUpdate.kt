@@ -28,9 +28,6 @@ object AutoUpdate {
     private val requestBody: RequestBody? = null
     private val logger = MiraiLogger.Factory.create(this::class.java)
     private val json = Json { ignoreUnknownKeys = true }
-    private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
-        .readTimeout(60000, TimeUnit.MILLISECONDS)
-
 
     /**
      * 加载数据并轮询 每小时查询一次
@@ -46,16 +43,13 @@ object AutoUpdate {
                 /**
                  * 判断是否有内容
                  */
-                if (githubRelease.size <= 0) {
+                if (githubRelease.isEmpty()) {
                     return
                 }
                 /**
                  * 首先判断是否是默认值 0
                  */
-//                if (Github.versionId == 0 || !githubRelease[0].tagName.contentEquals(Pixiv.version.toString())) {
-//                    Github.versionId = githubRelease[0].id!!
-//                    Github.save()
-//                } else
+
                 if (githubRelease[0].id!! != Github.versionId) {
                     /**
                      * 如果本地version-id与github的不同，则说明可能有新版本；继续进行tag和插件版本进行对比
