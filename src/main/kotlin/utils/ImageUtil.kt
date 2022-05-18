@@ -11,17 +11,12 @@ import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 import javax.imageio.ImageIO
-import javax.net.ssl.*
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -57,10 +52,10 @@ class ImageUtil {
 
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){
-                    client.build().newCall(request).execute();
+                    client.build().newCall(request).execute()
                 }else{
                     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-                    client.proxy(proxy).build().newCall(request).execute();
+                    client.proxy(proxy).build().newCall(request).execute()
                 }
 
                 val `in` = response.body?.byteStream()
@@ -107,23 +102,23 @@ class ImageUtil {
          */
         fun  rotate(src: Image, angel:Int): ByteArrayOutputStream
         {
-            val srcWidth: Int = src.getWidth(null);
-            val srcHeight : Int = src.getHeight (null);
+            val srcWidth: Int = src.getWidth(null)
+            val srcHeight : Int = src.getHeight (null)
             val rectDes : Rectangle = calcRotatedSize ( Rectangle ( Dimension (
                 srcWidth, srcHeight)), angel)
 
 
             var res: BufferedImage? = null
-            res = BufferedImage (rectDes.width, rectDes.height,BufferedImage.TYPE_INT_RGB);
-            val g2: Graphics2D = res.createGraphics ();
+            res = BufferedImage (rectDes.width, rectDes.height,BufferedImage.TYPE_INT_RGB)
+            val g2: Graphics2D = res.createGraphics ()
             // transform(这里先平移、再旋转比较方便处理；绘图时会采用这些变化，绘图默认从画布的左上顶点开始绘画，源图片的左上顶点与画布左上顶点对齐，然后开始绘画，修改坐标原点后，绘画对应的画布起始点改变，起到平移的效果；然后旋转图片即可)
 
             //平移（原理修改坐标系原点，绘图起点变了，起到了平移的效果，如果作用于旋转，则为旋转中心点）
-            g2.translate((rectDes.width - srcWidth) / 2, (rectDes.height - srcHeight) / 2);
+            g2.translate((rectDes.width - srcWidth) / 2, (rectDes.height - srcHeight) / 2)
 
 
             //旋转（原理transalte(dx,dy)->rotate(radians)->transalte(-dx,-dy);修改坐标系原点后，旋转90度，然后再还原坐标系原点为(0,0),但是整个坐标系已经旋转了相应的度数 ）
-            g2.rotate(Math.toRadians(angel.toDouble()), srcWidth.toDouble() / 2, srcHeight.toDouble() / 2);
+            g2.rotate(Math.toRadians(angel.toDouble()), srcWidth.toDouble() / 2, srcHeight.toDouble() / 2)
 
 //        //先旋转（以目标区域中心点为旋转中心点，源图片左上顶点对准目标区域中心点，然后旋转）
 //        g2.translate(rect_des.width/2,rect_des.height/ 2);
@@ -132,7 +127,7 @@ class ImageUtil {
 //        g2.translate(-src_width/2,-src_height/2);
 
 
-            g2.drawImage(src, null, null);
+            g2.drawImage(src, null, null)
             return imageToBytes(res,"PNG")
         }
 
@@ -140,17 +135,16 @@ class ImageUtil {
         /**
          * 转换BufferedImage 数据为byte数组
          *
-         * @param image
          * Image对象
          * @param format
          * image格式字符串.如"gif","png"
          * @return byte数组
          */
         private fun imageToBytes(bImage:BufferedImage, format:String):ByteArrayOutputStream {
-            val out : ByteArrayOutputStream = ByteArrayOutputStream();
+            val out = ByteArrayOutputStream()
 
             try {
-                ImageIO.write(bImage, format, out);
+                ImageIO.write(bImage, format, out)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -171,7 +165,26 @@ class ImageUtil {
             return Rectangle(Dimension(desWidth, desHeight))
         }
 
+        fun generateImage(imgData: String): ByteArray? { // 对字节数组字符串进行Base64解码并生成图片
+            val decoder = Base64.getDecoder()
+            var file = imgData
+            try {
+                // Base64解码
+                if (file.contains("data:")) {
+                    val start: Int = file.indexOf(",")
+                    file = file.substring(start + 1)
+                }
 
-
+                file = file.replace("\r|\n", "")
+                file = file.trim()
+                return decoder.decode(file)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                return null
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return null
+            }
+        }
     }
 }

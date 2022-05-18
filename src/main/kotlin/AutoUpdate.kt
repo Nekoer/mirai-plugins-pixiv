@@ -7,16 +7,13 @@ import com.hcyacg.utils.DownloadUtil
 import com.hcyacg.utils.RequestUtil
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
+import net.mamoe.mirai.console.ConsoleFrontEndImplementation
 import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.console.plugin.version
-import net.mamoe.mirai.console.rootDir
 import net.mamoe.mirai.utils.MiraiLogger
-import okhttp3.*
-import java.io.File
-import java.sql.Time
+import okhttp3.Headers
+import okhttp3.RequestBody
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
 
 
 /**
@@ -32,6 +29,7 @@ object AutoUpdate {
     /**
      * 加载数据并轮询 每小时查询一次
      */
+    @OptIn(ConsoleFrontEndImplementation::class)
     fun load() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
@@ -46,9 +44,6 @@ object AutoUpdate {
                 if (githubRelease.isEmpty()) {
                     return
                 }
-                /**
-                 * 首先判断是否是默认值 0
-                 */
 
                 if (githubRelease[0].id!! != Github.versionId) {
                     /**
@@ -71,10 +66,12 @@ object AutoUpdate {
                         }
 
                         logger.info("$temp 更新开始")
-                        DownloadUtil.download(githubRelease[0].assets?.get(0)?.browserDownloadUrl!!.replace(
+
+                        DownloadUtil.download(
+                            githubRelease[0].assets?.get(0)?.browserDownloadUrl!!.replace(
                             "https://github.com/",
                             "https://download.fastgit.org/"
-                        ),
+                            ),
                             MiraiConsole.pluginManager.pluginsFolder.path,
                             object : DownloadUtil.OnDownloadListener {
                                 override fun onDownloadSuccess() {
@@ -90,6 +87,12 @@ object AutoUpdate {
                                      * 启动mcl后关闭本程序
                                      */
                                     logger.info("请删除旧版本插件并重启程序")
+
+//                                    val name = ManagementFactory.getRuntimeMXBean().name
+//                                    val pid: String = name.split("@")[0]
+//                                    val cmd = arrayOf("cmd.exe", "/c", "taskkill -f /pid $pid")
+//                                    Runtime.getRuntime().exec(arrayOf("cmd.exe", "/k", "java -jar ${File("").canonicalPath + File.separator}mcl.jar"),null,File(File("").canonicalPath)).waitFor()
+//                                    Runtime.getRuntime().exec(cmd,null, File(File("").canonicalPath)).waitFor()
                                 }
 
                                 override fun onDownloading(progress: Int) {

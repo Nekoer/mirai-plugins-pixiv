@@ -16,7 +16,6 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
-import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,7 +31,7 @@ object Rank {
         calendar.add(Calendar.DAY_OF_MONTH, -2)
         val date: String = sdf.format(calendar.time)
 
-        var page: Int = 1
+        var page = 1
         var mode: String? = null
         var enable = false
 
@@ -170,7 +169,9 @@ object Rank {
                                 CacheUtil.Type.PIXIV
                             ).toByteArray().toExternalResource()
                         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-                        toExternalResource.close()
+                        withContext(Dispatchers.IO) {
+                            toExternalResource.close()
+                        }
                         tempMessage = if (sanityLevel != 6 || enable) {
                             tempMessage.plus(Image(imageId))
                         } else {

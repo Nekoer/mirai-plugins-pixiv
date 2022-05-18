@@ -71,6 +71,19 @@ object SearchPicCenter {
             )
         }
 
+        //谷歌搜图
+        val google = Google.load(event,picUri)
+        google.forEach {
+            nodes.add(
+                ForwardMessage.Node(
+                    senderId = event.bot.id,
+                    senderName = event.bot.nameCardOrNick,
+                    time = System.currentTimeMillis().toInt(),
+                    message = it
+                )
+            )
+        }
+
         //合并QQ消息 发送查询到的图片线索
         val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
             override fun generateTitle(forward: RawForwardMessage): String {
