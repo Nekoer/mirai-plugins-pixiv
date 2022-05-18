@@ -68,7 +68,6 @@ object Google {
                 }
             }
 
-            println(map.size)
 
             var num = 0
             doc.select("#search").select(".g").forEach {
@@ -78,7 +77,6 @@ object Google {
                     val title = it.selectFirst("h3")?.html()
                     val url = it.selectFirst("a")?.attr("href")
                     val image = map[it.select("img").attr("id")]
-                    println(image)
 
                     if (null != image){
                         val toExternalResource = ImageUtil.generateImage(image)?.toExternalResource()
