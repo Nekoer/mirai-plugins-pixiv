@@ -6,6 +6,7 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.apache.commons.codec.binary.Base64
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Image
@@ -14,7 +15,6 @@ import java.awt.image.BufferedImage
 import java.io.*
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.math.abs
@@ -166,7 +166,6 @@ class ImageUtil {
         }
 
         fun generateImage(imgData: String): ByteArray? { // 对字节数组字符串进行Base64解码并生成图片
-            val decoder = Base64.getDecoder()
             var file = imgData
             try {
                 // Base64解码
@@ -177,7 +176,7 @@ class ImageUtil {
 
                 file = file.replace("\r|\n", "")
                 file = file.trim()
-                return decoder.decode(file)
+                return Base64.decodeBase64(file)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
                 return null

@@ -23,6 +23,7 @@ repositories {
 }
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("commons-codec:commons-codec:1.15")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.jsoup:jsoup:1.14.3")
 
