@@ -70,8 +70,11 @@ object Pixiv : KotlinPlugin(
                 )
             }
 
-            val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]?[\\S]*[ ]?(r18)?\$")
+            val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }
+
+            val setuTag: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]{1}[\\S]*[ ]?(r18)?\$")
+            content { setuTag.matcher(message.contentToString()).find() } reply { SexyCenter.yandeTagSearch(this) }
 
             //测试成功
             val tag: Pattern = Pattern.compile("(?i)^(${Setting.command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
@@ -90,6 +93,7 @@ object Pixiv : KotlinPlugin(
             content { "切换涩图开关".contentEquals(message.contentToString()) } quoteReply { Helper.setuEnable(this) }
             content { "切换缓存开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableLocal(this) }
             content { "切换转发开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableForward(this) }
+            content { "切换图片转发开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableForward(this) }
 
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")

@@ -90,7 +90,7 @@ object Tag {
 
                     val sanityLevel = illusts[i].jsonObject["sanity_level"]?.jsonPrimitive?.content?.toInt()
                     message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
-                    if (Setting.command.rankAndTagAndUserByForward) {
+                    if (Setting.config.rankAndTagAndUserByForward) {
                         var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
@@ -140,7 +140,7 @@ object Tag {
                     }
                 }
             }
-            if (Setting.command.rankAndTagAndUserByForward) {
+            if (Setting.config.rankAndTagAndUserByForward) {
                 val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
                     override fun generateTitle(forward: RawForwardMessage): String {
                         return "Tag排行榜"

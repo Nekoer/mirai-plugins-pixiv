@@ -11,8 +11,6 @@ data class Command(
     var picToSearch: String = "ptst-",
     @SerialName("showRank")
     var showRank: String = "rank-",
-    @SerialName("rankAndTagAndUserByForward")
-    var rankAndTagAndUserByForward:Boolean = false,
     @SerialName("findUserWorksById")
     var findUserWorksById: String = "user-",
     @SerialName("searchInfoByPic")

@@ -1,9 +1,7 @@
 package com.hcyacg.details
 
 import com.hcyacg.entity.PixivImageDetail
-import com.hcyacg.entity.YandexImage
 import com.hcyacg.initial.Setting
-import com.hcyacg.search.Yandex
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
@@ -13,6 +11,7 @@ import com.madgag.gif.fmsware.AnimatedGifEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -141,6 +140,81 @@ object PicDetails {
         /**
          * 通过张数判断读取哪个json数据
          */
+
+        if (Setting.config.imageToForward && page.toInt() == 1){
+            val nodes = mutableListOf<ForwardMessage.Node>()
+            nodes.add(
+                ForwardMessage.Node(
+                    senderId = event.bot.id,
+                    senderName = event.bot.nameCardOrNick,
+                    time = System.currentTimeMillis().toInt(),
+                    message = PlainText("ID: $picId").plus("\n")
+                        .plus("标题: $title").plus("\n")
+                        .plus("画师: $author").plus("\n")
+                        .plus("画师ID: $authorId")
+                )
+            )
+            if (null != detail.metaPages){
+                detail.metaPages.forEach {
+                    val toExternalResource =
+                        ImageUtil.getImage(it.imageUrls?.original!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+                    val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+                    nodes.add(
+                        ForwardMessage.Node(
+                            senderId = event.bot.id,
+                            senderName = event.bot.nameCardOrNick,
+                            time = System.currentTimeMillis().toInt(),
+                            message = Image(imageId)
+                        )
+                    )
+
+                    withContext(Dispatchers.IO) {
+                        toExternalResource.close()
+                    }
+                }
+            }
+
+            if (null != detail.metaSinglePage && detail.metaSinglePage.originalImageUrl?.isNotBlank() == true){
+
+                val toExternalResource =
+                    ImageUtil.getImage(detail.metaSinglePage.originalImageUrl.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+                val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = Image(imageId)
+                    )
+                )
+
+                withContext(Dispatchers.IO) {
+                    toExternalResource.close()
+                }
+            }
+
+
+            val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
+                override fun generateTitle(forward: RawForwardMessage): String {
+                    return "$title"
+                }
+
+                override fun generateSummary(forward: RawForwardMessage): String {
+                    return "查看${pageCount}张图片"
+                }
+            })
+            /**
+             * 判断是否配置了撤回时间
+             */
+
+            if (sanityLevel == 6 && StringUtils.isNotBlank(Setting.config.recall.toString()) && Setting.config.recall != 0L) {
+                event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+            } else {
+                event.subject.sendMessage(forward)
+            }
+            return
+        }
+
         large = if (pageCount > 1) {
             detail.metaPages!![page.toInt() - 1].imageUrls!!.original
         } else {

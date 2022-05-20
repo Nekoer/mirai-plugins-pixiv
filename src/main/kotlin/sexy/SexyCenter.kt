@@ -48,12 +48,6 @@ object SexyCenter {
         }
 
 
-        val keys = event.message.content.split(" ")
-        if (keys.size >= 2) {
-            yandeTagSearch(event, keys[1], keys.equals("r18"))
-            return
-        }
-
         val list = mutableListOf<String>()
         if (Setting.config.setuEnable.pixiv) {
             list.add("pixiv")
@@ -107,11 +101,19 @@ object SexyCenter {
 
     }
 
-    private suspend fun yandeTagSearch(event: GroupMessageEvent, tag: String, isR18: Boolean) {
+    suspend fun yandeTagSearch(event: GroupMessageEvent) {
         try {
             if (!Setting.config.setuEnable.yande) {
                 return
             }
+
+            val keys = event.message.content.split(" ")
+            var tag = ""
+
+            if (keys.size >= 2) {
+                tag = keys[1]
+            }
+
             val obj = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://yande.re/post.json?limit=500&tags=${tag}",
@@ -147,7 +149,7 @@ object SexyCenter {
                 event.subject.sendMessage("内容为空")
             }
 
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             logger.warning("连接至yande出现异常，请检查网络")
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
@@ -246,7 +248,7 @@ object SexyCenter {
             )
 
             val lolicon = data?.let { Json.decodeFromJsonElement<Lolicon>(it) }
-            if (null == lolicon){
+            if (null == lolicon) {
                 event.subject.sendMessage(message.plus("Lolicon数据为空"))
                 return
             }
@@ -272,7 +274,8 @@ object SexyCenter {
             }
 
             if (Setting.config.recall != 0L) {
-                event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})")).recallIn(Setting.config.recall)
+                event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
+                    .recallIn(Setting.config.recall)
             } else {
                 event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
             }
@@ -388,7 +391,7 @@ object SexyCenter {
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
-        }  catch (e: IOException) {
+        } catch (e: IOException) {
             logger.warning("连接至pixiv出现异常，请检查网络")
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
@@ -448,7 +451,7 @@ object SexyCenter {
                 event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
             }
 
-        }  catch (e: IOException) {
+        } catch (e: IOException) {
             logger.warning("连接至本地图库出现异常,请检查本地图库是否已经设置")
             event.subject.sendMessage("本地图库出现异常")
         } catch (e: Exception) {

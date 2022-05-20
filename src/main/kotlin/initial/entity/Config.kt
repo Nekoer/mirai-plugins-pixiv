@@ -9,6 +9,10 @@ import java.io.File
 data class Config(
     @SerialName("setuEnable")
     var setuEnable: Enable = Enable(),
+    @SerialName("rankAndTagAndUserByForward")
+    var rankAndTagAndUserByForward:Boolean = false,
+    @SerialName("imageToForward")
+    var imageToForward:Boolean = false,
     @SerialName("token")
     var token: Token = Token(),
     @SerialName("proxy")

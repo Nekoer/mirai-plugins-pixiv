@@ -32,7 +32,8 @@ object Helper {
             .plus("图片是否开启缓存:${Setting.config.cache.enable}").plus("\n")
             .plus("缓存路径是否设置:${Setting.config.cache.directory.isNotBlank()}").plus("\n")
             .plus("本地图库是否设置:${Setting.config.localImagePath.isNotBlank()}").plus("\n")
-            .plus("转发消息是否开启:${Setting.command.rankAndTagAndUserByForward}").plus("\n")
+            .plus("转发消息是否开启:${Setting.config.rankAndTagAndUserByForward}").plus("\n")
+            .plus("图片转发是否开启:${Setting.config.imageToForward}").plus("\n")
             .plus("===============").plus("\n")
             .plus("本群权限").plus("\n")
             .plus(" ·涩图:${Setting.groups.indexOf(event.group.id.toString()) > -1}").plus("\n")
@@ -123,12 +124,12 @@ object Helper {
             return
         }
 
-        Setting.command.rankAndTagAndUserByForward = !Setting.command.rankAndTagAndUserByForward
+        Setting.config.rankAndTagAndUserByForward = !Setting.config.rankAndTagAndUserByForward
         Setting.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "转发消息${
-                    if (Setting.command.rankAndTagAndUserByForward) {
+                    if (Setting.config.rankAndTagAndUserByForward) {
                         "开启"
                     } else {
                         "关闭"
@@ -139,6 +140,30 @@ object Helper {
 
     }
 
+    /**
+     * 图片转发消息开关
+     */
+    suspend fun enableImageToForward(event: GroupMessageEvent) {
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        Setting.config.imageToForward = !Setting.config.imageToForward
+        Setting.save()
+        event.subject.sendMessage(
+            At(event.sender).plus("\n").plus(
+                "图片转发消息${
+                    if (Setting.config.imageToForward) {
+                        "开启"
+                    } else {
+                        "关闭"
+                    }
+                }"
+            )
+        )
+
+    }
     /**
      * 根据状态来设置涩图库开关
      */
