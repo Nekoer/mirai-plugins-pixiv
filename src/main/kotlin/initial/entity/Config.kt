@@ -1,6 +1,7 @@
 package com.hcyacg.initial.entity
 import com.hcyacg.anno.NoArgOpenDataClass
 import kotlinx.serialization.*
+import net.mamoe.mirai.console.data.ValueDescription
 import java.io.File
 
 @NoArgOpenDataClass
@@ -19,7 +20,9 @@ data class Config(
     @SerialName("cache")
     var cache: Cache = Cache(),
     @SerialName("localImagePath")
-    val localImagePath:String = System.getProperty("user.dir") + File.separator + "image"
+    val localImagePath:String = System.getProperty("user.dir") + File.separator + "image",
+    @SerialName("googleUrl")
+    val googleUrl:String = "https://www.google.com.hk"
 )
 
 @NoArgOpenDataClass
