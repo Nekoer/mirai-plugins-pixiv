@@ -23,6 +23,7 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
+import javax.net.ssl.SSLHandshakeException
 
 object LoliconCenter {
     private val requestBody: RequestBody? = null
@@ -125,6 +126,9 @@ object LoliconCenter {
             }
         } catch (e: IOException) {
             logger.warning("连接至Lolicon出现异常，请检查网络")
+            event.subject.sendMessage(message.plus("网络异常"))
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: HttpStatusException) {
             logger.warning("连接至Lolicon的网络超时，请检查网络")

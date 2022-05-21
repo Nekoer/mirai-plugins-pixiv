@@ -71,13 +71,14 @@ object Tag {
                 return
             }
             val nodes = mutableListOf<ForwardMessage.Node>()
+            var isR18 = false
             for (i in (num - 10) until num) {
                 if (illusts.size > i) {
                     val id = illusts[i].jsonObject["id"]?.jsonPrimitive?.content
                     val title = illusts[i].jsonObject["title"]?.jsonPrimitive?.content
 
                     val user = illusts[i].jsonObject["user"]?.jsonObject?.get("name")?.jsonPrimitive?.content
-
+                    val pageCount = illusts[i].jsonObject["page_count"]?.jsonPrimitive?.content
 //                    val large =
 //                        illusts[i].jsonObject["image_urls"]?.jsonObject?.get("large")?.jsonPrimitive?.content
 
@@ -89,9 +90,13 @@ object Tag {
                     val type = illusts[i].jsonObject["type"]?.jsonPrimitive?.content
 
                     val sanityLevel = illusts[i].jsonObject["sanity_level"]?.jsonPrimitive?.content?.toInt()
+                    if (sanityLevel == 6 && !isR18){
+                        isR18 = true
+                    }
+
                     message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
                     if (Setting.config.rankAndTagAndUserByForward) {
-                        var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
+                        var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
                         if ("ugoira".contentEquals(type)) {
@@ -122,7 +127,7 @@ object Tag {
                             withContext(Dispatchers.IO) {
                                 toExternalResource.close()
                             }
-                            tempMessage = if (sanityLevel != 6 || enable) {
+                            tempMessage = if (sanityLevel == 6 && enable) {
                                 tempMessage.plus(Image(imageId))
                             } else {
                                 tempMessage.plus("无权限查看涩图")
@@ -150,7 +155,11 @@ object Tag {
                         return "查看${nodes.size}条图片"
                     }
                 })
-                event.subject.sendMessage(forward)
+                if (isR18 && Setting.config.recall != 0L){
+                    event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+                }else{
+                    event.subject.sendMessage(forward)
+                }
             } else {
                 event.subject.sendMessage(message)
             }

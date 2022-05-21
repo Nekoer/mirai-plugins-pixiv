@@ -3,7 +3,9 @@ package com.hcyacg.science
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -96,7 +98,9 @@ object Style2paints {
                 delay(1000)
                 val image = file.toExternalResource()
                 val imageId: String = image.uploadAsImage(event.group).imageId
-                image.close()
+                withContext(Dispatchers.IO) {
+                    image.close()
+                }
                 event.subject.sendMessage(Image(imageId))
                 break
             }

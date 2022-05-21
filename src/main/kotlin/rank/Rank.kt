@@ -13,6 +13,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.message.data.MessageSource.Key.recallIn
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
@@ -118,13 +119,14 @@ object Rank {
             val illusts = data.jsonObject["illusts"]?.jsonArray
 
             val nodes = mutableListOf<ForwardMessage.Node>()
-
+            var isR18 = false
 
             for (i in (num - 10) until num) {
                 val id = illusts?.get(i)?.jsonObject?.get("id")?.jsonPrimitive?.content
                 val title = illusts?.get(i)?.jsonObject?.getValue("title")?.jsonPrimitive?.content
 
                 val user = illusts?.get(i)?.jsonObject?.get("user")?.jsonObject?.get("name")?.jsonPrimitive?.content
+
 
 //                val large =
 //                    illusts?.get(i)?.jsonObject?.get("image_urls")?.jsonObject?.get("large")?.jsonPrimitive?.content
@@ -136,12 +138,15 @@ object Rank {
                 }
 
                 val type = illusts?.get(i)?.jsonObject?.get("type")?.jsonPrimitive?.content
-
+                val pageCount = illusts?.get(i)?.jsonObject?.get("page_count")?.jsonPrimitive?.content
                 val sanityLevel = illusts?.get(i)?.jsonObject?.get("sanity_level")?.jsonPrimitive?.content?.toInt()
+                if (sanityLevel == 6 && !isR18){
+                    isR18 = true
+                }
                 message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
 
                 if (Setting.config.rankAndTagAndUserByForward) {
-                    var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
+                    var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
                     if ("ugoira".contentEquals(type)) {
@@ -155,7 +160,7 @@ object Rank {
                              * 判断是否配置了撤回时间
                              */
 
-                            tempMessage = if (sanityLevel != 6 || enable) {
+                            tempMessage = if (sanityLevel == 6 && enable) {
                                 tempMessage.plus(Image(imageId))
                             } else {
                                 tempMessage.plus("无权限查看涩图")
@@ -201,7 +206,12 @@ object Rank {
                         return "查看${nodes.size}条图片"
                     }
                 })
-                event.subject.sendMessage(forward)
+                if (isR18 && Setting.config.recall != 0L){
+                    event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+                }else{
+                    event.subject.sendMessage(forward)
+                }
+
             } else {
                 event.subject.sendMessage(message)
             }

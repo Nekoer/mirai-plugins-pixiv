@@ -29,6 +29,7 @@ import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.net.ssl.SSLHandshakeException
 
 /**
  * @Author: Nekoer
@@ -152,6 +153,9 @@ object SexyCenter {
         } catch (e: IOException) {
             logger.warning("连接至yande出现异常，请检查网络")
             event.subject.sendMessage("网络异常")
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至Yande的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
             logger.warning("连接至yande的网络超时，请检查网络")
             event.subject.sendMessage("网络异常")
@@ -213,6 +217,9 @@ object SexyCenter {
             }
         } catch (e: IOException) {
             logger.warning("连接至yande出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至yande的网络超时，请检查网络")
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
             logger.warning("连接至yande的网络超时，请检查网络")
@@ -283,6 +290,9 @@ object SexyCenter {
         } catch (e: IOException) {
             logger.warning("连接至Lolicon出现异常，请检查网络")
             event.subject.sendMessage("网络异常")
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
             logger.warning("连接至Lolicon的网络超时，请检查网络")
             event.subject.sendMessage("网络异常")
@@ -339,6 +349,9 @@ object SexyCenter {
         } catch (e: IOException) {
             logger.warning("连接至konachan出现异常，请检查网络")
             event.subject.sendMessage("网络异常")
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至konachan的网络超时，请检查网络")
+            event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
             logger.warning("连接至konachan的网络超时，请检查网络")
             event.subject.sendMessage("网络异常")
@@ -393,6 +406,9 @@ object SexyCenter {
             }
         } catch (e: IOException) {
             logger.warning("连接至pixiv出现异常，请检查网络")
+            event.subject.sendMessage("网络异常")
+        } catch (e: SSLHandshakeException) {
+            logger.warning("连接至pixiv的网络超时，请检查网络")
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
             logger.warning("连接至pixiv的网络超时，请检查网络")

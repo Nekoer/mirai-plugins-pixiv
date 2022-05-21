@@ -20,6 +20,7 @@ object Helper {
             .plus(" ·查看作者 ${Setting.command.findUserWorksById}作者id").plus("\n")
             .plus(" ·查找番剧 ${Setting.command.searchInfoByPic}番剧截图").plus("\n")
             .plus(" ·看涩图 ${Setting.command.setu}").plus("\n")
+            .plus(" ·看涩图 +tag ${Setting.command.setu} loli").plus("\n")
             .plus(" ·看萝莉 ${Setting.command.lolicon} 查询条件 r18,查询条件最多三个,例：少女|黑丝|猫耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
             .plus(" ·通过tag查找排行榜 ${Setting.command.tag}关键词-页码").plus("\n")
             .plus("===============").plus("\n")
@@ -43,6 +44,7 @@ object Helper {
             .plus(" ·切换缓存开关").plus("\n")
             .plus(" ·切换涩图开关").plus("\n")
             .plus(" ·切换转发开关").plus("\n")
+            .plus(" ·切换图片转发开关").plus("\n")
             .plus(" ·(开启|关闭)(pixiv|yande|lolicon|local|konachan) 例: 开启pixiv").plus("\n")
         event.subject.sendMessage(message)
     }
