@@ -24,13 +24,17 @@ command:
   searchInfoByPic: 'ptsf-' #以图搜番
   setu: setu
   tag: 'tag-' #搜标签 tag-xxx-页码
+  help: 帮助
 config: 
   setuEnable: 
-    pixiv: true
-    yande: true
-    konachan: true
-    lolicon: true
+    pixiv: true #不需要翻墙
+    yande: true #需要翻墙
+    konachan: true #需要翻墙
+    lolicon: true #不需要翻墙
     localImage: true #本地图库
+  forward: 
+    rankAndTagAndUserByForward: false #排行榜转发模式
+    imageToForward: false #图片详情转发模式
   token: 
     acgmx: # https://www.acgmx.com/account申请
     saucenao:  #saucenao.com注册账号后能看到api_key
@@ -43,6 +47,9 @@ config:
     enable: false                    #缓存开关
     directory: 'Mirai根目录\image'    #图片缓存路径
   localImagePath: 'Mirai根目录\image' #本地图库路径 默认和缓存路径一致
+  google: 
+    googleUrl: 'https://www.google.com.hk' #Google镜像源
+    resultNum: 6 #显示的结果数量
 ```
 ## 鸣谢
 
