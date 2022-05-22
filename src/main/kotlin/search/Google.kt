@@ -72,7 +72,7 @@ object Google {
             var num = 0
             doc.select("#search").select(".g").forEach {
 
-                if (num < Setting.config.googleConfig.resultNum){
+                if (num < Setting.config.googleConfig.resultNum - 1){
                     var message: Message = At(event.sender).plus("\n")
                     val title = it.selectFirst("h3")?.html()
                     val url = it.selectFirst("a")?.attr("href")
