@@ -141,7 +141,7 @@ object PicDetails {
          * 通过张数判断读取哪个json数据
          */
 
-        if (Setting.config.imageToForward && page.toInt() == 1){
+        if (Setting.config.forward.imageToForward && page.toInt() == 1){
             val nodes = mutableListOf<ForwardMessage.Node>()
             nodes.add(
                 ForwardMessage.Node(

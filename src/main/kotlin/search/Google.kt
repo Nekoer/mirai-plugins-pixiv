@@ -34,7 +34,7 @@ object Google {
         try{
             val host = Setting.config.proxy.host
             val port = Setting.config.proxy.port
-            val uri = "${Setting.config.googleUrl}/searchbyimage?image_url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0&hl=zh-CN"
+            val uri = "${Setting.config.googleConfig.googleUrl}/searchbyimage?image_url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0&hl=zh-CN"
 
             val response: Response = if (host.isBlank() || port == -1) {
                 client.build().newCall(Request.Builder().url(uri).headers(headers.build()).get().build()).execute()
@@ -49,9 +49,9 @@ object Google {
 
 
             val doc: Document = if (host.isBlank() || port == -1){
-                Jsoup.connect("${Setting.config.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").timeout(60000).get()
+                Jsoup.connect("${Setting.config.googleConfig.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").timeout(60000).get()
             }else{
-                Jsoup.connect("${Setting.config.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").proxy(host,port).timeout(60000).get()
+                Jsoup.connect("${Setting.config.googleConfig.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").proxy(host,port).timeout(60000).get()
             }
 
             val pattern = Pattern.compile("<script.*?>.*?(data:image.*?)['|\\\"];.*?</script>")
@@ -72,7 +72,7 @@ object Google {
             var num = 0
             doc.select("#search").select(".g").forEach {
 
-                if (num < 6){
+                if (num < Setting.config.googleConfig.resultNum){
                     var message: Message = At(event.sender).plus("\n")
                     val title = it.selectFirst("h3")?.html()
                     val url = it.selectFirst("a")?.attr("href")

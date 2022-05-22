@@ -95,7 +95,7 @@ object Tag {
                     }
 
                     message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
-                    if (Setting.config.rankAndTagAndUserByForward) {
+                    if (Setting.config.forward.rankAndTagAndUserByForward) {
                         var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
@@ -145,7 +145,7 @@ object Tag {
                     }
                 }
             }
-            if (Setting.config.rankAndTagAndUserByForward) {
+            if (Setting.config.forward.rankAndTagAndUserByForward) {
                 val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
                     override fun generateTitle(forward: RawForwardMessage): String {
                         return "Tag排行榜"

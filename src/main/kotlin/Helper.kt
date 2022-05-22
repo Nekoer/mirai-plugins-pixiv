@@ -33,8 +33,8 @@ object Helper {
             .plus("图片是否开启缓存:${Setting.config.cache.enable}").plus("\n")
             .plus("缓存路径是否设置:${Setting.config.cache.directory.isNotBlank()}").plus("\n")
             .plus("本地图库是否设置:${Setting.config.localImagePath.isNotBlank()}").plus("\n")
-            .plus("转发消息是否开启:${Setting.config.rankAndTagAndUserByForward}").plus("\n")
-            .plus("图片转发是否开启:${Setting.config.imageToForward}").plus("\n")
+            .plus("转发消息是否开启:${Setting.config.forward.rankAndTagAndUserByForward}").plus("\n")
+            .plus("图片转发是否开启:${Setting.config.forward.imageToForward}").plus("\n")
             .plus("===============").plus("\n")
             .plus("本群权限").plus("\n")
             .plus(" ·涩图:${Setting.groups.indexOf(event.group.id.toString()) > -1}").plus("\n")
@@ -126,12 +126,12 @@ object Helper {
             return
         }
 
-        Setting.config.rankAndTagAndUserByForward = !Setting.config.rankAndTagAndUserByForward
+        Setting.config.forward.rankAndTagAndUserByForward = !Setting.config.forward.rankAndTagAndUserByForward
         Setting.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "转发消息${
-                    if (Setting.config.rankAndTagAndUserByForward) {
+                    if (Setting.config.forward.rankAndTagAndUserByForward) {
                         "开启"
                     } else {
                         "关闭"
@@ -151,12 +151,12 @@ object Helper {
             return
         }
 
-        Setting.config.imageToForward = !Setting.config.imageToForward
+        Setting.config.forward.imageToForward = !Setting.config.forward.imageToForward
         Setting.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "图片转发消息${
-                    if (Setting.config.imageToForward) {
+                    if (Setting.config.forward.imageToForward) {
                         "开启"
                     } else {
                         "关闭"

@@ -9,10 +9,8 @@ import java.io.File
 data class Config(
     @SerialName("setuEnable")
     var setuEnable: Enable = Enable(),
-    @SerialName("rankAndTagAndUserByForward")
-    var rankAndTagAndUserByForward:Boolean = false,
-    @SerialName("imageToForward")
-    var imageToForward:Boolean = false,
+    @SerialName("forward")
+    val forward: ForWard = ForWard(),
     @SerialName("token")
     var token: Token = Token(),
     @SerialName("proxy")
@@ -25,8 +23,8 @@ data class Config(
     var cache: Cache = Cache(),
     @SerialName("localImagePath")
     val localImagePath:String = System.getProperty("user.dir") + File.separator + "image",
-    @SerialName("googleUrl")
-    val googleUrl:String = "https://www.google.com.hk"
+    @SerialName("google")
+    val googleConfig: GoogleConfig = GoogleConfig()
 )
 
 @NoArgOpenDataClass
