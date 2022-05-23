@@ -110,7 +110,7 @@ object Tag {
                                  * 判断是否配置了撤回时间
                                  */
 
-                                tempMessage = if (sanityLevel != 6 || enable) {
+                                tempMessage = if (sanityLevel != 6 && enable) {
                                     tempMessage.plus(Image(imageId))
                                 } else {
                                     tempMessage.plus("无权限查看涩图")
@@ -127,7 +127,7 @@ object Tag {
                             withContext(Dispatchers.IO) {
                                 toExternalResource.close()
                             }
-                            tempMessage = if (sanityLevel == 6 && enable) {
+                            tempMessage = if (sanityLevel == 6 || enable) {
                                 tempMessage.plus(Image(imageId))
                             } else {
                                 tempMessage.plus("无权限查看涩图")

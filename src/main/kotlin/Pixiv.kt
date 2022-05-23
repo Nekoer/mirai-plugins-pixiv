@@ -24,7 +24,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.1",
+        version = "1.7.1-fix",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -74,7 +74,7 @@ object Pixiv : KotlinPlugin(
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }
 
             val setuTag: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]{1}[\\S]*[ ]?(r18)?\$")
-            content { setuTag.matcher(message.contentToString()).find() } reply { SexyCenter.yandeTagSearch(this) }
+            content { setuTag.matcher(message.contentToString()).find()} reply { SexyCenter.yandeTagSearch(this) }
 
             //测试成功
             val tag: Pattern = Pattern.compile("(?i)^(${Setting.command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")

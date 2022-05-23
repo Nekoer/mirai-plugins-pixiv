@@ -124,7 +124,7 @@ object Google {
     }
 
     private fun getParamByUrl(url: String?, name: String): String? {
-        url?.replace("https://www.google.com.hk/search?", "")?.split("&")?.forEach {
+        url?.replace("${Setting.config.googleConfig.googleUrl}/search?", "")?.split("&")?.forEach {
             val data = it.split("=")
             if (data[0].contentEquals(name)) {
                 return data[1]
