@@ -14,7 +14,7 @@ object Helper {
 
     suspend fun load(event: GroupMessageEvent) {
         val message = At(event.sender).plus("\n")
-            .plus(" ·查看排行榜 ${Setting.command.showRank}day|week|month-页码").plus("\n")
+            .plus(" ·查看排行榜 ${Setting.command.showRank}daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g-页码").plus("\n")
             .plus(" ·查看图片详情 ${Setting.command.getDetailOfId}pixivId").plus("\n")
             .plus(" ·查找图片 ${Setting.command.picToSearch}你要找的图片").plus("\n")
             .plus(" ·查看作者 ${Setting.command.findUserWorksById}作者id").plus("\n")

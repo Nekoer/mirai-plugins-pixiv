@@ -41,6 +41,9 @@ object Pixiv : KotlinPlugin(
         Github.reload()
         AutoUpdate.load()
 
+
+
+
         globalEventChannel().subscribeGroupMessages {
             //测试成功
             val getDetailOfId: Pattern =
@@ -53,7 +56,7 @@ object Pixiv : KotlinPlugin(
 
             //测试成功
             val rank: Pattern =
-                Pattern.compile("(?i)^(${Setting.command.showRank})(day|week|month|setu)-([0-9]*[1-9][0-9]*)\$")
+                Pattern.compile("(?i)^(${Setting.command.showRank})(daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g)-([0-9]*[1-9][0-9]*)\$")
             content { rank.matcher(message.contentToString()).find() } quoteReply { Rank.showRank(this) }
 
             //测试成功
@@ -69,6 +72,8 @@ object Pixiv : KotlinPlugin(
                     this
                 )
             }
+
+            content { message.contentToString().contains("检测") } reply { Nsfw.load(this)}
 
             val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }

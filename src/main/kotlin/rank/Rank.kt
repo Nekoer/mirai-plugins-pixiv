@@ -72,38 +72,54 @@ object Rank {
             }
             /**
              * 判断是否为已有参数
+             * daily	每日
+             * weekly	每周
+             * monthly	每月
+             * rookie	新画师
+             * original	原创
+             * male	男性向
+             * female	女性向
+             * daily_r18	每日工口
+             * weekly_r18	每周工口
+             * male_r18	男性工口
+             * female_r18	女性腐向
+             * r18g	工口加强型（猎奇）
              */
-            if (!mode.contains("day") && !mode.contains("week") && !mode.contains("month") && !mode.contains("setu")) {
-                event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[day|week|month|setu]-页码")
+            val modeList = mutableListOf(
+                "daily",
+                "weekly",
+                "monthly",
+                "rookie",
+                "original",
+                "male",
+                "female",
+                "daily_r18",
+                "weekly_r18",
+                "male_r18",
+                "female_r18",
+                "r18g"
+            )
+
+            if (!modeList.contains(mode)) {
+                event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[$modeList]-页码")
                 return
             }
 
             /**
              * 进行数据分发请求
              */
-            if (mode.contains("day")) {
-                data = TotalProcessing().dealWith("illust", "daily", page, perPage, date)
-            }
 
-            if (mode.contains("week")) {
-                data = TotalProcessing().dealWith("illust", "weekly", page, perPage, date)
-            }
-
-            if (mode.contains("month")) {
-                data = TotalProcessing().dealWith("illust", "monthly", page, perPage, date)
-            }
-
-            if (mode.contains("setu")) {
+            val r18List = mutableListOf("daily_r18", "weekly_r18", "male_r18", "female_r18", "r18g")
+            if (r18List.contains(mode)) {
                 /**
                  * 判断该群是否有权查看涩图
                  */
-                if (Setting.groups.indexOf(event.group.id.toString()) >= 0) {
-                    data = TotalProcessing().dealWith("illust", "daily_r18", page, perPage, date)
-                } else {
+                if (Setting.groups.indexOf(event.group.id.toString()) < 0) {
                     event.subject.sendMessage("该群暂时无权限查看涩图排行榜")
                     return
                 }
             }
+            data = TotalProcessing().dealWith("illust", mode, page, perPage, date)
 
 
             /**
@@ -131,22 +147,27 @@ object Rank {
 //                val large =
 //                    illusts?.get(i)?.jsonObject?.get("image_urls")?.jsonObject?.get("large")?.jsonPrimitive?.content
 
-                val large = if (null != illusts?.get(i)?.jsonObject?.get("meta_single_page")?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content){
-                    illusts[i].jsonObject["meta_single_page"]?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content
-                }else{
-                    illusts?.get(i)?.jsonObject?.get("meta_pages")?.jsonArray?.get(0)?.jsonObject?.get("image_urls")?.jsonObject?.get("original")?.jsonPrimitive?.content
-                }
+                val large =
+                    if (null != illusts?.get(i)?.jsonObject?.get("meta_single_page")?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content) {
+                        illusts[i].jsonObject["meta_single_page"]?.jsonObject?.get("original_image_url")?.jsonPrimitive?.content
+                    } else {
+                        illusts?.get(i)?.jsonObject?.get("meta_pages")?.jsonArray?.get(0)?.jsonObject?.get("image_urls")?.jsonObject?.get(
+                            "original"
+                        )?.jsonPrimitive?.content
+                    }
 
                 val type = illusts?.get(i)?.jsonObject?.get("type")?.jsonPrimitive?.content
                 val pageCount = illusts?.get(i)?.jsonObject?.get("page_count")?.jsonPrimitive?.content
                 val sanityLevel = illusts?.get(i)?.jsonObject?.get("sanity_level")?.jsonPrimitive?.content?.toInt()
-                if (sanityLevel == 6 && !isR18){
+                if (sanityLevel == 6 && !isR18) {
                     isR18 = true
                 }
                 message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
 
                 if (Setting.config.forward.rankAndTagAndUserByForward) {
-                    var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张").plus("\n")
+                    var tempMessage =
+                        PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张")
+                            .plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
                     if ("ugoira".contentEquals(type)) {
@@ -206,9 +227,9 @@ object Rank {
                         return "查看${nodes.size}条图片"
                     }
                 })
-                if (isR18 && Setting.config.recall != 0L){
+                if (isR18 && Setting.config.recall != 0L) {
                     event.subject.sendMessage(forward).recallIn(Setting.config.recall)
-                }else{
+                } else {
                     event.subject.sendMessage(forward)
                 }
 

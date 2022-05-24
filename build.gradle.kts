@@ -27,6 +27,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.jsoup:jsoup:1.14.3")
 
+
     implementation("com.madgag:animated-gif-lib:1.4")
     compileOnly("org.bytedeco:javacv-platform:1.5.7")
 //    compileOnly
@@ -55,7 +56,7 @@ mavenCentralPublish {
     artifactId = "pixiv"
     groupId = "com.hcyacg"
     projectName = "mirai plugins pixiv"
-    workingDir = rootProject.buildDir.resolve("pub").apply { mkdirs() }
+//    workingDir = rootProject.buildDir.resolve("pub").apply { mkdirs() }
 
     // description from project.description by default
     githubProject("Nekoer", "mirai-plugins-pixiv")
