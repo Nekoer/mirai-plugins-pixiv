@@ -8,5 +8,4 @@ import kotlinx.serialization.json.Json
  */
 object Config {
     private val json = Json
-
 }
