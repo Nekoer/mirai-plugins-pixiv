@@ -16,6 +16,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.InputStream
 import java.math.RoundingMode
@@ -44,7 +45,6 @@ object Nsfw {
         jsonTemp.jsonObject.forEach { t, u ->
             tag[t]=u.jsonPrimitive.content
         }
-
     }
 
     suspend fun load(event: GroupMessageEvent) {
@@ -92,7 +92,7 @@ object Nsfw {
             quoteReply = if (null != tag[t] && tag[t] != ""){
                 quoteReply.plus("${tag[t]}:$lv\n")
             }else{
-                quoteReply.plus("${translate(t.replace("rating:", " ").replace("_", " ").replace("-", " "))}:$lv\n")
+                quoteReply.plus("${t}:$lv\n")
             }
 
         }
@@ -110,7 +110,7 @@ object Nsfw {
                 quoteReply = if (null != tag[t] && tag[t] != ""){
                     quoteReply.plus("${tag[t]}:$lv\n")
                 }else{
-                    quoteReply.plus("${translate(t.replace("rating:", " ").replace("_", " ").replace("-", " "))}:$lv\n")
+                    quoteReply.plus("${t}:$lv\n")
                 }
             }
         }
@@ -126,7 +126,7 @@ object Nsfw {
                 quoteReply = if (null != tag[t] && tag[t] != ""){
                     quoteReply.plus("${tag[t]}:$lv\n")
                 }else{
-                    quoteReply.plus("${translate(t.replace("rating:", " ").replace("_", " ").replace("-", " "))}:$lv\n")
+                    quoteReply.plus("${t}:$lv\n")
                 }
             }
 
@@ -135,16 +135,33 @@ object Nsfw {
         event.subject.sendMessage(quoteReply)
     }
 
-    private fun translate(data: String): String {
-        return data
-//        return try {
+    private fun translate(data: MutableList<String>): JsonElement? {
+        return try {
 //            val url = "http://fanyi.youdao.com/translate?&doctype=json&type=EN2ZH_CN&i=$data"
 //            val temp = RequestUtil.request(RequestUtil.Companion.Method.GET, url, null, headers.build())
 //            temp!!.jsonObject["translateResult"]!!.jsonArray[0].jsonArray[0].jsonObject["tgt"]!!.jsonPrimitive.content
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            data
-//        }
+            val url = "http://api.interpreter.caiyunai.com/v1/translator"
+            val headers = Headers.Builder()
+            headers.add("content-type", "application/json")
+            headers.add("x-authorization","token 彩云小译Token")
+            var msg = "["
+            data.toTypedArray().forEach {
+                msg = msg.plus("\"${it.replace("_"," ").replace("-"," ")}\",")
+            }
+            msg = msg.substring(0,msg.length - 1).plus("]")
+            val body = "{\n" +
+                    "        \"source\": ${msg},\n" +
+                    "        \"trans_type\": \"en2zh\",\n" +
+                    "        \"request_id\": \"demo\",\n" +
+                    "        \"detect\": true\n" +
+                    "    }"
+            val temp = RequestUtil.request(RequestUtil.Companion.Method.POST, url, body.toRequestBody(), headers.build())
+            println(temp)
+            temp?.jsonObject?.get("target")?.jsonArray
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }
