@@ -18,7 +18,7 @@ object Setting : AutoSavePluginConfig("Setting") {
     @ValueName("command")
     @ValueDescription("触发命令")
     var command: Command by value()
-    @ValueName("com/hcyacg/configyacg/config")
+    @ValueName("config")
     @ValueDescription("各项配置")
     var config: Config by value()
 
