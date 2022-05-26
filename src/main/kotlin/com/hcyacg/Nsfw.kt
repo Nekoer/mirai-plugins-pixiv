@@ -1,18 +1,14 @@
 package com.hcyacg
 
-import com.hcyacg.initial.Setting
-import com.hcyacg.search.Google
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
-import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.QuoteReply
-import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -20,8 +16,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.InputStream
 import java.math.RoundingMode
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 

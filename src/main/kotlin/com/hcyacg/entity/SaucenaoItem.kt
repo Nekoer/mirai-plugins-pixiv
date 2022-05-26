@@ -1,18 +1,16 @@
-package entity
+package com.hcyacg.entity
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-
 
 @Serializable
 data class SaucenaoItem(
     @SerialName("header")
     val header: Header? = Header(),
     @SerialName("results")
-    val results: List<Result>? = listOf()
+    val results: List<SResult>? = listOf()
 )
 
 @Serializable
@@ -48,7 +46,7 @@ data class Header(
 )
 
 @Serializable
-data class Result(
+data class SResult(
     @SerialName("data")
     val `data`: Data,
     @SerialName("header")

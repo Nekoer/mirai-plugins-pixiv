@@ -2,6 +2,7 @@ package com.hcyacg.sexy
 
 import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Setting
+import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.rank.TotalProcessing
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -14,16 +15,14 @@ import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.message.data.content
+import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.jsoup.HttpStatusException
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
+import java.io.*
 import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -128,8 +127,35 @@ object SexyCenter {
                 val id = obj.jsonArray[num].jsonObject["id"]?.jsonPrimitive?.content
                 val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
 
-                val toExternalResource =
-                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray().toExternalResource()
+
+                val toExternalResource: ExternalResource
+                if (Setting.config.lowPoly){
+                    val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
+
+                    /**
+                     * 生成low poly风格的图片
+                     * @param inputStream  源图片
+                     * @param accuracy     精度值，越小精度越高
+                     * @param scale        缩放，源图片和目标图片的尺寸比例
+                     * @param fill         是否填充颜色，为false时只绘制线条
+                     * @param format       输出图片格式
+                     * @param antiAliasing 是否抗锯齿
+                     * @param pointCount   随机点的数量
+                     */
+                    toExternalResource = LowPoly.generate(
+                        ByteArrayInputStream(byte),
+                        200,
+                        1F,
+                        true,
+                        "png",
+                        false,
+                        200
+                    ).toByteArray().toExternalResource()
+                }else{
+                    toExternalResource = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
+                        .toExternalResource()
+                }
+
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -194,8 +220,35 @@ object SexyCenter {
                 val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
 
 
-                val toExternalResource =
-                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray().toExternalResource()
+                val toExternalResource: ExternalResource
+                if (Setting.config.lowPoly){
+                    val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
+
+                    /**
+                     * 生成low poly风格的图片
+                     * @param inputStream  源图片
+                     * @param accuracy     精度值，越小精度越高
+                     * @param scale        缩放，源图片和目标图片的尺寸比例
+                     * @param fill         是否填充颜色，为false时只绘制线条
+                     * @param format       输出图片格式
+                     * @param antiAliasing 是否抗锯齿
+                     * @param pointCount   随机点的数量
+                     */
+                    toExternalResource = LowPoly.generate(
+                        ByteArrayInputStream(byte),
+                        200,
+                        1F,
+                        true,
+                        "png",
+                        false,
+                        200
+                    ).toByteArray().toExternalResource()
+                }else{
+                    toExternalResource = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
+                        .toExternalResource()
+                }
+
+
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -271,10 +324,35 @@ object SexyCenter {
                 return
             }
 
+            val toExternalResource: ExternalResource
+            if (Setting.config.lowPoly){
+                val byte = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
 
-            val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
+                /**
+                 * 生成low poly风格的图片
+                 * @param inputStream  源图片
+                 * @param accuracy     精度值，越小精度越高
+                 * @param scale        缩放，源图片和目标图片的尺寸比例
+                 * @param fill         是否填充颜色，为false时只绘制线条
+                 * @param format       输出图片格式
+                 * @param antiAliasing 是否抗锯齿
+                 * @param pointCount   随机点的数量
+                 */
+                toExternalResource = LowPoly.generate(
+                    ByteArrayInputStream(byte),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
+            }else{
+                toExternalResource = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
                     .toExternalResource()
+            }
+
+
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -329,8 +407,37 @@ object SexyCenter {
 
                 val id = obj.jsonArray[num].jsonObject["id"]?.jsonPrimitive?.content
                 val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
-                val toExternalResource =
-                    ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray().toExternalResource()
+
+                val toExternalResource: ExternalResource
+                if (Setting.config.lowPoly){
+                    val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray()
+
+                    /**
+                     * 生成low poly风格的图片
+                     * @param inputStream  源图片
+                     * @param accuracy     精度值，越小精度越高
+                     * @param scale        缩放，源图片和目标图片的尺寸比例
+                     * @param fill         是否填充颜色，为false时只绘制线条
+                     * @param format       输出图片格式
+                     * @param antiAliasing 是否抗锯齿
+                     * @param pointCount   随机点的数量
+                     */
+                    toExternalResource = LowPoly.generate(
+                        ByteArrayInputStream(byte),
+                        200,
+                        1F,
+                        true,
+                        "png",
+                        false,
+                        200
+                    ).toByteArray().toExternalResource()
+                }else{
+                    toExternalResource = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray()
+                        .toExternalResource()
+                }
+
+
+
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
@@ -390,9 +497,36 @@ object SexyCenter {
             val id = tempData["id"]?.jsonPrimitive?.content
 
             val image = tempData["image_urls"]?.jsonObject?.get("large")?.jsonPrimitive?.content
-            val toExternalResource =
-                ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
+
+
+            val toExternalResource: ExternalResource
+            if (Setting.config.lowPoly){
+                val byte = ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
+
+                /**
+                 * 生成low poly风格的图片
+                 * @param inputStream  源图片
+                 * @param accuracy     精度值，越小精度越高
+                 * @param scale        缩放，源图片和目标图片的尺寸比例
+                 * @param fill         是否填充颜色，为false时只绘制线条
+                 * @param format       输出图片格式
+                 * @param antiAliasing 是否抗锯齿
+                 * @param pointCount   随机点的数量
+                 */
+                toExternalResource = LowPoly.generate(
+                    ByteArrayInputStream(byte),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
+            }else{
+                toExternalResource = ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
                     .toExternalResource()
+            }
+
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -454,8 +588,34 @@ object SexyCenter {
                 out.write(buffer, 0, len)
             }
 
-            val toExternalResource =
-                out.toByteArray().toExternalResource()
+
+            val toExternalResource: ExternalResource
+            if (Setting.config.lowPoly){
+
+                /**
+                 * 生成low poly风格的图片
+                 * @param inputStream  源图片
+                 * @param accuracy     精度值，越小精度越高
+                 * @param scale        缩放，源图片和目标图片的尺寸比例
+                 * @param fill         是否填充颜色，为false时只绘制线条
+                 * @param format       输出图片格式
+                 * @param antiAliasing 是否抗锯齿
+                 * @param pointCount   随机点的数量
+                 */
+                toExternalResource = LowPoly.generate(
+                    ByteArrayInputStream(out.toByteArray()),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
+            }else{
+                toExternalResource =
+                    out.toByteArray().toExternalResource()
+            }
+
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

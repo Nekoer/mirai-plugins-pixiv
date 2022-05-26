@@ -5,6 +5,7 @@ import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.lowpoly.LowPoly
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -13,12 +14,14 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.QuoteReply
+import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.jsoup.HttpStatusException
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketException
@@ -105,11 +108,37 @@ object LoliconCenter {
                 event.subject.sendMessage(message.plus("Lolicon数据为空"))
                 return
             }
+            val toExternalResource: ExternalResource
+            if (Setting.config.lowPoly){
+                val byte = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
 
-
-            val toExternalResource =
-                ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
+                /**
+                 * 生成low poly风格的图片
+                 * @param inputStream  源图片
+                 * @param accuracy     精度值，越小精度越高
+                 * @param scale        缩放，源图片和目标图片的尺寸比例
+                 * @param fill         是否填充颜色，为false时只绘制线条
+                 * @param format       输出图片格式
+                 * @param antiAliasing 是否抗锯齿
+                 * @param pointCount   随机点的数量
+                 */
+                toExternalResource = LowPoly.generate(
+                    ByteArrayInputStream(byte),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
+            }else{
+                toExternalResource = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
                     .toExternalResource()
+            }
+
+
+
+
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()

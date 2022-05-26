@@ -6,7 +6,7 @@ import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
 import com.hcyacg.utils.RequestUtil
-import entity.SaucenaoItem
+import com.hcyacg.entity.SaucenaoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
@@ -14,7 +14,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger

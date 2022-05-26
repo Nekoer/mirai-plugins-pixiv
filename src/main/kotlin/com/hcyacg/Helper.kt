@@ -21,7 +21,7 @@ object Helper {
             .plus(" ·查找番剧 ${Setting.command.searchInfoByPic}番剧截图").plus("\n")
             .plus(" ·看涩图 ${Setting.command.setu}").plus("\n")
             .plus(" ·看涩图 +tag ${Setting.command.setu} loli").plus("\n")
-            .plus(" ·看萝莉 ${Setting.command.lolicon} 查询条件 r18,查询条件最多三个,例：少女|黑丝|猫耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
+            .plus(" ·看萝莉 ${Setting.command.lolicon} 查询条件 r18,查询条件最多三个用&分割，|为或者,例：少女|姐姐&黑丝|白丝&猫耳|狗耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
             .plus(" ·通过tag查找排行榜 ${Setting.command.tag}关键词-页码").plus("\n")
             .plus("===============").plus("\n")
             .plus("涩图开关").plus("\n")
@@ -35,6 +35,7 @@ object Helper {
             .plus("本地图库是否设置:${Setting.config.localImagePath.isNotBlank()}").plus("\n")
             .plus("转发消息是否开启:${Setting.config.forward.rankAndTagAndUserByForward}").plus("\n")
             .plus("图片转发是否开启:${Setting.config.forward.imageToForward}").plus("\n")
+            .plus("涩图晶格化是否开启:${Setting.config.lowPoly}").plus("\n")
             .plus("===============").plus("\n")
             .plus("本群权限").plus("\n")
             .plus(" ·涩图:${Setting.groups.indexOf(event.group.id.toString()) > -1}").plus("\n")
@@ -45,6 +46,7 @@ object Helper {
             .plus(" ·切换涩图开关").plus("\n")
             .plus(" ·切换转发开关").plus("\n")
             .plus(" ·切换图片转发开关").plus("\n")
+            .plus(" ·切换晶格化开关").plus("\n")
             .plus(" ·(开启|关闭)(pixiv|yande|lolicon|local|konachan) 例: 开启pixiv").plus("\n")
         event.subject.sendMessage(message)
     }
@@ -166,6 +168,32 @@ object Helper {
         )
 
     }
+
+    /**
+     * 晶格化涩图开关
+     */
+    suspend fun enableLowPoly(event: GroupMessageEvent){
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        Setting.config.lowPoly = !Setting.config.lowPoly
+        Setting.save()
+        event.subject.sendMessage(
+            At(event.sender).plus("\n").plus(
+                "涩图晶格化${
+                    if (Setting.config.lowPoly) {
+                        "开启"
+                    } else {
+                        "关闭"
+                    }
+                }"
+            )
+        )
+    }
+
+
     /**
      * 根据状态来设置涩图库开关
      */

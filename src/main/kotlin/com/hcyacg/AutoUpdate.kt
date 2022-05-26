@@ -1,5 +1,6 @@
 package com.hcyacg
 
+import com.hcyacg.Pixiv
 import com.hcyacg.Pixiv.save
 import com.hcyacg.entity.GithubReleaseItem
 import com.hcyacg.initial.Github

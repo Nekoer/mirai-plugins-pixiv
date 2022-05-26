@@ -3,11 +3,8 @@ package com.hcyacg.utils
 import com.hcyacg.initial.Setting
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
 
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
-import okhttp3.internal.closeQuietly
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit

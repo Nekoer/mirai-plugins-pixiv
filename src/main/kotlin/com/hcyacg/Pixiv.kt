@@ -1,5 +1,8 @@
 package com.hcyacg
 
+import com.hcyacg.AutoUpdate
+import com.hcyacg.Helper
+import com.hcyacg.Nsfw
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
 import com.hcyacg.initial.Github
@@ -10,13 +13,10 @@ import com.hcyacg.search.SearchPicCenter
 import com.hcyacg.search.Trace
 import com.hcyacg.sexy.LoliconCenter
 import com.hcyacg.sexy.SexyCenter
-import net.mamoe.mirai.console.extension.PluginComponentStorage
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.events.BotLeaveEvent
-import net.mamoe.mirai.event.events.GroupAllowConfessTalkEvent
 import net.mamoe.mirai.event.globalEventChannel
-import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeGroupMessages
 import java.util.regex.Pattern
 
@@ -24,7 +24,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.1-fix",
+        version = "1.7.2",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -73,7 +73,7 @@ object Pixiv : KotlinPlugin(
                 )
             }
 
-            content { message.contentToString().contains("检测") } reply { Nsfw.load(this)}
+            content { message.contentToString().contains("检测") } reply { Nsfw.load(this) }
 
             val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }
@@ -98,7 +98,16 @@ object Pixiv : KotlinPlugin(
             content { "切换涩图开关".contentEquals(message.contentToString()) } quoteReply { Helper.setuEnable(this) }
             content { "切换缓存开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableLocal(this) }
             content { "切换转发开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableForward(this) }
-            content { "切换图片转发开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableForward(this) }
+            content { "切换图片转发开关".contentEquals(message.contentToString()) } quoteReply {
+                Helper.enableImageToForward(
+                    this
+                )
+            }
+            content { "切换晶格化开关".contentEquals(message.contentToString()) } quoteReply {
+                Helper.enableLowPoly(
+                    this
+                )
+            }
 
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")

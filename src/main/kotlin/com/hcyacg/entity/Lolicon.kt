@@ -7,13 +7,13 @@ import kotlinx.serialization.SerialName
 @Serializable
 data class Lolicon(
     @SerialName("data")
-    val `data`: List<Data>? = listOf(),
+    val `data`: List<LData>? = listOf(),
     @SerialName("error")
     val error: String? = ""
 )
 
 @Serializable
-data class Data(
+data class LData(
     @SerialName("author")
     val author: String? = "",
     @SerialName("ext")
