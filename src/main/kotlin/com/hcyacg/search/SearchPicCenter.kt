@@ -1,5 +1,6 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Setting
 import com.hcyacg.utils.DataUtil
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -20,68 +21,76 @@ object SearchPicCenter {
         val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
             .replace("-", "")
 
-        val picToHtmlSearch = Ascii2d.picToHtmlSearch(event, picUri)
-        //Ascii2d 搜索
-        picToHtmlSearch.forEach {
-            nodes.add(
-                ForwardMessage.Node(
-                    senderId = event.bot.id,
-                    senderName = event.bot.nameCardOrNick,
-                    time = System.currentTimeMillis().toInt(),
-                    message = it
+        if (Setting.config.enable.search.ascii2d) {
+            val picToHtmlSearch = Ascii2d.picToHtmlSearch(event, picUri)
+            //Ascii2d 搜索
+            picToHtmlSearch.forEach {
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = it
+                    )
                 )
-            )
+            }
         }
 
-        //Saucenao 搜索
-        val picToSearch = Saucenao.picToSearch(event, picUri)
-        picToSearch.forEach {
-            nodes.add(
-                ForwardMessage.Node(
-                    senderId = event.bot.id,
-                    senderName = event.bot.nameCardOrNick,
-                    time = System.currentTimeMillis().toInt(),
-                    message = it
+        if (Setting.config.enable.search.saucenao) {
+            //Saucenao 搜索
+            val picToSearch = Saucenao.picToSearch(event, picUri)
+            picToSearch.forEach {
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = it
+                    )
                 )
-            )
+            }
         }
 
-        //iqdb搜索
-        val iqdb = Iqdb.picToHtmlSearch(event, picUri)
-        iqdb.forEach {
-            nodes.add(
-                ForwardMessage.Node(
-                    senderId = event.bot.id,
-                    senderName = event.bot.nameCardOrNick,
-                    time = System.currentTimeMillis().toInt(),
-                    message = it
+        if (Setting.config.enable.search.iqdb) {
+            //iqdb搜索
+            val iqdb = Iqdb.picToHtmlSearch(event, picUri)
+            iqdb.forEach {
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = it
+                    )
                 )
-            )
+            }
         }
-
-        val yandex = Yandex.picToHtmlSearch(event,picUri)
-        yandex.forEach {
-            nodes.add(
-                ForwardMessage.Node(
-                    senderId = event.bot.id,
-                    senderName = event.bot.nameCardOrNick,
-                    time = System.currentTimeMillis().toInt(),
-                    message = it
+        if (Setting.config.enable.search.yandex) {
+            val yandex = Yandex.picToHtmlSearch(event, picUri)
+            yandex.forEach {
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = it
+                    )
                 )
-            )
+            }
         }
-
-        //谷歌搜图
-        val google = Google.load(event,picUri)
-        google.forEach {
-            nodes.add(
-                ForwardMessage.Node(
-                    senderId = event.bot.id,
-                    senderName = event.bot.nameCardOrNick,
-                    time = System.currentTimeMillis().toInt(),
-                    message = it
+        if (Setting.config.enable.search.google) {
+            //谷歌搜图
+            val google = Google.load(event, picUri)
+            google.forEach {
+                nodes.add(
+                    ForwardMessage.Node(
+                        senderId = event.bot.id,
+                        senderName = event.bot.nameCardOrNick,
+                        time = System.currentTimeMillis().toInt(),
+                        message = it
+                    )
                 )
-            )
+            }
         }
 
         //合并QQ消息 发送查询到的图片线索

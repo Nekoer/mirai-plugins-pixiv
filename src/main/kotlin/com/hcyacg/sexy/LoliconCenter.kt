@@ -40,7 +40,7 @@ object LoliconCenter {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
-        if (!Setting.config.setuEnable.lolicon) {
+        if (!Setting.config.enable.sexy.lolicon) {
             event.subject.sendMessage(message.plus("已关闭lolicon"))
             return
         }

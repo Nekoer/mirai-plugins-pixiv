@@ -25,11 +25,18 @@ object Helper {
             .plus(" ·通过tag查找排行榜 ${Setting.command.tag}关键词-页码").plus("\n")
             .plus("===============").plus("\n")
             .plus("涩图开关").plus("\n")
-            .plus(" ·pixiv:${Setting.config.setuEnable.pixiv}").plus("\n")
-            .plus(" ·yande:${Setting.config.setuEnable.yande}").plus("\n")
-            .plus(" ·konachan:${Setting.config.setuEnable.konachan}").plus("\n")
-            .plus(" ·lolicon:${Setting.config.setuEnable.lolicon}").plus("\n")
-            .plus(" ·local:${Setting.config.setuEnable.localImage} 本地图库只要撤回时长不是0,默认撤回").plus("\n")
+            .plus(" ·pixiv:${Setting.config.enable.sexy.pixiv}").plus("\n")
+            .plus(" ·yande:${Setting.config.enable.sexy.yande}").plus("\n")
+            .plus(" ·konachan:${Setting.config.enable.sexy.konachan}").plus("\n")
+            .plus(" ·lolicon:${Setting.config.enable.sexy.lolicon}").plus("\n")
+            .plus(" ·local:${Setting.config.enable.sexy.localImage} 本地图库只要撤回时长不是0,默认撤回").plus("\n")
+            .plus("搜索引擎开关").plus("\n")
+            .plus(" ·ascii2d:${Setting.config.enable.search.ascii2d}").plus("\n")
+            .plus(" ·google:${Setting.config.enable.search.google}").plus("\n")
+            .plus(" ·iqdb:${Setting.config.enable.search.iqdb}").plus("\n")
+            .plus(" ·saucenao:${Setting.config.enable.search.saucenao}").plus("\n")
+            .plus(" ·yandex:${Setting.config.enable.search.yandex}").plus("\n")
+
             .plus("图片是否开启缓存:${Setting.config.cache.enable}").plus("\n")
             .plus("缓存路径是否设置:${Setting.config.cache.directory.isNotBlank()}").plus("\n")
             .plus("本地图库是否设置:${Setting.config.localImagePath.isNotBlank()}").plus("\n")
@@ -48,6 +55,7 @@ object Helper {
             .plus(" ·切换图片转发开关").plus("\n")
             .plus(" ·切换晶格化开关").plus("\n")
             .plus(" ·(开启|关闭)(pixiv|yande|lolicon|local|konachan) 例: 开启pixiv").plus("\n")
+            .plus(" ·(开启|关闭)(ascii2d|google|saucenao|yandex|iqdb) 例: 开启ascii2d").plus("\n")
         event.subject.sendMessage(message)
     }
 
@@ -104,20 +112,6 @@ object Helper {
         )
     }
 
-    /**
-     * 涩图库开关
-     */
-    suspend fun enableSetu(event: GroupMessageEvent) {
-        if (!Setting.admins.contains(event.sender.id.toString())) {
-            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
-            return
-        }
-
-        var message = event.message.contentToString()
-        val state = message.contains("开启")
-        message = message.replace("开启", "").replace("关闭", "")
-        event.subject.sendMessage(changeSetu(state, message))
-    }
 
     /**
      * 转发消息开关
@@ -195,33 +189,95 @@ object Helper {
 
 
     /**
+     * 涩图库开关
+     */
+    suspend fun enableSetu(event: GroupMessageEvent) {
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        var message = event.message.contentToString()
+        val state = message.contains("开启")
+        message = message.replace("开启", "").replace("关闭", "")
+        event.subject.sendMessage(changeSetu(state, message))
+    }
+
+    /**
      * 根据状态来设置涩图库开关
      */
     private fun changeSetu(state: Boolean, key: String): Message {
         when (key) {
             "pixiv" -> {
-                Setting.config.setuEnable.pixiv = state
+                Setting.config.enable.sexy.pixiv = state
             }
             "yande" -> {
-                Setting.config.setuEnable.yande = state
+                Setting.config.enable.sexy.yande = state
             }
             "local" -> {
-                Setting.config.setuEnable.localImage = state
+                Setting.config.enable.sexy.localImage = state
             }
             "lolicon" -> {
-                Setting.config.setuEnable.lolicon = state
+                Setting.config.enable.sexy.lolicon = state
             }
             "konachan" -> {
-                Setting.config.setuEnable.konachan = state
+                Setting.config.enable.sexy.konachan = state
             }
         }
 
         Setting.save()
         return PlainText("开关已切换").plus("\n")
-            .plus("pixiv:${Setting.config.setuEnable.pixiv}").plus("\n")
-            .plus("yande:${Setting.config.setuEnable.yande}").plus("\n")
-            .plus("local:${Setting.config.setuEnable.localImage}").plus("\n")
-            .plus("lolicon:${Setting.config.setuEnable.lolicon}").plus("\n")
-            .plus("konachan:${Setting.config.setuEnable.konachan}")
+            .plus("pixiv:${Setting.config.enable.sexy.pixiv}").plus("\n")
+            .plus("yande:${Setting.config.enable.sexy.yande}").plus("\n")
+            .plus("local:${Setting.config.enable.sexy.localImage}").plus("\n")
+            .plus("lolicon:${Setting.config.enable.sexy.lolicon}").plus("\n")
+            .plus("konachan:${Setting.config.enable.sexy.konachan}")
+    }
+
+
+    /**
+     * 搜索引擎开关
+     */
+    suspend fun enableSearch(event: GroupMessageEvent){
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        var message = event.message.contentToString()
+        val state = message.contains("开启")
+        message = message.replace("开启", "").replace("关闭", "")
+        event.subject.sendMessage(changeSearch(state, message))
+    }
+
+    /**
+     * 修改各个搜索引擎的开关
+     */
+    private fun changeSearch(state: Boolean, key: String): Message {
+        when (key) {
+            "google" -> {
+                Setting.config.enable.search.google = state
+            }
+            "ascii2d" -> {
+                Setting.config.enable.search.ascii2d = state
+            }
+            "iqdb" -> {
+                Setting.config.enable.search.iqdb = state
+            }
+            "saucenao" -> {
+                Setting.config.enable.search.saucenao = state
+            }
+            "yandex" -> {
+                Setting.config.enable.search.yandex = state
+            }
+        }
+
+        Setting.save()
+        return PlainText("开关已切换").plus("\n")
+            .plus("ascii2d:${Setting.config.enable.search.ascii2d}").plus("\n")
+            .plus("google:${Setting.config.enable.search.google}").plus("\n")
+            .plus("iqdb:${Setting.config.enable.search.iqdb}").plus("\n")
+            .plus("saucenao:${Setting.config.enable.search.saucenao}").plus("\n")
+            .plus("yandex:${Setting.config.enable.search.yandex}")
     }
 }

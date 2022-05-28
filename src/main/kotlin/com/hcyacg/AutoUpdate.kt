@@ -32,6 +32,7 @@ object AutoUpdate {
      */
     @OptIn(ConsoleFrontEndImplementation::class)
     fun load() {
+        return
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 val data =

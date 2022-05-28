@@ -6,8 +6,8 @@ import java.io.File
 @NoArgOpenDataClass
 @Serializable
 data class Config(
-    @SerialName("setuEnable")
-    var setuEnable: Enable = Enable(),
+    @SerialName("enable")
+    var enable: Enable = Enable(),
     @SerialName("forward")
     val forward: ForWard = ForWard(),
     @SerialName("token")

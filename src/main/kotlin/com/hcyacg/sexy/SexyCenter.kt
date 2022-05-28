@@ -49,24 +49,24 @@ object SexyCenter {
 
 
         val list = mutableListOf<String>()
-        if (Setting.config.setuEnable.pixiv) {
+        if (Setting.config.enable.sexy.pixiv) {
             list.add("pixiv")
         }
 
-        if (Setting.config.setuEnable.yande) {
+        if (Setting.config.enable.sexy.yande) {
             list.add("yande")
         }
 
-        if (Setting.config.setuEnable.konachan) {
+        if (Setting.config.enable.sexy.konachan) {
             list.add("konachan")
         }
 
 
-        if (Setting.config.setuEnable.localImage) {
+        if (Setting.config.enable.sexy.localImage) {
             list.add("localImage")
         }
 
-        if (Setting.config.setuEnable.lolicon) {
+        if (Setting.config.enable.sexy.lolicon) {
             list.add("lolicon")
         }
 
@@ -103,7 +103,7 @@ object SexyCenter {
 
     suspend fun yandeTagSearch(event: GroupMessageEvent) {
         try {
-            if (!Setting.config.setuEnable.yande) {
+            if (!Setting.config.enable.sexy.yande) {
                 return
             }
 
@@ -201,7 +201,7 @@ object SexyCenter {
     }
 
     private suspend fun yande(event: GroupMessageEvent) {
-        if (!Setting.config.setuEnable.yande) {
+        if (!Setting.config.enable.sexy.yande) {
             return
         }
         try {
@@ -294,7 +294,7 @@ object SexyCenter {
 
     private suspend fun lolicon(event: GroupMessageEvent) {
         val message = QuoteReply(event.message)
-        if (!Setting.config.setuEnable.lolicon) {
+        if (!Setting.config.enable.sexy.lolicon) {
             return
         }
         try {
@@ -390,7 +390,7 @@ object SexyCenter {
     }
 
     private suspend fun konachan(event: GroupMessageEvent) {
-        if (!Setting.config.setuEnable.konachan) {
+        if (!Setting.config.enable.sexy.konachan) {
             return
         }
         try {
@@ -478,7 +478,7 @@ object SexyCenter {
     }
 
     private suspend fun pixiv(event: GroupMessageEvent) {
-        if (!Setting.config.setuEnable.pixiv) {
+        if (!Setting.config.enable.sexy.pixiv) {
             return
         }
         try {
@@ -566,7 +566,7 @@ object SexyCenter {
      * 本地图库
      */
     private suspend fun localImage(event: GroupMessageEvent) {
-        if (!Setting.config.setuEnable.localImage) {
+        if (!Setting.config.enable.sexy.localImage) {
             return
         }
         try {

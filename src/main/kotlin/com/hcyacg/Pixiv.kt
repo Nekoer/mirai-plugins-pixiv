@@ -1,8 +1,5 @@
 package com.hcyacg
 
-import com.hcyacg.AutoUpdate
-import com.hcyacg.Helper
-import com.hcyacg.Nsfw
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
 import com.hcyacg.initial.Github
@@ -112,6 +109,10 @@ object Pixiv : KotlinPlugin(
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")
             content { enableSetu.matcher(message.contentToString()).find() } quoteReply { Helper.enableSetu(this) }
+
+            val enableSearch = Pattern.compile("(?i)^(关闭|开启)(ascii2d|google|saucenao|yandex|iqdb)\$")
+            content { enableSearch.matcher(message.contentToString()).find() } quoteReply { Helper.enableSearch(this) }
+
 
 //            content { "test".contentEquals(message.contentToString()) } quoteReply {PicDetails.getUgoira()}
 
