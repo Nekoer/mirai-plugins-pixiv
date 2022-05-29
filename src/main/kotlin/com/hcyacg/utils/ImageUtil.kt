@@ -1,5 +1,6 @@
 package com.hcyacg.utils
 
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
@@ -39,8 +40,8 @@ class ImageUtil {
          */
         fun getImage(imageUri: String, type: CacheUtil.Type): ByteArrayOutputStream {
             val infoStream = ByteArrayOutputStream()
-            val host = Setting.config.proxy.host
-            val port = Setting.config.proxy.port
+            val host = Config.proxy.host
+            val port = Config.proxy.port
 
             try{
 
@@ -71,7 +72,7 @@ class ImageUtil {
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
 
-                if (Setting.config.cache.enable){
+                if (Config.cache.enable){
                     CacheUtil.saveToLocal(infoStream,type,temp)
                 }
 

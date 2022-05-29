@@ -1,6 +1,6 @@
 package com.hcyacg.utils
 
-import com.hcyacg.initial.Setting
+import com.hcyacg.initial.Config
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -51,8 +51,8 @@ class RequestUtil {
          * 发送http请求，返回数据（其中根据proxy是否配置加入代理机制）
          */
         private fun httpObject(request: Request): JsonElement? {
-            val host = Setting.config.proxy.host
-            val port = Setting.config.proxy.port
+            val host = Config.proxy.host
+            val port = Config.proxy.port
 
 
             response = if (host.isBlank() || port == -1) {

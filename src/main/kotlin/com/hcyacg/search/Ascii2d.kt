@@ -1,5 +1,6 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -57,7 +58,7 @@ object Ascii2d {
                 }
             }
 
-            val sc = SSLContext.getInstance(Setting.config.tlsVersion)
+            val sc = SSLContext.getInstance(Config.tlsVersion)
             sc.init(null, arrayOf(trustManager), null)
 
             val sslsf = SSLConnectionSocketFactory(sc)

@@ -1,6 +1,8 @@
 package com.hcyacg.details
 
 import com.hcyacg.entity.PixivImageDetail
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -26,7 +28,7 @@ import javax.imageio.ImageIO
 
 
 object PicDetails {
-    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
     private var isChange: Boolean = false
     private val logger = MiraiLogger.Factory.create(this::class.java)
@@ -35,7 +37,7 @@ object PicDetails {
         val data: JsonElement?
         val messageChain: MessageChain = event.message
 
-        if (!event.message.contentToString().contains(Setting.command.getDetailOfId)) {
+        if (!event.message.contentToString().contains(Command.getDetailOfId)) {
             return
         }
 
@@ -46,24 +48,24 @@ object PicDetails {
         var page: String?
         try {
             page =
-                messageChain.contentToString().replace(Setting.command.getDetailOfId, "").replace(" ", "").split("-")[1]
+                messageChain.contentToString().replace(Command.getDetailOfId, "").replace(" ", "").split("-")[1]
         } catch (e: Exception) {
-            id = messageChain.contentToString().replace(Setting.command.getDetailOfId, "").replace(" ", "")
+            id = messageChain.contentToString().replace(Command.getDetailOfId, "").replace(" ", "")
             page = "1"
         }
 
         if (null == id) {
             try {
-                id = messageChain.content.replace(Setting.command.getDetailOfId, "").replace(" ", "").split("-")[0]
+                id = messageChain.content.replace(Command.getDetailOfId, "").replace(" ", "").split("-")[0]
             } catch (e: Exception) {
-                event.subject.sendMessage("请输入正确的插画id  ${Setting.command.getDetailOfId}id")
+                event.subject.sendMessage("请输入正确的插画id  ${Command.getDetailOfId}id")
                 return
             }
         }
 
 
         if (StringUtils.isBlank(id)) {
-            event.subject.sendMessage("请输入正确的插画id ${Setting.command.getDetailOfId}id")
+            event.subject.sendMessage("请输入正确的插画id ${Command.getDetailOfId}id")
             return
         }
 
@@ -119,8 +121,8 @@ object PicDetails {
                  * 判断是否配置了撤回时间
                  */
 
-                if (sanityLevel == 6 && StringUtils.isNotBlank(Setting.config.recall.toString()) && Setting.config.recall != 0L) {
-                    event.subject.sendMessage(message).recallIn(Setting.config.recall)
+                if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
+                    event.subject.sendMessage(message).recallIn(Config.recall)
                 } else {
                     event.subject.sendMessage(message)
                 }
@@ -141,7 +143,7 @@ object PicDetails {
          * 通过张数判断读取哪个json数据
          */
 
-        if (Setting.config.forward.imageToForward && page.toInt() == 1){
+        if (Config.forward.imageToForward && page.toInt() == 1){
             val nodes = mutableListOf<ForwardMessage.Node>()
             nodes.add(
                 ForwardMessage.Node(
@@ -207,8 +209,8 @@ object PicDetails {
              * 判断是否配置了撤回时间
              */
 
-            if (sanityLevel == 6 && StringUtils.isNotBlank(Setting.config.recall.toString()) && Setting.config.recall != 0L) {
-                event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+            if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
+                event.subject.sendMessage(forward).recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(forward)
             }
@@ -237,7 +239,7 @@ object PicDetails {
         /**
          * 判断key是否配置，未配置提醒用户
          */
-        if (Setting.config.token.acgmx.isBlank()) {
+        if (Config.token.acgmx.isBlank()) {
             message.plus("\n").plus("您未配置acgmx_token,请到https://www.acgmx.com/account申请")
         }
 
@@ -245,8 +247,8 @@ object PicDetails {
          * 判断是否配置了撤回时间
          */
 
-        if (sanityLevel == 6 && StringUtils.isNotBlank(Setting.config.recall.toString()) && Setting.config.recall != 0L) {
-            event.subject.sendMessage(message).recallIn(Setting.config.recall)
+        if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
+            event.subject.sendMessage(message).recallIn(Config.recall)
         } else {
             event.subject.sendMessage(message)
         }

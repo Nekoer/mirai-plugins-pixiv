@@ -1,6 +1,8 @@
 package com.hcyacg
 
 import com.hcyacg.Pixiv.save
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -14,39 +16,39 @@ object Helper {
 
     suspend fun load(event: GroupMessageEvent) {
         val message = At(event.sender).plus("\n")
-            .plus(" ·查看排行榜 ${Setting.command.showRank}daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g-页码").plus("\n")
-            .plus(" ·查看图片详情 ${Setting.command.getDetailOfId}pixivId").plus("\n")
-            .plus(" ·查找图片 ${Setting.command.picToSearch}你要找的图片").plus("\n")
-            .plus(" ·查看作者 ${Setting.command.findUserWorksById}作者id").plus("\n")
-            .plus(" ·查找番剧 ${Setting.command.searchInfoByPic}番剧截图").plus("\n")
-            .plus(" ·看涩图 ${Setting.command.setu}").plus("\n")
-            .plus(" ·看涩图 +tag ${Setting.command.setu} loli").plus("\n")
-            .plus(" ·看萝莉 ${Setting.command.lolicon} 查询条件 r18,查询条件最多三个用&分割，|为或者,例：少女|姐姐&黑丝|白丝&猫耳|狗耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
-            .plus(" ·通过tag查找排行榜 ${Setting.command.tag}关键词-页码").plus("\n")
+            .plus(" ·查看排行榜 ${Command.showRank}daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g-页码").plus("\n")
+            .plus(" ·查看图片详情 ${Command.getDetailOfId}pixivId").plus("\n")
+            .plus(" ·查找图片 ${Command.picToSearch}你要找的图片").plus("\n")
+            .plus(" ·查看作者 ${Command.findUserWorksById}作者id").plus("\n")
+            .plus(" ·查找番剧 ${Command.searchInfoByPic}番剧截图").plus("\n")
+            .plus(" ·看涩图 ${Command.setu}").plus("\n")
+            .plus(" ·看涩图 +tag ${Command.setu} loli").plus("\n")
+            .plus(" ·看萝莉 ${Command.lolicon} 查询条件 r18,查询条件最多三个用&分割，|为或者,例：少女|姐姐&黑丝|白丝&猫耳|狗耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
+            .plus(" ·通过tag查找排行榜 ${Command.tag}关键词-页码").plus("\n")
             .plus("===============").plus("\n")
             .plus("涩图开关").plus("\n")
-            .plus(" ·pixiv:${Setting.config.enable.sexy.pixiv}").plus("\n")
-            .plus(" ·yande:${Setting.config.enable.sexy.yande}").plus("\n")
-            .plus(" ·konachan:${Setting.config.enable.sexy.konachan}").plus("\n")
-            .plus(" ·lolicon:${Setting.config.enable.sexy.lolicon}").plus("\n")
-            .plus(" ·local:${Setting.config.enable.sexy.localImage} 本地图库只要撤回时长不是0,默认撤回").plus("\n")
+            .plus(" ·pixiv:${Config.enable.sexy.pixiv}").plus("\n")
+            .plus(" ·yande:${Config.enable.sexy.yande}").plus("\n")
+            .plus(" ·konachan:${Config.enable.sexy.konachan}").plus("\n")
+            .plus(" ·lolicon:${Config.enable.sexy.lolicon}").plus("\n")
+            .plus(" ·local:${Config.enable.sexy.localImage} 本地图库只要撤回时长不是0,默认撤回").plus("\n")
             .plus("搜索引擎开关").plus("\n")
-            .plus(" ·ascii2d:${Setting.config.enable.search.ascii2d}").plus("\n")
-            .plus(" ·google:${Setting.config.enable.search.google}").plus("\n")
-            .plus(" ·iqdb:${Setting.config.enable.search.iqdb}").plus("\n")
-            .plus(" ·saucenao:${Setting.config.enable.search.saucenao}").plus("\n")
-            .plus(" ·yandex:${Setting.config.enable.search.yandex}").plus("\n")
+            .plus(" ·ascii2d:${Config.enable.search.ascii2d}").plus("\n")
+            .plus(" ·google:${Config.enable.search.google}").plus("\n")
+            .plus(" ·iqdb:${Config.enable.search.iqdb}").plus("\n")
+            .plus(" ·saucenao:${Config.enable.search.saucenao}").plus("\n")
+            .plus(" ·yandex:${Config.enable.search.yandex}").plus("\n")
 
-            .plus("图片是否开启缓存:${Setting.config.cache.enable}").plus("\n")
-            .plus("缓存路径是否设置:${Setting.config.cache.directory.isNotBlank()}").plus("\n")
-            .plus("本地图库是否设置:${Setting.config.localImagePath.isNotBlank()}").plus("\n")
-            .plus("转发消息是否开启:${Setting.config.forward.rankAndTagAndUserByForward}").plus("\n")
-            .plus("图片转发是否开启:${Setting.config.forward.imageToForward}").plus("\n")
-            .plus("涩图晶格化是否开启:${Setting.config.lowPoly}").plus("\n")
+            .plus("图片是否开启缓存:${Config.cache.enable}").plus("\n")
+            .plus("缓存路径是否设置:${Config.cache.directory.isNotBlank()}").plus("\n")
+            .plus("本地图库是否设置:${Config.localImagePath.isNotBlank()}").plus("\n")
+            .plus("转发消息是否开启:${Config.forward.rankAndTagAndUserByForward}").plus("\n")
+            .plus("图片转发是否开启:${Config.forward.imageToForward}").plus("\n")
+            .plus("涩图晶格化是否开启:${Config.lowPoly}").plus("\n")
             .plus("===============").plus("\n")
             .plus("本群权限").plus("\n")
             .plus(" ·涩图:${Setting.groups.indexOf(event.group.id.toString()) > -1}").plus("\n")
-            .plus(" ·撤回时长:${Setting.config.recall}ms").plus("\n")
+            .plus(" ·撤回时长:${Config.recall}ms").plus("\n")
             .plus("===============").plus("\n")
             .plus("管理员命令").plus("\n")
             .plus(" ·切换缓存开关").plus("\n")
@@ -96,13 +98,13 @@ object Helper {
             event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
             return
         }
-        Setting.config.cache.enable = !Setting.config.cache.enable
+        Config.cache.enable = !Config.cache.enable
 
-        Setting.save()
+        Config.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "缓存图片已${
-                    if (Setting.config.cache.enable) {
+                    if (Config.cache.enable) {
                         "开启"
                     } else {
                         "关闭"
@@ -122,12 +124,12 @@ object Helper {
             return
         }
 
-        Setting.config.forward.rankAndTagAndUserByForward = !Setting.config.forward.rankAndTagAndUserByForward
-        Setting.save()
+        Config.forward.rankAndTagAndUserByForward = !Config.forward.rankAndTagAndUserByForward
+        Config.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "转发消息${
-                    if (Setting.config.forward.rankAndTagAndUserByForward) {
+                    if (Config.forward.rankAndTagAndUserByForward) {
                         "开启"
                     } else {
                         "关闭"
@@ -147,12 +149,12 @@ object Helper {
             return
         }
 
-        Setting.config.forward.imageToForward = !Setting.config.forward.imageToForward
-        Setting.save()
+        Config.forward.imageToForward = !Config.forward.imageToForward
+        Config.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "图片转发消息${
-                    if (Setting.config.forward.imageToForward) {
+                    if (Config.forward.imageToForward) {
                         "开启"
                     } else {
                         "关闭"
@@ -172,12 +174,12 @@ object Helper {
             return
         }
 
-        Setting.config.lowPoly = !Setting.config.lowPoly
-        Setting.save()
+        Config.lowPoly = !Config.lowPoly
+        Config.save()
         event.subject.sendMessage(
             At(event.sender).plus("\n").plus(
                 "涩图晶格化${
-                    if (Setting.config.lowPoly) {
+                    if (Config.lowPoly) {
                         "开启"
                     } else {
                         "关闭"
@@ -209,29 +211,29 @@ object Helper {
     private fun changeSetu(state: Boolean, key: String): Message {
         when (key) {
             "pixiv" -> {
-                Setting.config.enable.sexy.pixiv = state
+                Config.enable.sexy.pixiv = state
             }
             "yande" -> {
-                Setting.config.enable.sexy.yande = state
+                Config.enable.sexy.yande = state
             }
             "local" -> {
-                Setting.config.enable.sexy.localImage = state
+                Config.enable.sexy.localImage = state
             }
             "lolicon" -> {
-                Setting.config.enable.sexy.lolicon = state
+                Config.enable.sexy.lolicon = state
             }
             "konachan" -> {
-                Setting.config.enable.sexy.konachan = state
+                Config.enable.sexy.konachan = state
             }
         }
 
-        Setting.save()
+        Config.save()
         return PlainText("开关已切换").plus("\n")
-            .plus("pixiv:${Setting.config.enable.sexy.pixiv}").plus("\n")
-            .plus("yande:${Setting.config.enable.sexy.yande}").plus("\n")
-            .plus("local:${Setting.config.enable.sexy.localImage}").plus("\n")
-            .plus("lolicon:${Setting.config.enable.sexy.lolicon}").plus("\n")
-            .plus("konachan:${Setting.config.enable.sexy.konachan}")
+            .plus("pixiv:${Config.enable.sexy.pixiv}").plus("\n")
+            .plus("yande:${Config.enable.sexy.yande}").plus("\n")
+            .plus("local:${Config.enable.sexy.localImage}").plus("\n")
+            .plus("lolicon:${Config.enable.sexy.lolicon}").plus("\n")
+            .plus("konachan:${Config.enable.sexy.konachan}")
     }
 
 
@@ -256,28 +258,28 @@ object Helper {
     private fun changeSearch(state: Boolean, key: String): Message {
         when (key) {
             "google" -> {
-                Setting.config.enable.search.google = state
+                Config.enable.search.google = state
             }
             "ascii2d" -> {
-                Setting.config.enable.search.ascii2d = state
+                Config.enable.search.ascii2d = state
             }
             "iqdb" -> {
-                Setting.config.enable.search.iqdb = state
+                Config.enable.search.iqdb = state
             }
             "saucenao" -> {
-                Setting.config.enable.search.saucenao = state
+                Config.enable.search.saucenao = state
             }
             "yandex" -> {
-                Setting.config.enable.search.yandex = state
+                Config.enable.search.yandex = state
             }
         }
 
-        Setting.save()
+        Config.save()
         return PlainText("开关已切换").plus("\n")
-            .plus("ascii2d:${Setting.config.enable.search.ascii2d}").plus("\n")
-            .plus("google:${Setting.config.enable.search.google}").plus("\n")
-            .plus("iqdb:${Setting.config.enable.search.iqdb}").plus("\n")
-            .plus("saucenao:${Setting.config.enable.search.saucenao}").plus("\n")
-            .plus("yandex:${Setting.config.enable.search.yandex}")
+            .plus("ascii2d:${Config.enable.search.ascii2d}").plus("\n")
+            .plus("google:${Config.enable.search.google}").plus("\n")
+            .plus("iqdb:${Config.enable.search.iqdb}").plus("\n")
+            .plus("saucenao:${Config.enable.search.saucenao}").plus("\n")
+            .plus("yandex:${Config.enable.search.yandex}")
     }
 }

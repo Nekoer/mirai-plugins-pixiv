@@ -1,6 +1,8 @@
 package com.hcyacg.sexy
 
 import com.hcyacg.entity.Lolicon
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -40,13 +42,13 @@ object LoliconCenter {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
-        if (!Setting.config.enable.sexy.lolicon) {
+        if (!Config.enable.sexy.lolicon) {
             event.subject.sendMessage(message.plus("已关闭lolicon"))
             return
         }
         val data: JsonElement?
 
-        val temp = event.message.contentToString().replace("${Setting.command.lolicon} ", "").split(" ")
+        val temp = event.message.contentToString().replace("${Command.lolicon} ", "").split(" ")
         //https://api.lolicon.app/setu/v2?r18=2&proxy=i.acgmx.com&size=original&keyword=loli
         var r18 = 0
         val keyword: String
@@ -109,7 +111,7 @@ object LoliconCenter {
                 return
             }
             val toExternalResource: ExternalResource
-            if (Setting.config.lowPoly){
+            if (Config.lowPoly){
                 val byte = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
 
                 /**
@@ -144,10 +146,10 @@ object LoliconCenter {
                 toExternalResource.close()
             }
 
-            if (r18 == 1 && Setting.config.recall != 0L) {
+            if (r18 == 1 && Config.recall != 0L) {
                 event.subject.sendMessage(
                     message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")
-                ).recallIn(Setting.config.recall)
+                ).recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(
                     message.plus(Image(imageId)).plus("图片链接：\nhttps://www.pixiv.net/artworks/${lolicon.data[0].pid}")

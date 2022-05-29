@@ -7,6 +7,8 @@ import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
 import com.hcyacg.utils.RequestUtil
 import com.hcyacg.entity.SaucenaoItem
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
@@ -44,7 +46,7 @@ object Saucenao {
             /**
              * 未配置key通知用户
              */
-            if (Setting.config.token.saucenao.isBlank()) {
+            if (Config.token.saucenao.isBlank()) {
                 event.subject.sendMessage(At(event.sender).plus("您还未配置saucenao的api_key,申请网址为https://saucenao.com/user.php?page=search-api"))
                 return list
             }
@@ -146,7 +148,7 @@ object Saucenao {
             return list
         } catch (e: Exception) {
             e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${Setting.command.picToSearch}图片")
+            event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
             list.clear()
             return list
         }
@@ -199,7 +201,7 @@ object Saucenao {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${Setting.command.picToSearch}图片")
+            event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
             return null
         }
         return null
@@ -214,7 +216,7 @@ object Saucenao {
         try {
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Setting.config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
                 requestBody,
                 headers.build()
             )

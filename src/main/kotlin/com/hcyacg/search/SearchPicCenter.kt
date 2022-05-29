@@ -1,5 +1,6 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.DataUtil
 import net.mamoe.mirai.contact.nameCardOrNick
@@ -21,7 +22,7 @@ object SearchPicCenter {
         val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
             .replace("-", "")
 
-        if (Setting.config.enable.search.ascii2d) {
+        if (Config.enable.search.ascii2d) {
             val picToHtmlSearch = Ascii2d.picToHtmlSearch(event, picUri)
             //Ascii2d 搜索
             picToHtmlSearch.forEach {
@@ -36,7 +37,7 @@ object SearchPicCenter {
             }
         }
 
-        if (Setting.config.enable.search.saucenao) {
+        if (Config.enable.search.saucenao) {
             //Saucenao 搜索
             val picToSearch = Saucenao.picToSearch(event, picUri)
             picToSearch.forEach {
@@ -51,7 +52,7 @@ object SearchPicCenter {
             }
         }
 
-        if (Setting.config.enable.search.iqdb) {
+        if (Config.enable.search.iqdb) {
             //iqdb搜索
             val iqdb = Iqdb.picToHtmlSearch(event, picUri)
             iqdb.forEach {
@@ -65,7 +66,7 @@ object SearchPicCenter {
                 )
             }
         }
-        if (Setting.config.enable.search.yandex) {
+        if (Config.enable.search.yandex) {
             val yandex = Yandex.picToHtmlSearch(event, picUri)
             yandex.forEach {
                 nodes.add(
@@ -78,7 +79,7 @@ object SearchPicCenter {
                 )
             }
         }
-        if (Setting.config.enable.search.google) {
+        if (Config.enable.search.google) {
             //谷歌搜图
             val google = Google.load(event, picUri)
             google.forEach {

@@ -1,6 +1,8 @@
 package com.hcyacg.rank
 
 import com.hcyacg.details.PicDetails
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -44,9 +46,9 @@ object Rank {
              */
             try {
                 page =
-                    event.message.content.replace(Setting.command.showRank, "").replace(" ", "").split("-")[1].toInt()
+                    event.message.content.replace(Command.showRank, "").replace(" ", "").split("-")[1].toInt()
             } catch (e: Exception) {
-                mode = event.message.content.replace(Setting.command.showRank, "").replace(" ", "")
+                mode = event.message.content.replace(Command.showRank, "").replace(" ", "")
                 page = 1
             }
 
@@ -63,9 +65,9 @@ object Rank {
 
             if (null == mode) {
                 try {
-                    mode = event.message.content.replace(Setting.command.showRank, "").replace(" ", "").split("-")[0]
+                    mode = event.message.content.replace(Command.showRank, "").replace(" ", "").split("-")[0]
                 } catch (e: java.lang.Exception) {
-                    event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[day|week|month|setu]-页码")
+                    event.subject.sendMessage("请输入正确的排行榜命令 ${Command.showRank}[day|week|month|setu]-页码")
                     return
                 }
             }
@@ -100,7 +102,7 @@ object Rank {
             )
 
             if (!modeList.contains(mode)) {
-                event.subject.sendMessage("请输入正确的排行榜命令 ${Setting.command.showRank}[$modeList]-页码")
+                event.subject.sendMessage("请输入正确的排行榜命令 ${Command.showRank}[$modeList]-页码")
                 return
             }
 
@@ -163,7 +165,7 @@ object Rank {
                 }
                 message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
 
-                if (Setting.config.forward.rankAndTagAndUserByForward) {
+                if (Config.forward.rankAndTagAndUserByForward) {
                     var tempMessage =
                         PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张")
                             .plus("\n")
@@ -216,7 +218,7 @@ object Rank {
 
             }
 
-            if (Setting.config.forward.rankAndTagAndUserByForward) {
+            if (Config.forward.rankAndTagAndUserByForward) {
                 val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
                     override fun generateTitle(forward: RawForwardMessage): String {
                         return "Pixiv排行榜"
@@ -226,8 +228,8 @@ object Rank {
                         return "查看${nodes.size}条图片"
                     }
                 })
-                if (isR18 && Setting.config.recall != 0L) {
-                    event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+                if (isR18 && Config.recall != 0L) {
+                    event.subject.sendMessage(forward).recallIn(Config.recall)
                 } else {
                     event.subject.sendMessage(forward)
                 }

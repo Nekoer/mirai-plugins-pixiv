@@ -1,5 +1,7 @@
 package com.hcyacg.details
 
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -22,7 +24,7 @@ import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
 
 object UserDetails {
-    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
     private val logger = MiraiLogger.Factory.create(this::class.java)
     suspend fun findUserWorksById(event: GroupMessageEvent){
@@ -30,18 +32,18 @@ object UserDetails {
         var authorData: JsonElement? = null
         var enable = false
         try{
-            if (!event.message.contentToString().contains(Setting.command.findUserWorksById)){
+            if (!event.message.contentToString().contains(Command.findUserWorksById)){
                 return
             }
             if (Setting.groups.contains(event.group.id.toString())) {
                 enable = true
             }
 
-            val authorId = event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-")[0]
+            val authorId = event.message.contentToString().replace(Command.findUserWorksById,"").replace(" ","").split("-")[0]
 
 
-            val page = if(event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-").size == 2){
-                event.message.contentToString().replace(Setting.command.findUserWorksById,"").replace(" ","").split("-")[1].toInt()
+            val page = if(event.message.contentToString().replace(Command.findUserWorksById,"").replace(" ","").split("-").size == 2){
+                event.message.contentToString().replace(Command.findUserWorksById,"").replace(" ","").split("-")[1].toInt()
             }else{
                 1
             }
@@ -56,7 +58,7 @@ object UserDetails {
             }
 
             if (StringUtils.isBlank(authorId)){
-                event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id-页码")
+                event.subject.sendMessage("请输入正确的命令 ${Command.findUserWorksById}作者Id-页码")
                 return
             }
 
@@ -121,7 +123,7 @@ object UserDetails {
                 val sanityLevel = tempData[i].jsonObject["sanity_level"]?.jsonPrimitive?.content?.toInt()
                 message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $id").plus("\n")
 
-                if (Setting.config.forward.rankAndTagAndUserByForward) {
+                if (Config.forward.rankAndTagAndUserByForward) {
                     var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $id").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
@@ -179,7 +181,7 @@ object UserDetails {
 //                message = message.plus("${index +1 }. $title - $id").plus("\n")
 //            }
 
-            if (Setting.config.forward.rankAndTagAndUserByForward) {
+            if (Config.forward.rankAndTagAndUserByForward) {
                 val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
                     override fun generateTitle(forward: RawForwardMessage): String {
                         return "Tag排行榜"
@@ -195,7 +197,7 @@ object UserDetails {
             }
         }catch (e:Exception){
             e.printStackTrace()
-            event.subject.sendMessage("请输入正确的命令 ${Setting.command.findUserWorksById}作者Id-页码")
+            event.subject.sendMessage("请输入正确的命令 ${Command.findUserWorksById}作者Id-页码")
         }
     }
 }

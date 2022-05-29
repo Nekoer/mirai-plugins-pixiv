@@ -1,6 +1,7 @@
 package com.hcyacg.sexy
 
 import com.hcyacg.entity.Lolicon
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.rank.TotalProcessing
@@ -49,24 +50,24 @@ object SexyCenter {
 
 
         val list = mutableListOf<String>()
-        if (Setting.config.enable.sexy.pixiv) {
+        if (Config.enable.sexy.pixiv) {
             list.add("pixiv")
         }
 
-        if (Setting.config.enable.sexy.yande) {
+        if (Config.enable.sexy.yande) {
             list.add("yande")
         }
 
-        if (Setting.config.enable.sexy.konachan) {
+        if (Config.enable.sexy.konachan) {
             list.add("konachan")
         }
 
 
-        if (Setting.config.enable.sexy.localImage) {
+        if (Config.enable.sexy.localImage) {
             list.add("localImage")
         }
 
-        if (Setting.config.enable.sexy.lolicon) {
+        if (Config.enable.sexy.lolicon) {
             list.add("lolicon")
         }
 
@@ -103,7 +104,7 @@ object SexyCenter {
 
     suspend fun yandeTagSearch(event: GroupMessageEvent) {
         try {
-            if (!Setting.config.enable.sexy.yande) {
+            if (!Config.enable.sexy.yande) {
                 return
             }
 
@@ -129,7 +130,7 @@ object SexyCenter {
 
 
                 val toExternalResource: ExternalResource
-                if (Setting.config.lowPoly){
+                if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
 
                     /**
@@ -166,9 +167,9 @@ object SexyCenter {
                  * 判断是否配置了撤回时间
                  */
 
-                if (Setting.config.recall != 0L) {
+                if (Config.recall != 0L) {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
-                        .recallIn(Setting.config.recall)
+                        .recallIn(Config.recall)
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
                 }
@@ -201,7 +202,7 @@ object SexyCenter {
     }
 
     private suspend fun yande(event: GroupMessageEvent) {
-        if (!Setting.config.enable.sexy.yande) {
+        if (!Config.enable.sexy.yande) {
             return
         }
         try {
@@ -221,7 +222,7 @@ object SexyCenter {
 
 
                 val toExternalResource: ExternalResource
-                if (Setting.config.lowPoly){
+                if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
 
                     /**
@@ -259,9 +260,9 @@ object SexyCenter {
                  * 判断是否配置了撤回时间
                  */
 
-                if (Setting.config.recall != 0L) {
+                if (Config.recall != 0L) {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
-                        .recallIn(Setting.config.recall)
+                        .recallIn(Config.recall)
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
                 }
@@ -294,7 +295,7 @@ object SexyCenter {
 
     private suspend fun lolicon(event: GroupMessageEvent) {
         val message = QuoteReply(event.message)
-        if (!Setting.config.enable.sexy.lolicon) {
+        if (!Config.enable.sexy.lolicon) {
             return
         }
         try {
@@ -325,7 +326,7 @@ object SexyCenter {
             }
 
             val toExternalResource: ExternalResource
-            if (Setting.config.lowPoly){
+            if (Config.lowPoly){
                 val byte = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
 
                 /**
@@ -358,9 +359,9 @@ object SexyCenter {
                 toExternalResource.close()
             }
 
-            if (Setting.config.recall != 0L) {
+            if (Config.recall != 0L) {
                 event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
-                    .recallIn(Setting.config.recall)
+                    .recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
             }
@@ -390,7 +391,7 @@ object SexyCenter {
     }
 
     private suspend fun konachan(event: GroupMessageEvent) {
-        if (!Setting.config.enable.sexy.konachan) {
+        if (!Config.enable.sexy.konachan) {
             return
         }
         try {
@@ -409,7 +410,7 @@ object SexyCenter {
                 val jpegUrl = obj.jsonArray[num].jsonObject["jpeg_url"]?.jsonPrimitive?.content
 
                 val toExternalResource: ExternalResource
-                if (Setting.config.lowPoly){
+                if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray()
 
                     /**
@@ -444,9 +445,9 @@ object SexyCenter {
                 }
                 val quoteReply: QuoteReply = QuoteReply(event.message)
 
-                if (Setting.config.recall != 0L) {
+                if (Config.recall != 0L) {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
-                        .recallIn(Setting.config.recall)
+                        .recallIn(Config.recall)
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
                 }
@@ -478,7 +479,7 @@ object SexyCenter {
     }
 
     private suspend fun pixiv(event: GroupMessageEvent) {
-        if (!Setting.config.enable.sexy.pixiv) {
+        if (!Config.enable.sexy.pixiv) {
             return
         }
         try {
@@ -500,7 +501,7 @@ object SexyCenter {
 
 
             val toExternalResource: ExternalResource
-            if (Setting.config.lowPoly){
+            if (Config.lowPoly){
                 val byte = ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
 
                 /**
@@ -532,9 +533,9 @@ object SexyCenter {
                 toExternalResource.close()
             }
             val quoteReply: QuoteReply = QuoteReply(event.message)
-            if (Setting.config.recall != 0L) {
+            if (Config.recall != 0L) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
-                    .recallIn(Setting.config.recall)
+                    .recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
@@ -566,11 +567,11 @@ object SexyCenter {
      * 本地图库
      */
     private suspend fun localImage(event: GroupMessageEvent) {
-        if (!Setting.config.enable.sexy.localImage) {
+        if (!Config.enable.sexy.localImage) {
             return
         }
         try {
-            val file = File(Setting.config.localImagePath)
+            val file = File(Config.localImagePath)
             val list = getAllImage(file)
 
             val num = 0 until list.size
@@ -590,7 +591,7 @@ object SexyCenter {
 
 
             val toExternalResource: ExternalResource
-            if (Setting.config.lowPoly){
+            if (Config.lowPoly){
 
                 /**
                  * 生成low poly风格的图片
@@ -620,9 +621,9 @@ object SexyCenter {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (Setting.config.recall != 0L) {
+            if (Config.recall != 0L) {
                 event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
-                    .recallIn(Setting.config.recall)
+                    .recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(At(event.sender).plus("\n").plus(Image(imageId)))
             }

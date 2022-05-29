@@ -1,5 +1,6 @@
 package com.hcyacg.utils
 
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.ByteArrayOutputStream
@@ -37,7 +38,7 @@ object CacheUtil {
                 return
             }
 
-            val directory = File(Setting.config.cache.directory)
+            val directory = File(Config.cache.directory)
             val imageDir = File(directory.path + File.separator + temp)
             if (!imageDir.exists()){
                 imageDir.mkdirs()

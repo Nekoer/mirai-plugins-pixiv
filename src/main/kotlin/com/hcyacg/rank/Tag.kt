@@ -1,6 +1,8 @@
 package com.hcyacg.rank
 
 import com.hcyacg.details.PicDetails
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -35,8 +37,8 @@ object Tag {
             if (Setting.groups.contains(event.group.id.toString())) {
                 enable = true
             }
-            val q = event.message.content.replace(Setting.command.tag, "").replace(" ", "").split("-")[0]
-            val page = event.message.content.replace(Setting.command.tag, "").replace(" ", "").split("-")[1].toInt()
+            val q = event.message.content.replace(Command.tag, "").replace(" ", "").split("-")[0]
+            val page = event.message.content.replace(Command.tag, "").replace(" ", "").split("-")[1].toInt()
             var offset = 0
             var num = 0
             if (page % 3 != 0) {
@@ -95,7 +97,7 @@ object Tag {
                     }
 
                     message = message.plus("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("\n")
-                    if (Setting.config.forward.rankAndTagAndUserByForward) {
+                    if (Config.forward.rankAndTagAndUserByForward) {
                         var tempMessage = PlainText("${(page * 10) - 9 + (i % 10)}. $title - $user - $id").plus("  作品共${pageCount}张").plus("\n")
 //                val detail = PicDetails.getDetailOfId(id!!)
 
@@ -145,7 +147,7 @@ object Tag {
                     }
                 }
             }
-            if (Setting.config.forward.rankAndTagAndUserByForward) {
+            if (Config.forward.rankAndTagAndUserByForward) {
                 val forward = RawForwardMessage(nodes).render(object : ForwardMessage.DisplayStrategy {
                     override fun generateTitle(forward: RawForwardMessage): String {
                         return "Tag排行榜"
@@ -155,8 +157,8 @@ object Tag {
                         return "查看${nodes.size}条图片"
                     }
                 })
-                if (isR18 && Setting.config.recall != 0L){
-                    event.subject.sendMessage(forward).recallIn(Setting.config.recall)
+                if (isR18 && Config.recall != 0L){
+                    event.subject.sendMessage(forward).recallIn(Config.recall)
                 }else{
                     event.subject.sendMessage(forward)
                 }

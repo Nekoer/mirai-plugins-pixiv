@@ -1,6 +1,7 @@
 package com.hcyacg.rank
 
 
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
 import kotlinx.serialization.json.JsonElement
@@ -12,7 +13,7 @@ import okhttp3.RequestBody
  * 排行榜总处理中心
  */
 class TotalProcessing {
-    private val headers = Headers.Builder().add("token", Setting.config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
     private val logger = MiraiLogger.Factory.create(this::class.java)
     /**

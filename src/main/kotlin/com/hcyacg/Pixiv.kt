@@ -2,6 +2,8 @@ package com.hcyacg
 
 import com.hcyacg.details.PicDetails
 import com.hcyacg.details.UserDetails
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.initial.Github
 import com.hcyacg.initial.Setting
 import com.hcyacg.rank.Rank
@@ -30,11 +32,15 @@ object Pixiv : KotlinPlugin(
 
     override fun onDisable() {
         Setting.save()
+        Config.save()
+        Command.save()
         Github.save()
     }
 
     override fun onEnable() {
         Setting.reload()
+        Config.reload()
+        Command.reload()
         Github.reload()
         AutoUpdate.load()
 
@@ -44,7 +50,7 @@ object Pixiv : KotlinPlugin(
         globalEventChannel().subscribeGroupMessages {
             //测试成功
             val getDetailOfId: Pattern =
-                Pattern.compile("(?i)^(${Setting.command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
+                Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() } quoteReply {
                 PicDetails.load(
                     this
@@ -53,17 +59,17 @@ object Pixiv : KotlinPlugin(
 
             //测试成功
             val rank: Pattern =
-                Pattern.compile("(?i)^(${Setting.command.showRank})(daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g)-([0-9]*[1-9][0-9]*)\$")
+                Pattern.compile("(?i)^(${Command.showRank})(daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g)-([0-9]*[1-9][0-9]*)\$")
             content { rank.matcher(message.contentToString()).find() } quoteReply { Rank.showRank(this) }
 
             //测试成功
             val findUserWorksById: Pattern =
-                Pattern.compile("(?i)^(${Setting.command.findUserWorksById})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
+                Pattern.compile("(?i)^(${Command.findUserWorksById})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content {
                 findUserWorksById.matcher(message.contentToString()).find()
             } quoteReply { UserDetails.findUserWorksById(this) }
             //测试成功
-            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Setting.command.searchInfoByPic}).+$")
+            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic}).+$")
             content { searchInfoByPic.matcher(message.contentToString()).find() } quoteReply {
                 Trace.searchInfoByPic(
                     this
@@ -72,25 +78,25 @@ object Pixiv : KotlinPlugin(
 
             content { message.contentToString().contains("检测") } reply { Nsfw.load(this) }
 
-            val setu: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})\$")
+            val setu: Pattern = Pattern.compile("(?i)^(${Command.setu})\$")
             content { setu.matcher(message.contentToString()).find() } reply { SexyCenter.init(this) }
 
-            val setuTag: Pattern = Pattern.compile("(?i)^(${Setting.command.setu})[ ]{1}[\\S]*[ ]?(r18)?\$")
+            val setuTag: Pattern = Pattern.compile("(?i)^(${Command.setu})[ ]{1}[\\S]*[ ]?(r18)?\$")
             content { setuTag.matcher(message.contentToString()).find()} reply { SexyCenter.yandeTagSearch(this) }
 
             //测试成功
-            val tag: Pattern = Pattern.compile("(?i)^(${Setting.command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
+            val tag: Pattern = Pattern.compile("(?i)^(${Command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
             content { tag.matcher(message.contentToString()).find() } quoteReply { Tag.init(this) }
             //测试成功
-            val picToSearch: Pattern = Pattern.compile("(?i)^(${Setting.command.picToSearch}).+$")
+            val picToSearch: Pattern = Pattern.compile("(?i)^(${Command.picToSearch}).+$")
             content {
                 picToSearch.matcher(message.contentToString()).find()
             } quoteReply { SearchPicCenter.forward(this) }
 
-            val lolicon: Pattern = Pattern.compile("(?i)^(${Setting.command.lolicon})( ([^ ]*)( (r18))?)?\$")
+            val lolicon: Pattern = Pattern.compile("(?i)^(${Command.lolicon})( ([^ ]*)( (r18))?)?\$")
             content { lolicon.matcher(message.contentToString()).find() } quoteReply { LoliconCenter.load(this) }
 
-            content { Setting.command.help.contentEquals(message.contentToString()) } quoteReply { Helper.load(this) }
+            content { Command.help.contentEquals(message.contentToString()) } quoteReply { Helper.load(this) }
 
             content { "切换涩图开关".contentEquals(message.contentToString()) } quoteReply { Helper.setuEnable(this) }
             content { "切换缓存开关".contentEquals(message.contentToString()) } quoteReply { Helper.enableLocal(this) }
