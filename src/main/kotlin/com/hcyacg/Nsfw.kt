@@ -78,6 +78,10 @@ object Nsfw {
                         tag[t] = u.jsonPrimitive.content
                     }
                 }
+            }else{
+                jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
+                    tag[t] = u.jsonPrimitive.content
+                }
             }
         }
 

@@ -257,7 +257,7 @@ object PicDetails {
 
     }
 
-    fun getDetailOfId(id:String): PixivImageDetail? {
+    private fun getDetailOfId(id:String): PixivImageDetail? {
         try {
             val data = request(
                 Companion.Method.GET,
