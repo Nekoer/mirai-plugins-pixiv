@@ -226,7 +226,9 @@ object PicDetails {
         val toExternalResource =
             ImageUtil.getImage(large!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
-        toExternalResource.close()
+        withContext(Dispatchers.IO) {
+            toExternalResource.close()
+        }
 
         val message: Message = At(event.sender)
             .plus(Image(imageId)).plus("\n")
@@ -256,30 +258,18 @@ object PicDetails {
     }
 
     fun getDetailOfId(id:String): PixivImageDetail? {
-        try{
+        try {
             val data = request(
                 Companion.Method.GET,
                 "https://api.acgmx.com/illusts/detail?illustId=$id&reduction=true",
                 requestBody,
                 headers.build()
-            )
-
-            if (null == data){
-                return null
-            }
+            ) ?: return null
 
             val tempData = data.jsonObject["data"]?.jsonObject?.get("illust")
-            val pixivImageDetail = tempData?.let { json.decodeFromJsonElement<PixivImageDetail>(it) }
 
-            /**
-             * 判断该id是否有数据
-             */
-            if (null == pixivImageDetail) {
-                return null
-            }
-
-            return pixivImageDetail
-        }catch (e:Exception){
+            return tempData?.let<JsonElement, PixivImageDetail> { json.decodeFromJsonElement(it) } ?: return null
+        } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
