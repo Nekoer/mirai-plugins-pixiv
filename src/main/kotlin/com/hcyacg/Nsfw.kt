@@ -13,32 +13,50 @@ import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.util.concurrent.TimeUnit
 
 object Nsfw {
     private val logger = MiraiLogger.Factory.create(this::class.java)
     private val headers = Headers.Builder()
-    private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
-        .readTimeout(60000, TimeUnit.MILLISECONDS).followRedirects(false)
 
     private val tag = mutableMapOf<String,String>()
     private val json = Json
     init {
         val file = File(MiraiConsole.pluginManager.pluginsConfigFolder.path + File.separator +"com.hcyacg.pixiv"+ File.separator+ "tags.json")
-        if (!file.exists()){
-            val resourceAsStream: InputStream? =
-                Nsfw::class.java.classLoader.getResourceAsStream("tags.json")
-            resourceAsStream?.let { file.writeBytes(it.readAllBytes()) }
+        val resourceAsStream: InputStream? =
+            Nsfw::class.java.classLoader.getResourceAsStream("tags.json")
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val buffer = ByteArray(1024)
+        var len: Int
+        if (resourceAsStream != null) {
+            while (resourceAsStream.read(buffer).also { len = it } > -1) {
+                byteArrayOutputStream.write(buffer, 0, len)
+            }
+            byteArrayOutputStream.flush()
+            resourceAsStream.close()
         }
 
-        val jsonTemp = json.parseToJsonElement(file.readText())
-        jsonTemp.jsonObject.forEach { t, u ->
-            tag[t]=u.jsonPrimitive.content
+
+
+        if (!file.exists()){
+            file.writeBytes(byteArrayOutputStream.toByteArray())
         }
+
+        val resourceTempFile = json.parseToJsonElement(byteArrayOutputStream.toString("UTF-8"))
+
+        val jsonTemp = json.parseToJsonElement(file.readText())
+        if (!resourceTempFile.jsonObject["version"]!!.jsonPrimitive.content.contentEquals(jsonTemp.jsonObject["version"]!!.jsonPrimitive.content)){
+            file.writeBytes(byteArrayOutputStream.toByteArray())
+        }
+
+        jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
+            tag[t] = u.jsonPrimitive.content
+        }
+
     }
 
     suspend fun load(event: GroupMessageEvent) {
@@ -51,11 +69,12 @@ object Nsfw {
 
 
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-        val body = RequestBody.create(
-            "image/*".toMediaTypeOrNull(),
-            ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray()
-        )
-        requestBody.addFormDataPart("img", "${picUri}.png", body)
+        val body = ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray()
+        val bodies = body.toRequestBody(
+                "image/*".toMediaTypeOrNull(),
+                0, body.size
+            )
+        requestBody.addFormDataPart("img", "${picUri}.png", bodies)
 
         headers.add(
             "User-Agent",

@@ -1,6 +1,5 @@
 package com.hcyacg
 
-import com.hcyacg.Pixiv
 import com.hcyacg.Pixiv.save
 import com.hcyacg.entity.GithubReleaseItem
 import com.hcyacg.initial.Github
@@ -32,7 +31,6 @@ object AutoUpdate {
      */
     @OptIn(ConsoleFrontEndImplementation::class)
     fun load() {
-        return
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 val data =

@@ -23,7 +23,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.2",
+        version = "1.7.1-fix",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -88,7 +88,7 @@ object Pixiv : KotlinPlugin(
             val tag: Pattern = Pattern.compile("(?i)^(${Command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
             content { tag.matcher(message.contentToString()).find() } quoteReply { Tag.init(this) }
             //测试成功
-            val picToSearch: Pattern = Pattern.compile("(?i)^(${Command.picToSearch}).+$")
+            val picToSearch: Pattern = Pattern.compile("(?i)^(${Command.picToSearch})(\\n){0,1}.+$")
             content {
                 picToSearch.matcher(message.contentToString()).find()
             } quoteReply { SearchPicCenter.forward(this) }
