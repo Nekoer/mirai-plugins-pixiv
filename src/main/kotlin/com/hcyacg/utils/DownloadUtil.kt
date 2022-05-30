@@ -1,13 +1,11 @@
 package com.hcyacg.utils
 
-import com.hcyacg.initial.Config
+
 import okhttp3.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 
@@ -20,18 +18,18 @@ object DownloadUtil {
      * @param listener 下载监听
      */
     fun download(url: String, saveDir: String, listener: OnDownloadListener) {
-        val host = Config.proxy.host
-        val port = Config.proxy.port
+//        val host = Config.proxy.host
+//        val port = Config.proxy.port
 
 
         val request: Request = Request.Builder().url(url).build()
-        val client = if (host.isBlank() || port == -1){
-            okHttpClient.build()
-        }else{
-            val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-            okHttpClient.proxy(proxy).build()
-        }
-        client.newCall(request).enqueue(object : Callback {
+//        val client = if (host.isBlank() || port == -1){
+//            okHttpClient.build()
+//        }else{
+//            val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
+//            okHttpClient.proxy(proxy).build()
+//        }
+        okHttpClient.build().newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 listener.onDownloadFailed()

@@ -25,6 +25,7 @@ object Helper {
             .plus(" ·看涩图 +tag ${Command.setu} loli").plus("\n")
             .plus(" ·看萝莉 ${Command.lolicon} 查询条件 r18,查询条件最多三个用&分割，|为或者,例：少女|姐姐&黑丝|白丝&猫耳|狗耳;如果有r18则必须放在最后，开启18禁模式").plus("\n")
             .plus(" ·通过tag查找排行榜 ${Command.tag}关键词-页码").plus("\n")
+            .plus(" ·检测图片的涩情程度并打上标签 检测[图片]").plus("\n")
             .plus("===============").plus("\n")
             .plus("涩图开关").plus("\n")
             .plus(" ·pixiv:${Config.enable.sexy.pixiv}").plus("\n")

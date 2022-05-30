@@ -8,5 +8,5 @@ data class GoogleConfig(
     @SerialName("googleUrl")
     val googleUrl:String = "https://www.google.com.hk",
     @SerialName("resultNum")
-    val resultNum:Int = 6
+    val resultNum:Int = 2
 )
