@@ -23,7 +23,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.2",
+        version = "1.7.2-fix",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -111,7 +111,11 @@ object Pixiv : KotlinPlugin(
                     this
                 )
             }
-
+            content { message.contentToString().contains("设置撤回") } quoteReply {
+                Helper.changeRecall(
+                    this
+                )
+            }
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")
             content { enableSetu.matcher(message.contentToString()).find() } quoteReply { Helper.enableSetu(this) }

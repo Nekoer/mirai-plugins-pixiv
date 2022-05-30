@@ -57,6 +57,7 @@ object Helper {
             .plus(" ·切换转发开关").plus("\n")
             .plus(" ·切换图片转发开关").plus("\n")
             .plus(" ·切换晶格化开关").plus("\n")
+            .plus(" ·设置撤回").plus("\n")
             .plus(" ·(开启|关闭)(pixiv|yande|lolicon|local|konachan) 例: 开启pixiv").plus("\n")
             .plus(" ·(开启|关闭)(ascii2d|google|saucenao|yandex|iqdb) 例: 开启ascii2d").plus("\n")
         event.subject.sendMessage(message)
@@ -282,5 +283,21 @@ object Helper {
             .plus("iqdb:${Config.enable.search.iqdb}").plus("\n")
             .plus("saucenao:${Config.enable.search.saucenao}").plus("\n")
             .plus("yandex:${Config.enable.search.yandex}")
+    }
+
+    /**
+     * 修改撤回
+     */
+    suspend fun changeRecall(event: GroupMessageEvent){
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        var message = event.message.contentToString()
+        message = message.replace("设置撤回", "")
+        Config.recall = message.toLong()
+        Config.save()
+        event.subject.sendMessage("撤回时间已修改,当前为${Config.recall}ms")
     }
 }

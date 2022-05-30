@@ -1,19 +1,19 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.6.10"
+    val kotlinVersion = "1.6.21"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
 
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("net.mamoe.mirai-console") version "2.11.0-RC2"
+    id("net.mamoe.mirai-console") version "2.11.1"
     id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 }
 
 group = "com.hcyacg"
-version = "1.7.2"
+version = "1.7.2-fix"
 
 repositories {
 //    mavenLocal()

@@ -31,7 +31,7 @@ object Config : AutoSavePluginConfig("Config") {
 
     @ValueName("recall")
     @ValueDescription("自动撤回 涩图专用 单位ms")
-    var recall: Long = 5000
+    var recall: Long by value(5000L)
 
     @ValueName("tlsVersion")
     var tlsVersion: String by value("TLSv1.2")

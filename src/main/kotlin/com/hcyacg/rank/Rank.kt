@@ -122,7 +122,6 @@ object Rank {
             }
             data = TotalProcessing().dealWith("illust", mode, page, perPage, date)
 
-
             /**
              * 针对数据为空进行通知
              */
@@ -130,6 +129,14 @@ object Rank {
                 event.subject.sendMessage("当前排行榜暂无数据")
                 return
             }
+
+            if (null != data.jsonObject["code"]){
+                if (data.jsonObject["code"].toString().toInt() == 400){
+                    event.subject.sendMessage("需要会员,请购买后使用")
+                    return
+                }
+            }
+
 
 
             var message: Message = At(event.sender).plus("\n").plus("======插画排行榜($mode)======").plus("\n")
