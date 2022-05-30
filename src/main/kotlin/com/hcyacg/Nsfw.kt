@@ -1,9 +1,7 @@
 package com.hcyacg
 
-import com.hcyacg.utils.CacheUtil
-import com.hcyacg.utils.DataUtil
-import com.hcyacg.utils.ImageUtil
-import com.hcyacg.utils.RequestUtil
+
+import com.hcyacg.utils.*
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -13,9 +11,7 @@ import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.InputStream
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -25,37 +21,66 @@ object Nsfw {
 
     private val tag = mutableMapOf<String,String>()
     private val json = Json
+    const val url = "https://raw.fastgit.org/Nekoer/mirai-plugins-pixiv/master/src/main/resources/tags.json"
     init {
         val file = File(MiraiConsole.pluginManager.pluginsConfigFolder.path + File.separator +"com.hcyacg.pixiv"+ File.separator+ "tags.json")
-        val resourceAsStream: InputStream? =
-            Nsfw::class.java.classLoader.getResourceAsStream("tags.json")
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        val buffer = ByteArray(1024)
-        var len: Int
-        if (resourceAsStream != null) {
-            while (resourceAsStream.read(buffer).also { len = it } > -1) {
-                byteArrayOutputStream.write(buffer, 0, len)
-            }
-            byteArrayOutputStream.flush()
-            resourceAsStream.close()
-        }
-
-
 
         if (!file.exists()){
-            file.writeBytes(byteArrayOutputStream.toByteArray())
+            DownloadUtil.download(
+                url,
+                file.parentFile.path,
+                object : DownloadUtil.OnDownloadListener {
+                    override fun onDownloadSuccess() {
+                        logger.info("tags.json下载成功")
+                        val jsonTemp = json.parseToJsonElement(file.readText())
+                        jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
+                            tag[t] = u.jsonPrimitive.content
+                        }
+                    }
+
+                    override fun onDownloading(progress: Int) {
+
+                    }
+
+                    override fun onDownloadFailed() {
+                        logger.warning("tags.json下载失败,请使用代理或者手动下载 ${url.replace("raw.githubusercontent.com","raw.fastgit.org")} 并存放到 ${file.parentFile.path}")
+
+                    }
+                }
+            )
+        }else{
+            val data = RequestUtil.request(RequestUtil.Companion.Method.GET,url,null, headers.build())
+            val jsonTemp = json.parseToJsonElement(file.readText())
+            if (data != null) {
+                if (!data.jsonObject["version"]!!.jsonPrimitive.content.contentEquals(jsonTemp.jsonObject["version"]!!.jsonPrimitive.content)){
+                    DownloadUtil.download(
+                        url,
+                        file.parentFile.path,
+                        object : DownloadUtil.OnDownloadListener {
+                            override fun onDownloadSuccess() {
+                                logger.info("tags.json下载成功")
+                                jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
+                                    tag[t] = u.jsonPrimitive.content
+                                }
+                            }
+
+                            override fun onDownloading(progress: Int) {
+
+                            }
+
+                            override fun onDownloadFailed() {
+                                logger.warning("tags.json下载失败,请使用代理或者手动下载 ${url.replace("raw.githubusercontent.com","raw.fastgit.org")} 并存放到 ${file.parentFile.path}")
+                            }
+                        }
+                    )
+                }else{
+                    jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
+                        tag[t] = u.jsonPrimitive.content
+                    }
+                }
+            }
         }
 
-        val resourceTempFile = json.parseToJsonElement(byteArrayOutputStream.toString("UTF-8"))
-
-        val jsonTemp = json.parseToJsonElement(file.readText())
-        if (!resourceTempFile.jsonObject["version"]!!.jsonPrimitive.content.contentEquals(jsonTemp.jsonObject["version"]!!.jsonPrimitive.content)){
-            file.writeBytes(byteArrayOutputStream.toByteArray())
-        }
-
-        jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
-            tag[t] = u.jsonPrimitive.content
-        }
 
     }
 
@@ -103,7 +128,7 @@ object Nsfw {
 
             lv = lv.plus("%")
             quoteReply = if (null != tag[t] && tag[t] != ""){
-                quoteReply.plus("${tag[t]}:$lv\n")
+                quoteReply.plus("${tag[t]}(${t}):$lv\n")
             }else{
                 quoteReply.plus("${t}:$lv\n")
             }
@@ -121,7 +146,7 @@ object Nsfw {
             if (lv.toInt() >= 90) {
                 lv = lv.plus("%")
                 quoteReply = if (null != tag[t] && tag[t] != ""){
-                    quoteReply.plus("${tag[t]}:$lv\n")
+                    quoteReply.plus("${tag[t]}(${t}):$lv\n")
                 }else{
                     quoteReply.plus("${t}:$lv\n")
                 }
@@ -137,7 +162,7 @@ object Nsfw {
             if (lv.toInt() >= 90) {
                 lv = lv.plus("%")
                 quoteReply = if (null != tag[t] && tag[t] != ""){
-                    quoteReply.plus("${tag[t]}:$lv\n")
+                    quoteReply.plus("${tag[t]}(${t}):$lv\n")
                 }else{
                     quoteReply.plus("${t}:$lv\n")
                 }
@@ -145,7 +170,7 @@ object Nsfw {
 
         }
 
-        event.subject.sendMessage(quoteReply)
+        event.subject.sendMessage(quoteReply.plus("\n").plus("本功能不保证长期使用,并且标签为机翻,如果有错误请到Github仓库PR"))
     }
 
     private fun translate(data: MutableList<String>): JsonElement? {

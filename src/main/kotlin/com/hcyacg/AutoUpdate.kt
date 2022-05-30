@@ -68,10 +68,7 @@ object AutoUpdate {
                         logger.info("$temp 更新开始")
 
                         DownloadUtil.download(
-                            githubRelease[0].assets?.get(0)?.browserDownloadUrl!!.replace(
-                            "https://github.com/",
-                            "https://download.fastgit.org/"
-                            ),
+                            githubRelease[0].assets?.get(0)?.browserDownloadUrl!!,
                             MiraiConsole.pluginManager.pluginsFolder.path,
                             object : DownloadUtil.OnDownloadListener {
                                 override fun onDownloadSuccess() {
