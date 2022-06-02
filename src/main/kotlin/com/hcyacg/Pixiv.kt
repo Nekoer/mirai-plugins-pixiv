@@ -117,6 +117,9 @@ object Pixiv : KotlinPlugin(
                 )
             }
 
+            val vip = Pattern.compile("(?i)^(购买)(月费|季度|半年|年费)会员\$")
+            content { vip.matcher(message.contentToString()).find() } quoteReply {Vip.buy(this)}
+
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")
             content { enableSetu.matcher(message.contentToString()).find() } quoteReply { Helper.enableSetu(this) }
 

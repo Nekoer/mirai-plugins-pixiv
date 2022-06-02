@@ -4,6 +4,7 @@ import com.hcyacg.entity.PixivImageDetail
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
+import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
@@ -16,12 +17,14 @@ import kotlinx.serialization.json.*
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import org.apache.commons.lang3.StringUtils
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -103,29 +106,41 @@ object PicDetails {
         }
 
         if ("ugoira".contentEquals(type)) {
-            val toExternalResource = getUgoira(picId!!.toLong())?.toExternalResource()
-            val imageId: String? = toExternalResource?.uploadAsImage(event.group)?.imageId
-            withContext(Dispatchers.IO) {
-                toExternalResource?.close()
+            val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
+                val byte = getUgoira(picId!!.toLong())
+                LowPoly.generate(
+                    ByteArrayInputStream(byte),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
+            }else{
+                getUgoira(picId!!.toLong())!!.toExternalResource()
             }
-            if (null != imageId) {
-                val message: Message = At(event.sender)
-                    .plus(Image(imageId)).plus("\n")
-                    .plus("ID: $picId").plus("\n")
-                    .plus("标题: $title").plus("\n")
-                    .plus("画师: $author").plus("\n")
-                    .plus("画师ID: $authorId").plus("\n")
-                    .plus("当前共有: $pageCount 张,现处在 $page 张")
 
-                /**
-                 * 判断是否配置了撤回时间
-                 */
+            val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
+            withContext(Dispatchers.IO) {
+                toExternalResource.close()
+            }
+            val message: Message = At(event.sender)
+                .plus(Image(imageId)).plus("\n")
+                .plus("ID: $picId").plus("\n")
+                .plus("标题: $title").plus("\n")
+                .plus("画师: $author").plus("\n")
+                .plus("画师ID: $authorId").plus("\n")
+                .plus("当前共有: $pageCount 张,现处在 $page 张")
 
-                if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
-                    event.subject.sendMessage(message).recallIn(Config.recall)
-                } else {
-                    event.subject.sendMessage(message)
-                }
+            /**
+             * 判断是否配置了撤回时间
+             */
+
+            if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L && !Config.lowPoly) {
+                event.subject.sendMessage(message).recallIn(Config.recall)
+            } else {
+                event.subject.sendMessage(message)
             }
 
             return
@@ -158,8 +173,22 @@ object PicDetails {
             )
             if (null != detail.metaPages){
                 detail.metaPages.forEach {
-                    val toExternalResource =
+                    val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
+                        val byte = ImageUtil.getImage(it.imageUrls?.original!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray()
+                        LowPoly.generate(
+                            ByteArrayInputStream(byte),
+                            200,
+                            1F,
+                            true,
+                            "png",
+                            false,
+                            200
+                        ).toByteArray().toExternalResource()
+                    }else{
                         ImageUtil.getImage(it.imageUrls?.original!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+                    }
+
+
                     val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                     nodes.add(
                         ForwardMessage.Node(
@@ -178,8 +207,21 @@ object PicDetails {
 
             if (null != detail.metaSinglePage && detail.metaSinglePage.originalImageUrl?.isNotBlank() == true){
 
-                val toExternalResource =
+                val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
+                    val byte = ImageUtil.getImage(detail.metaSinglePage.originalImageUrl.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray()
+                    LowPoly.generate(
+                        ByteArrayInputStream(byte),
+                        200,
+                        1F,
+                        true,
+                        "png",
+                        false,
+                        200
+                    ).toByteArray().toExternalResource()
+                }else{
                     ImageUtil.getImage(detail.metaSinglePage.originalImageUrl.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+                }
+
                 val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                 nodes.add(
                     ForwardMessage.Node(
@@ -209,7 +251,7 @@ object PicDetails {
              * 判断是否配置了撤回时间
              */
 
-            if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
+            if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L && !Config.lowPoly) {
                 event.subject.sendMessage(forward).recallIn(Config.recall)
             } else {
                 event.subject.sendMessage(forward)
@@ -223,8 +265,21 @@ object PicDetails {
             detail.metaSinglePage!!.originalImageUrl
         }
 
-        val toExternalResource =
+        val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
+            val byte = ImageUtil.getImage(large!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray()
+            LowPoly.generate(
+                ByteArrayInputStream(byte),
+                200,
+                1F,
+                true,
+                "png",
+                false,
+                200
+            ).toByteArray().toExternalResource()
+        }else{
             ImageUtil.getImage(large!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray().toExternalResource()
+        }
+
         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
         withContext(Dispatchers.IO) {
             toExternalResource.close()
@@ -249,7 +304,7 @@ object PicDetails {
          * 判断是否配置了撤回时间
          */
 
-        if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L) {
+        if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L && !Config.lowPoly) {
             event.subject.sendMessage(message).recallIn(Config.recall)
         } else {
             event.subject.sendMessage(message)

@@ -58,6 +58,7 @@ object Helper {
             .plus(" ·切换图片转发开关").plus("\n")
             .plus(" ·切换晶格化开关").plus("\n")
             .plus(" ·设置撤回").plus("\n")
+            .plus(" ·购买(月费|季度|半年|年费)会员").plus("\n")
             .plus(" ·(开启|关闭)(pixiv|yande|lolicon|local|konachan) 例: 开启pixiv").plus("\n")
             .plus(" ·(开启|关闭)(ascii2d|google|saucenao|yandex|iqdb) 例: 开启ascii2d").plus("\n")
         event.subject.sendMessage(message)

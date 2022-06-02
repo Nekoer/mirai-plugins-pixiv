@@ -64,7 +64,9 @@ class RequestUtil {
 
 
             if (response!!.isSuccessful) {
-                return response!!.body?.string()?.let { Json.parseToJsonElement(it) }
+                return response!!.body?.string()?.let {
+                    Json.parseToJsonElement(it)
+                }
             }
 
             response!!.close()
