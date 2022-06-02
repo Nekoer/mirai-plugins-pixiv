@@ -132,7 +132,7 @@ object Rank {
 
             if (null != data.jsonObject["code"]){
                 if (data.jsonObject["code"].toString().toInt() == 400){
-                    event.subject.sendMessage("需要会员,请购买后使用")
+                    event.subject.sendMessage("需要会员,请购买后使用,请输入购买(月费|季度|半年|年费)会员")
                     return
                 }
             }
