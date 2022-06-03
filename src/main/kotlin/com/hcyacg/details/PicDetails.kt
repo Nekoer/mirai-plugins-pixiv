@@ -17,7 +17,6 @@ import kotlinx.serialization.json.*
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
-import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
@@ -25,6 +24,7 @@ import okhttp3.*
 import org.apache.commons.lang3.StringUtils
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -106,21 +106,21 @@ object PicDetails {
         }
 
         if ("ugoira".contentEquals(type)) {
-            val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
-                val byte = getUgoira(picId!!.toLong())
-                LowPoly.generate(
-                    ByteArrayInputStream(byte),
-                    200,
-                    1F,
-                    true,
-                    "png",
-                    false,
-                    200
-                ).toByteArray().toExternalResource()
-            }else{
-                getUgoira(picId!!.toLong())!!.toExternalResource()
-            }
-
+//            val toExternalResource = if (sanityLevel == 6 && Config.lowPoly){
+//                val byte = getUgoira(picId!!.toLong())
+//                LowPoly.generate(
+//                    ByteArrayInputStream(byte),
+//                    200,
+//                    1F,
+//                    true,
+//                    "png",
+//                    false,
+//                    200
+//                ).toByteArray().toExternalResource()
+//            }else{
+//                getUgoira(picId!!.toLong())!!.toExternalResource()
+//            }
+            val toExternalResource = getUgoira(picId!!.toLong())!!.toExternalResource()
             val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
@@ -382,7 +382,28 @@ object PicDetails {
                     withContext(Dispatchers.IO) {
                         ImageIO.read(File(dir.path + File.separator + "image" + File.separator + pic[i]))
                     } // 读入需要播放的jpg文件
-                e.addFrame(src[i]) //添加到帧中
+
+
+                val out = ByteArrayOutputStream()
+                withContext(Dispatchers.IO) {
+                    ImageIO.write(src[i], "png", out)
+                }
+//                val input: InputStream = ByteArrayInputStream(out.toByteArray())
+                e.addFrame(withContext(Dispatchers.IO) {
+                    ImageIO.read(
+                        ByteArrayInputStream(
+                            LowPoly.generate(
+                                ByteArrayInputStream(out.toByteArray()),
+                                200,
+                                1F,
+                                true,
+                                "png",
+                                false,
+                                200
+                            ).toByteArray()
+                        )
+                    )
+                }) //添加到帧中
             }
 
             e.finish()
