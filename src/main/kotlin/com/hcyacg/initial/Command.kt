@@ -44,4 +44,8 @@ object Command: AutoSavePluginConfig("Command") {
     @ValueName("help")
     @ValueDescription("帮助")
     var help: String by value("帮助")
+
+    @ValueName("晶格化")
+    @ValueDescription("晶格化命令")
+    var lowPoly: String by value("帮助")
 }

@@ -6,24 +6,35 @@ import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Github
 import com.hcyacg.initial.Setting
+import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.rank.Rank
 import com.hcyacg.rank.Tag
 import com.hcyacg.search.SearchPicCenter
 import com.hcyacg.search.Trace
 import com.hcyacg.sexy.LoliconCenter
 import com.hcyacg.sexy.SexyCenter
+import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
+import com.hcyacg.utils.ImageUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.events.BotLeaveEvent
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeGroupMessages
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
+import java.io.ByteArrayInputStream
 import java.util.regex.Pattern
 
 object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.2-fix",
+        version = "1.7.4-future",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -126,7 +137,28 @@ object Pixiv : KotlinPlugin(
             val enableSearch = Pattern.compile("(?i)^(关闭|开启)(ascii2d|google|saucenao|yandex|iqdb)\$")
             content { enableSearch.matcher(message.contentToString()).find() } quoteReply { Helper.enableSearch(this) }
 
+            val lowPoly = Pattern.compile("(?i)^(${Command.lowPoly}).+\$")
+            content { lowPoly.matcher(message.contentToString()).find() } quoteReply {
+                val picUri = DataUtil.getSubString(this.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
+                    .replace("-", "")
+                val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+                val byte = ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray()
+                val toExternalResource = LowPoly.generate(
+                    ByteArrayInputStream(byte),
+                    200,
+                    1F,
+                    true,
+                    "png",
+                    false,
+                    200
+                ).toByteArray().toExternalResource()
 
+
+                withContext(Dispatchers.IO){
+                    subject.sendImage(toExternalResource)
+                }
+                toExternalResource.close()
+            }
 //            content { "test".contentEquals(message.contentToString()) } quoteReply {PicDetails.getUgoira()}
 
 //            val coloring: Pattern = Pattern.compile("(?i)^(上色)$")
