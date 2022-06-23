@@ -4,6 +4,7 @@ import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.lowpoly.LowPoly
+import com.hcyacg.lowpoly.utils.CheckFileTypeUtil
 import com.hcyacg.rank.TotalProcessing
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
@@ -133,16 +134,6 @@ object SexyCenter {
                 if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
 
-                    /**
-                     * 生成low poly风格的图片
-                     * @param inputStream  源图片
-                     * @param accuracy     精度值，越小精度越高
-                     * @param scale        缩放，源图片和目标图片的尺寸比例
-                     * @param fill         是否填充颜色，为false时只绘制线条
-                     * @param format       输出图片格式
-                     * @param antiAliasing 是否抗锯齿
-                     * @param pointCount   随机点的数量
-                     */
                     toExternalResource = LowPoly.generate(
                         ByteArrayInputStream(byte),
                         200,
@@ -162,7 +153,7 @@ object SexyCenter {
                     toExternalResource.close()
                 }
 
-                val quoteReply: QuoteReply = QuoteReply(event.message)
+                val quoteReply = QuoteReply(event.message)
                 /**
                  * 判断是否配置了撤回时间
                  */
@@ -225,16 +216,6 @@ object SexyCenter {
                 if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.YANDE).toByteArray()
 
-                    /**
-                     * 生成low poly风格的图片
-                     * @param inputStream  源图片
-                     * @param accuracy     精度值，越小精度越高
-                     * @param scale        缩放，源图片和目标图片的尺寸比例
-                     * @param fill         是否填充颜色，为false时只绘制线条
-                     * @param format       输出图片格式
-                     * @param antiAliasing 是否抗锯齿
-                     * @param pointCount   随机点的数量
-                     */
                     toExternalResource = LowPoly.generate(
                         ByteArrayInputStream(byte),
                         200,
@@ -255,7 +236,7 @@ object SexyCenter {
                     toExternalResource.close()
                 }
 
-                val quoteReply: QuoteReply = QuoteReply(event.message)
+                val quoteReply = QuoteReply(event.message)
                 /**
                  * 判断是否配置了撤回时间
                  */
@@ -329,16 +310,6 @@ object SexyCenter {
             if (Config.lowPoly){
                 val byte = ImageUtil.getImage(lolicon.data[0].urls?.original!!, CacheUtil.Type.LOLICON).toByteArray()
 
-                /**
-                 * 生成low poly风格的图片
-                 * @param inputStream  源图片
-                 * @param accuracy     精度值，越小精度越高
-                 * @param scale        缩放，源图片和目标图片的尺寸比例
-                 * @param fill         是否填充颜色，为false时只绘制线条
-                 * @param format       输出图片格式
-                 * @param antiAliasing 是否抗锯齿
-                 * @param pointCount   随机点的数量
-                 */
                 toExternalResource = LowPoly.generate(
                     ByteArrayInputStream(byte),
                     200,
@@ -413,16 +384,7 @@ object SexyCenter {
                 if (Config.lowPoly){
                     val byte = ImageUtil.getImage(jpegUrl!!, CacheUtil.Type.KONACHAN).toByteArray()
 
-                    /**
-                     * 生成low poly风格的图片
-                     * @param inputStream  源图片
-                     * @param accuracy     精度值，越小精度越高
-                     * @param scale        缩放，源图片和目标图片的尺寸比例
-                     * @param fill         是否填充颜色，为false时只绘制线条
-                     * @param format       输出图片格式
-                     * @param antiAliasing 是否抗锯齿
-                     * @param pointCount   随机点的数量
-                     */
+
                     toExternalResource = LowPoly.generate(
                         ByteArrayInputStream(byte),
                         200,
@@ -443,7 +405,7 @@ object SexyCenter {
                 withContext(Dispatchers.IO) {
                     toExternalResource.close()
                 }
-                val quoteReply: QuoteReply = QuoteReply(event.message)
+                val quoteReply = QuoteReply(event.message)
 
                 if (Config.recall != 0L) {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
@@ -504,16 +466,7 @@ object SexyCenter {
             if (Config.lowPoly){
                 val byte = ImageUtil.getImage(image!!.replace("i.pximg.net", "i.acgmx.com"), CacheUtil.Type.PIXIV).toByteArray()
 
-                /**
-                 * 生成low poly风格的图片
-                 * @param inputStream  源图片
-                 * @param accuracy     精度值，越小精度越高
-                 * @param scale        缩放，源图片和目标图片的尺寸比例
-                 * @param fill         是否填充颜色，为false时只绘制线条
-                 * @param format       输出图片格式
-                 * @param antiAliasing 是否抗锯齿
-                 * @param pointCount   随机点的数量
-                 */
+
                 toExternalResource = LowPoly.generate(
                     ByteArrayInputStream(byte),
                     200,
@@ -532,7 +485,7 @@ object SexyCenter {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            val quoteReply: QuoteReply = QuoteReply(event.message)
+            val quoteReply = QuoteReply(event.message)
             if (Config.recall != 0L) {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
                     .recallIn(Config.recall)
@@ -593,16 +546,7 @@ object SexyCenter {
             val toExternalResource: ExternalResource
             if (Config.lowPoly){
 
-                /**
-                 * 生成low poly风格的图片
-                 * @param inputStream  源图片
-                 * @param accuracy     精度值，越小精度越高
-                 * @param scale        缩放，源图片和目标图片的尺寸比例
-                 * @param fill         是否填充颜色，为false时只绘制线条
-                 * @param format       输出图片格式
-                 * @param antiAliasing 是否抗锯齿
-                 * @param pointCount   随机点的数量
-                 */
+
                 toExternalResource = LowPoly.generate(
                     ByteArrayInputStream(out.toByteArray()),
                     200,
@@ -648,7 +592,16 @@ object SexyCenter {
                     if (tempFile.isDirectory) {
                         imageList.addAll(getAllImage(tempFile))
                     } else {
-                        imageList.add(tempFile.path)
+                        val type = CheckFileTypeUtil.getFileType(tempFile.path)
+                        if (tempFile.endsWith(".jpg") || tempFile.endsWith(".png") || tempFile.endsWith(".gif")){
+                            if (arrayOf("jpg","png","gif").contains(type)){
+                                imageList.add(tempFile.path)
+                            }else{
+                                logger.warning("${tempFile.path}不是有效图片")
+                            }
+                        }else{
+                            logger.warning("${tempFile.path}不是有效图片")
+                        }
                     }
                 }
             } else {
