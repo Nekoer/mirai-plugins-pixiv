@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
@@ -384,26 +385,31 @@ object PicDetails {
                     } // 读入需要播放的jpg文件
 
 
-                val out = ByteArrayOutputStream()
-                withContext(Dispatchers.IO) {
-                    ImageIO.write(src[i], "png", out)
-                }
-//                val input: InputStream = ByteArrayInputStream(out.toByteArray())
-                e.addFrame(withContext(Dispatchers.IO) {
-                    ImageIO.read(
-                        ByteArrayInputStream(
-                            LowPoly.generate(
-                                ByteArrayInputStream(out.toByteArray()),
-                                200,
-                                1F,
-                                true,
-                                "png",
-                                false,
-                                200
-                            ).toByteArray()
+
+                if(Config.lowPoly){
+                    val out = ByteArrayOutputStream()
+                    withContext(Dispatchers.IO) {
+                        ImageIO.write(src[i], "png", out)
+                    }
+                    e.addFrame(withContext(Dispatchers.IO) {
+                        ImageIO.read(
+                            ByteArrayInputStream(
+                                LowPoly.generate(
+                                    ByteArrayInputStream(out.toByteArray()),
+                                    200,
+                                    1F,
+                                    true,
+                                    "png",
+                                    false,
+                                    200
+                                ).toByteArray()
+                            )
                         )
-                    )
-                }) //添加到帧中
+                    }) //添加到帧中
+                }else{
+                    e.addFrame(src[i])
+                }
+
             }
 
             e.finish()
