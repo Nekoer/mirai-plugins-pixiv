@@ -34,3 +34,10 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: buildPlugin
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      if: success()
+      with:
+        path: /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai/
+        retention-days: 0
+        if-no-files-found: error
