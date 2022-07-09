@@ -1,7 +1,6 @@
 package com.hcyacg.search
 
 import com.hcyacg.initial.Config
-import com.hcyacg.initial.Setting
 import com.hcyacg.utils.DataUtil
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent

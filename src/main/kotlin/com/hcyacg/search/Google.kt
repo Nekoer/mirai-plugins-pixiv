@@ -1,7 +1,6 @@
 package com.hcyacg.search
 
 import com.hcyacg.initial.Config
-import com.hcyacg.initial.Setting
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -97,6 +96,7 @@ object Google {
 
 //            println(doc.select("#search").select(".g"))
 
+            response.close()
             return list
         }catch (e: IOException) {
             logger.warning("连接至Google出现异常，请检查网络")

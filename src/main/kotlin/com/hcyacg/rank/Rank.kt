@@ -122,6 +122,7 @@ object Rank {
             }
             data = TotalProcessing().dealWith("illust", mode, page, perPage, date)
 
+
             /**
              * 针对数据为空进行通知
              */
