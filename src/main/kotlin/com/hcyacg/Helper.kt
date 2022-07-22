@@ -1,5 +1,6 @@
 package com.hcyacg
 
+import com.hcyacg.Pixiv.reload
 import com.hcyacg.Pixiv.save
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
@@ -300,5 +301,26 @@ object Helper {
         Config.recall = message.toLong()
         Config.save()
         event.subject.sendMessage("撤回时间已修改,当前为${Config.recall}ms")
+    }
+
+    suspend fun black(event: GroupMessageEvent){
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        var message = event.message.contentToString()
+
+        when (message){
+            "ban" -> {
+                Setting.black.add(event.group.id.toString())
+            }
+            "unban" -> {
+                Setting.black.remove(event.group.id.toString())
+            }
+        }
+        Setting.save();
+        Setting.reload();
+        event.subject.sendMessage("该群已${message}")
     }
 }

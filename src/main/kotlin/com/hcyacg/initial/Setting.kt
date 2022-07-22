@@ -16,4 +16,8 @@ object Setting : AutoSavePluginConfig("Setting") {
     @ValueDescription("可以使用涩图的QQ群")
     var groups: MutableList<String> by value()
 
+    @ValueName("black")
+    @ValueDescription("黑名单群")
+    var black: MutableList<String> by value()
+
 }

@@ -106,7 +106,6 @@ object Trace {
             //开始时间
             val formatter = SimpleDateFormat("HH:mm:ss")
             formatter.timeZone = TimeZone.getTimeZone("GMT+00:00")
-            println(from.toString())
             val startTime = formatter.format(from.toString().split(".")[0].toLong() * 1000)
             val endTime = formatter.format(to.toString().split(".")[0].toLong() * 1000)
 
