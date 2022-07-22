@@ -49,9 +49,7 @@ object Trace {
             /**
              * 获取图片的代码
              */
-            val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.jpg]")!!
-                .replace("}.png]", "")
-                .replace("}.mirai]", "").replace("}.gif]", "")
+            val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
 
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
@@ -63,6 +61,9 @@ object Trace {
             val trace = data?.let { Json.decodeFromJsonElement<com.hcyacg.entity.Trace>(it) }
 //                logger.warning(data.toString())
             val result = trace?.result
+
+
+
 
             val message: Message = At(event.sender).plus("\n")
 
@@ -105,6 +106,7 @@ object Trace {
             //开始时间
             val formatter = SimpleDateFormat("HH:mm:ss")
             formatter.timeZone = TimeZone.getTimeZone("GMT+00:00")
+            println(from.toString())
             val startTime = formatter.format(from.toString().split(".")[0].toLong() * 1000)
             val endTime = formatter.format(to.toString().split(".")[0].toLong() * 1000)
 
