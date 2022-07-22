@@ -51,7 +51,7 @@ object Pixiv : KotlinPlugin(
         Config.reload()
         Command.reload()
         Github.reload()
-//        AutoUpdate.load()
+        AutoUpdate.load()
 
 
 

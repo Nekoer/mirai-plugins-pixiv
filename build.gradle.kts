@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.7.4-future-2"
+version = "1.7.4"
 
 repositories {
 //    mavenLocal()
@@ -55,13 +55,15 @@ mavenCentralPublish {
     artifactId = "pixiv"
     groupId = "com.hcyacg"
     projectName = "mirai plugins pixiv"
+
+    //developer(1,"Nekoer","hcyacg@vip.qq.com","","","","")
 //    workingDir = rootProject.buildDir.resolve("pub").apply { mkdirs() }
 
     // description from project.description by default
-    githubProject("Nekoer", "mirai-plugins-pixiv")
-
+    //githubProject("Nekoer", "mirai-plugins-pixiv")
+    singleDevGithubProject("Nekoer", "mirai-plugins-pixiv")
     useCentralS01()
-    licenseFromGitHubProject("licenseAGPL-3.0", "master")
+    licenseFromGitHubProject("AGPL-3.0", "master")
 
     publication {
         artifact(tasks.getByName("buildPlugin"))
