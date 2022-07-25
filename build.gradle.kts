@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.7.4"
+version = "1.7.4-fix"
 
 repositories {
 //    mavenLocal()

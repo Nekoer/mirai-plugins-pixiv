@@ -525,10 +525,13 @@ object SexyCenter {
         }
         try {
             val file = File(Config.localImagePath)
+
             val list = getAllImage(file)
-
+            if(list.size == 0){
+                return
+            }
             val num = 0 until list.size
-
+            println(num)
             val imageFile = File(list[num.random()])
             val input = withContext(Dispatchers.IO) {
                 FileInputStream(imageFile)
@@ -593,7 +596,7 @@ object SexyCenter {
                         imageList.addAll(getAllImage(tempFile))
                     } else {
                         val type = CheckFileTypeUtil.getFileType(tempFile.path)
-                        if (tempFile.endsWith(".jpg") || tempFile.endsWith(".png") || tempFile.endsWith(".gif")){
+                        if (tempFile.path.endsWith(".jpg") || tempFile.path.endsWith(".png") || tempFile.path.endsWith(".gif")){
                             if (arrayOf("jpg","png","gif").contains(type)){
                                 imageList.add(tempFile.path)
                             }else{
