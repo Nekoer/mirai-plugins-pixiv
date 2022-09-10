@@ -1,9 +1,8 @@
 package com.hcyacg.lowpoly.utils;
 
 import kotlinx.serialization.json.Json;
+import net.mamoe.mirai.utils.MiraiLogger;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 public class CheckFileTypeUtil {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(CheckFileTypeUtil.class);
+    private static final MiraiLogger logger = MiraiLogger.Factory.INSTANCE.create(CheckFileTypeUtil.class);
 
     private CheckFileTypeUtil() {
 

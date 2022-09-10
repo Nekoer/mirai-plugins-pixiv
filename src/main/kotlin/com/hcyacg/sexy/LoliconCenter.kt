@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.utils.ExternalResource
@@ -42,17 +43,20 @@ object LoliconCenter {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
+
         if (!Config.enable.sexy.lolicon) {
             event.subject.sendMessage(message.plus("已关闭lolicon"))
             return
         }
+
+        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
         val data: JsonElement?
 
         val temp = event.message.contentToString().replace("${Command.lolicon} ", "").split(" ")
         //https://api.lolicon.app/setu/v2?r18=2&proxy=i.acgmx.com&size=original&keyword=loli
         var r18 = 0
         val keyword: String
-        var url = "https://api.lolicon.app/setu/v2?proxy=i.acgmx.com&size=original"
+        var url = "https://api.lolicon.app/setu/v2?proxy=i.acgmx.com&size=${Config.loliconSize}"
 
         if (temp.isNotEmpty()) {
             keyword = temp[0]

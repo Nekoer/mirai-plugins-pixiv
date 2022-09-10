@@ -4,6 +4,7 @@ import com.hcyacg.details.PicDetails
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
+import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
+import java.io.ByteArrayInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -121,7 +123,7 @@ object Rank {
                 }
             }
             data = TotalProcessing().dealWith("illust", mode, page, perPage, date)
-
+            event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
 
             /**
              * 针对数据为空进行通知
@@ -180,7 +182,21 @@ object Rank {
 //                val detail = PicDetails.getDetailOfId(id!!)
 
                     if ("ugoira".contentEquals(type)) {
-                        val toExternalResource = PicDetails.getUgoira(id!!.toLong())?.toExternalResource()
+                        val toExternalResource = if(sanityLevel == 6 && Config.lowPoly){
+                            val byte = PicDetails.getUgoira(id!!.toLong())
+                            LowPoly.generate(
+                                ByteArrayInputStream(byte),
+                                200,
+                                1F,
+                                true,
+                                "png",
+                                false,
+                                200
+                            ).toByteArray().toExternalResource()
+                        }else{
+                            PicDetails.getUgoira(id!!.toLong())?.toExternalResource()
+                        }
+
                         val imageId: String? = toExternalResource?.uploadAsImage(event.group)?.imageId
                         withContext(Dispatchers.IO) {
                             toExternalResource?.close()
@@ -198,11 +214,24 @@ object Rank {
                         }
 
                     } else {
-                        val toExternalResource =
-                            ImageUtil.getImage(
-                                large!!.replace("i.pximg.net", "i.acgmx.com"),
-                                CacheUtil.Type.PIXIV
+                        val toExternalResource = if(sanityLevel == 6 && Config.lowPoly){
+                            val byte = ImageUtil.getImage(large!!.replace("i.pximg.net", "i.acgmx.com"),CacheUtil.Type.PIXIV).toByteArray()
+                            LowPoly.generate(
+                                ByteArrayInputStream(byte),
+                                200,
+                                1F,
+                                true,
+                                "png",
+                                false,
+                                200
                             ).toByteArray().toExternalResource()
+                        }else{
+                                ImageUtil.getImage(
+                                    large!!.replace("i.pximg.net", "i.acgmx.com"),
+                                    CacheUtil.Type.PIXIV
+                                ).toByteArray().toExternalResource()
+                        }
+
                         val imageId: String = toExternalResource.uploadAsImage(event.group).imageId
                         withContext(Dispatchers.IO) {
                             toExternalResource.close()

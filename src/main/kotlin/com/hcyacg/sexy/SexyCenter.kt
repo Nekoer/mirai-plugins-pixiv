@@ -48,7 +48,7 @@ object SexyCenter {
             event.subject.sendMessage("该群无权限查看涩图")
             return
         }
-
+        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
 
         val list = mutableListOf<String>()
         if (Config.enable.sexy.pixiv) {

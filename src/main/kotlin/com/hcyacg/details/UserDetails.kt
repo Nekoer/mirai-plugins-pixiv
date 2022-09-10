@@ -25,6 +25,7 @@ object UserDetails {
     private val requestBody: RequestBody? = null
     private val logger = MiraiLogger.Factory.create(this::class.java)
     suspend fun findUserWorksById(event: GroupMessageEvent){
+
         var data: JsonElement? = null
         var authorData: JsonElement? = null
         var enable = false
@@ -32,6 +33,7 @@ object UserDetails {
             if (!event.message.contentToString().contains(Command.findUserWorksById)){
                 return
             }
+            event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
             if (Setting.groups.contains(event.group.id.toString())) {
                 enable = true
             }

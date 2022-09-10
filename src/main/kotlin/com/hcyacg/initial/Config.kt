@@ -51,6 +51,10 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueName("lowPoly")
     @ValueDescription("涩图晶格化开关")
     var lowPoly: Boolean by value(false)
+
+    @ValueName("loliconSize")
+    @ValueDescription("lolicon图大小:original,regular,small,thumb,mini")
+    var loliconSize:String by value("original")
 }
 
 @NoArgOpenDataClass

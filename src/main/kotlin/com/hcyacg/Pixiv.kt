@@ -13,6 +13,7 @@ import com.hcyacg.search.SearchPicCenter
 import com.hcyacg.search.Trace
 import com.hcyacg.sexy.LoliconCenter
 import com.hcyacg.sexy.SexyCenter
+import com.hcyacg.sexy.WarehouseCenter
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
@@ -128,6 +129,18 @@ object Pixiv : KotlinPlugin(
                 )
             }
 
+            content { message.contentToString().contains("设置loli图片大小") && !Setting.black.contains(group.id.toString()) } quoteReply {
+                Helper.setLoliconSize(
+                    this
+                )
+            }
+
+            content { message.contentToString().contains("suki") && !Setting.black.contains(group.id.toString()) } quoteReply {
+                WarehouseCenter.init(
+                    this
+                )
+            }
+
             val vip = Pattern.compile("(?i)^(购买)(月费|季度|半年|年费)会员\$")
             content { vip.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply {Vip.buy(this)}
 
@@ -136,6 +149,7 @@ object Pixiv : KotlinPlugin(
 
             val enableSearch = Pattern.compile("(?i)^(关闭|开启)(ascii2d|google|saucenao|yandex|iqdb)\$")
             content { enableSearch.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply { Helper.enableSearch(this) }
+
 
             val lowPoly = Pattern.compile("(?i)^(${Command.lowPoly}).+\$")
             content { lowPoly.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply {

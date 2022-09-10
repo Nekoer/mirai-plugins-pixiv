@@ -4,6 +4,7 @@ import com.hcyacg.initial.Config
 import com.hcyacg.utils.DataUtil
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.RawForwardMessage
 
@@ -14,7 +15,7 @@ object SearchPicCenter {
 
     suspend fun forward(event: GroupMessageEvent) {
         val nodes = mutableListOf<ForwardMessage.Node>()
-
+        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
         /**
          * 获取图片的代码
          */

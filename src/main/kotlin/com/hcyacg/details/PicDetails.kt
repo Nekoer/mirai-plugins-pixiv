@@ -37,13 +37,14 @@ object PicDetails {
     private val logger = MiraiLogger.Factory.create(this::class.java)
     private val json = Json { ignoreUnknownKeys = true }
     suspend fun load(event: GroupMessageEvent){
+
         val data: JsonElement?
         val messageChain: MessageChain = event.message
 
         if (!event.message.contentToString().contains(Command.getDetailOfId)) {
             return
         }
-
+        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"));
         /**
          * 获取要查询的id和图片的张数，通过分割获取
          */
@@ -366,7 +367,7 @@ object PicDetails {
                     .headers(headers.build()).get().build()
             ).execute()
 
-            output.writeBytes(response.body?.byteStream()?.readBytes()!!)
+            output.writeBytes(response.body.byteStream().readBytes())
 
             ZipUtil.unzip(dir.path + File.separator + "${ugoiraId}.zip", dir.path + File.separator + "image")
 

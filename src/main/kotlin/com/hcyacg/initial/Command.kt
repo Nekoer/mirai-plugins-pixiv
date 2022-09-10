@@ -48,4 +48,8 @@ object Command: AutoSavePluginConfig("Command") {
     @ValueName("lowPoly")
     @ValueDescription("晶格化命令")
     var lowPoly: String by value("晶格化")
+
+    @ValueName("warehouse")
+    @ValueDescription("从指定库存发送图片")
+    var warehouse:String by value("来点库存")
 }
