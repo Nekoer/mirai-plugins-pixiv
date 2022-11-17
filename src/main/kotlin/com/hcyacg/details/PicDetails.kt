@@ -287,8 +287,8 @@ object PicDetails {
             toExternalResource.close()
         }
 
-        val message: Message = At(event.sender)
-            .plus(Image(imageId)).plus("\n")
+        val imageMessage: Message = Image(imageId)
+        val message: Message = At(event.sender).plus("\n")
             .plus("ID: $picId").plus("\n")
             .plus("标题: $title").plus("\n")
             .plus("画师: $author").plus("\n")
@@ -299,7 +299,8 @@ object PicDetails {
          * 判断key是否配置，未配置提醒用户
          */
         if (Config.token.acgmx.isBlank()) {
-            message.plus("\n").plus("您未配置acgmx_token,请到https://www.acgmx.com/account申请")
+            event.subject.sendMessage("您未配置acgmx_token,请到https://www.acgmx.com/account申请")
+            return
         }
 
         /**
@@ -308,8 +309,10 @@ object PicDetails {
 
         if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L && !Config.lowPoly) {
             event.subject.sendMessage(message).recallIn(Config.recall)
+            event.subject.sendMessage(imageMessage)
         } else {
             event.subject.sendMessage(message)
+            event.subject.sendMessage(imageMessage)
         }
 
     }

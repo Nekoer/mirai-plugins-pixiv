@@ -37,7 +37,9 @@ data class LData(
     @SerialName("urls")
     val urls: Urls? = Urls(),
     @SerialName("width")
-    val width: Int? = 0
+    val width: Int? = 0,
+    @SerialName("aiType")
+    val aiType: Int? = 0
 )
 
 @Serializable

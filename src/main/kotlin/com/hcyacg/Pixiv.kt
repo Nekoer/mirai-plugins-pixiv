@@ -33,7 +33,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.4",
+        version = "1.7.5",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
@@ -52,7 +52,7 @@ object Pixiv : KotlinPlugin(
         Config.reload()
         Command.reload()
         Github.reload()
-        AutoUpdate.load()
+//        AutoUpdate.load()
 
 
 

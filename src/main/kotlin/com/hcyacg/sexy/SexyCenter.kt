@@ -159,8 +159,8 @@ object SexyCenter {
                  */
 
                 if (Config.recall != 0L) {
-                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
-                        .recallIn(Config.recall)
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId))).recallIn(Config.recall)
+                    event.subject.sendMessage("来源:YANDE($id)")
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
                 }
@@ -242,8 +242,8 @@ object SexyCenter {
                  */
 
                 if (Config.recall != 0L) {
-                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
-                        .recallIn(Config.recall)
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId))).recallIn(Config.recall)
+                    event.subject.sendMessage("来源:YANDE($id)")
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:YANDE($id)"))
                 }
@@ -331,8 +331,8 @@ object SexyCenter {
             }
 
             if (Config.recall != 0L) {
-                event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
-                    .recallIn(Config.recall)
+                event.subject.sendMessage(message.plus(Image(imageId))).recallIn(Config.recall)
+                event.subject.sendMessage("来源:Lolicon(${lolicon.data[0].pid})")
             } else {
                 event.subject.sendMessage(message.plus(Image(imageId)).plus("来源:Lolicon(${lolicon.data[0].pid})"))
             }
@@ -408,8 +408,8 @@ object SexyCenter {
                 val quoteReply = QuoteReply(event.message)
 
                 if (Config.recall != 0L) {
-                    event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
-                        .recallIn(Config.recall)
+                    event.subject.sendMessage(quoteReply.plus(Image(imageId))).recallIn(Config.recall)
+                    event.subject.sendMessage("来源:KONACHAN($id)")
                 } else {
                     event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:KONACHAN($id)"))
                 }
@@ -487,8 +487,8 @@ object SexyCenter {
             }
             val quoteReply = QuoteReply(event.message)
             if (Config.recall != 0L) {
-                event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
-                    .recallIn(Config.recall)
+                event.subject.sendMessage(quoteReply.plus(Image(imageId))).recallIn(Config.recall)
+                event.subject.sendMessage("来源:Pixiv($id)")
             } else {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
