@@ -308,8 +308,8 @@ object PicDetails {
          */
 
         if (sanityLevel == 6 && StringUtils.isNotBlank(Config.recall.toString()) && Config.recall != 0L && !Config.lowPoly) {
-            event.subject.sendMessage(message).recallIn(Config.recall)
-            event.subject.sendMessage(imageMessage)
+            event.subject.sendMessage(message)
+            event.subject.sendMessage(imageMessage).recallIn(Config.recall)
         } else {
             event.subject.sendMessage(message)
             event.subject.sendMessage(imageMessage)
