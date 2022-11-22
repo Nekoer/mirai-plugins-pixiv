@@ -1,5 +1,13 @@
 # mirai-plugins-pixiv
-可查看pixiv排行榜，作者作品，插画图片等等
+
+---
+
+[![MiraiForum](https://img.shields.io/badge/post-on%20MiraiForum-yellow)](https://mirai.mamoe.net/topic/461)
+![Stars](https://img.shields.io/github/stars/Nekoer/mirai-plugins-pixiv)
+![Downloads](https://img.shields.io/github/downloads/Nekoer/mirai-plugins-pixiv/total)
+[![Release](https://img.shields.io/github/v/release/Nekoer/mirai-plugins-pixiv)](https://github.com/Nekoer/mirai-plugins-pixiv/releases)
+
+* 可查看pixiv排行榜，作者作品，插画图片等等
 - pixiv排行榜
 - 查看图片
 - 查看作者作品
