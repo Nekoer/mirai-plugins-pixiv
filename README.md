@@ -1,7 +1,4 @@
 # mirai-plugins-pixiv
-
----
-
 [![MiraiForum](https://img.shields.io/badge/post-on%20MiraiForum-yellow)](https://mirai.mamoe.net/topic/461)
 ![Stars](https://img.shields.io/github/stars/Nekoer/mirai-plugins-pixiv)
 ![Downloads](https://img.shields.io/github/downloads/Nekoer/mirai-plugins-pixiv/total)
