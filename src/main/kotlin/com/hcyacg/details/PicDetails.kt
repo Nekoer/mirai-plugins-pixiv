@@ -89,7 +89,7 @@ object PicDetails {
          * 判断该id是否有数据
          */
         if (null == detail) {
-            event.subject.sendMessage("该作品是被删除或不存在的作品ID.")
+            event.subject.sendMessage("该作品是被删除或不存在的作品ID亦或您不是本站会员.")
             return
         }
 
