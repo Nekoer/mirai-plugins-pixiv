@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonElement
 import okhttp3.*
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit
 class RequestUtil {
     companion object {
         private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
-            .readTimeout(60000, TimeUnit.MILLISECONDS)
+            .readTimeout(60000, TimeUnit.MILLISECONDS).protocols(Collections.singletonList(Protocol.HTTP_1_1))
         private var response: Response? = null
 
         fun request(
