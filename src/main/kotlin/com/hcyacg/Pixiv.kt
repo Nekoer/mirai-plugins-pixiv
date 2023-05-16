@@ -33,7 +33,7 @@ object Pixiv : KotlinPlugin(
     JvmPluginDescription(
         id = "com.hcyacg.pixiv",
         name = "pixiv插画",
-        version = "1.7.5",
+        version = "1.7.6",
     ) {
         author("Nekoer")
         info("""pixiv插画""")
