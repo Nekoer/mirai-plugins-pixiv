@@ -49,11 +49,14 @@ object Trace {
             /**
              * 获取图片的代码
              */
-            val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
+            /**
+             * 获取图片的代码
+             */
+            val picUri = DataUtil.getImageLink(event.message) ?: return
 
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://api.trace.moe/search?cutBorders&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri.replace("-", "")}/0?",
+                "https://api.trace.moe/search?cutBorders&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
                 requestBody,
                 headers.build()
             )

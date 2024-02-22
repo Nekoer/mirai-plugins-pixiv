@@ -17,6 +17,10 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueDescription("开关 search:搜索图片的引擎开关 sexy:涩图库来源开关")
     var enable: Enable by value()
 
+    @ValueName("waitTime")
+    @ValueDescription("等待时间 搜图搜番时指令与图片分开发送模式下的等待时间（秒）")
+    var waitTime: Int by value(60)
+
     @ValueName("forward")
     @ValueDescription("转发模式 rankAndTagAndUserByForward:排行榜、标签、作者三个变成转发模式; imageToForward:查看图片详情变成转发模式 可发送该作品的所有图片")
     val forward: ForWard by value()

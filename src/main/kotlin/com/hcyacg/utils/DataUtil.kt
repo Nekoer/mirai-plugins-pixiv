@@ -1,5 +1,7 @@
 package com.hcyacg.utils;
 
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.MessageChain
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.text.NumberFormat
@@ -11,6 +13,25 @@ import java.text.NumberFormat
  */
 class DataUtil {
     companion object {
+        fun getImageLink(chain: MessageChain): String? {
+            chain.forEach {
+                if (it is Image) {
+                    val pic = it.toString()
+                    if (pic.contains("mirai:image")) {
+                        return pic
+                            .substringAfter("[mirai:image:{")
+                            .substringBefore("}")
+                            .replace("-", "")
+                    } else if (pic.contains("overflow:image")) {
+                        return pic
+                            .substringAfter("[overflow:image,url=http://gchat.qpic.cn/gchatpic_new/0/0-0-")
+                            .substringBefore("/0")
+                    }
+                }
+            }
+            return null
+        }
+
         fun getSubString(text: String, left: String?, right: String?): String? {
             var result = ""
             var zLen: Int

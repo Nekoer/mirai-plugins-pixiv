@@ -90,8 +90,7 @@ object Nsfw {
 
     suspend fun load(event: GroupMessageEvent) {
         println("检测中")
-        val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
-            .replace("-", "")
+        val picUri = DataUtil.getImageLink(event.message) ?: return
         val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
 
         val uri = "https://api.dnlab.net/animepic/upload"
