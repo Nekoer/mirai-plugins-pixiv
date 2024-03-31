@@ -16,20 +16,22 @@ class DataUtil {
         fun getImageLink(chain: MessageChain): String? {
             chain.forEach {
                 if (it is Image) {
-                    val pic = it.toString()
-                    if (pic.contains("mirai:image")) {
-                        return pic
-                            .substringAfter("[mirai:image:{")
-                            .substringBefore("}")
-                            .replace("-", "")
-                    } else if (pic.contains("overflow:image")) {
-                        return pic
-                            .substringAfter("[overflow:image,url=http://gchat.qpic.cn/gchatpic_new/0/0-0-")
-                            .substringBefore("/0")
-                    }
+                    return getImageLinkFromImage(it)
                 }
             }
             return null
+        }
+
+        fun getImageLinkFromImage(image: Image): String {
+            val pic = image.toString()
+            return if (pic.contains("overflow:image")) {
+                pic
+                    .substringAfter("[overflow:image,url=")
+                    .substringBefore("?")
+            } else {
+                val picUri = image.imageId.replace("-", "")
+                "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+            }
         }
 
         fun getSubString(text: String, left: String?, right: String?): String? {

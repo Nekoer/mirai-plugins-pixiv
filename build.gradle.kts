@@ -26,9 +26,9 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.jsoup:jsoup:1.15.4")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.madgag:animated-gif-lib:1.4")
-    compileOnly("org.bytedeco:javacv-platform:1.5.10")
+    implementation("org.bytedeco:javacv-platform:1.5.10")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
 }

@@ -56,7 +56,7 @@ object Trace {
 
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://api.trace.moe/search?cutBorders&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                "https://api.trace.moe/search?cutBorders&url=${picUri}",
                 requestBody,
                 headers.build()
             )

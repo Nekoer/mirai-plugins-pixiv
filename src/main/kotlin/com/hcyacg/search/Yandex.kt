@@ -36,7 +36,7 @@ object Yandex {
         val list = mutableListOf<Message>()
 
         try {
-            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+            val url = picUri
 
             val yandexImageUpload =
                 "https://yandex.com/images-apphost/image-download?url=${url}&cbird=111&images_avatars_size=preview&images_avatars_namespace=images-cbir"

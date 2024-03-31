@@ -34,7 +34,7 @@ object Google {
         try{
             val host = Config.proxy.host
             val port = Config.proxy.port
-            val uri = "${Config.googleConfig.googleUrl}/searchbyimage?image_url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0&hl=zh-CN"
+            val uri = "${Config.googleConfig.googleUrl}/searchbyimage?image_url=${picUri}&hl=zh-CN"
 
             val response: Response = if (host.isBlank() || port == -1) {
                 client.build().newCall(Request.Builder().url(uri).headers(headers.build()).get().build()).execute()

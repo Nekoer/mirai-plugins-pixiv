@@ -9,6 +9,7 @@ import com.hcyacg.utils.RequestUtil
 import com.hcyacg.entity.SaucenaoItem
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
+import com.hcyacg.utils.DataUtil.Companion.getImageLinkFromImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
@@ -58,11 +59,11 @@ object Saucenao {
 //                .replace("-", "")
 
             //旋转三次
-            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+            val url = picUri
             val rotate90 = rotate(withContext(Dispatchers.IO) {
                 ImageIO.read(URL(url))
             }, 90).toByteArray().toExternalResource()
-            val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
+            val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {
                 rotate90.close()
             }
@@ -70,7 +71,7 @@ object Saucenao {
             val rotate180 = rotate(withContext(Dispatchers.IO) {
                 ImageIO.read(URL(url))
             }, 180).toByteArray().toExternalResource()
-            val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
+            val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {
                 rotate180.close()
             }
@@ -78,16 +79,16 @@ object Saucenao {
             val rotate270 = rotate(withContext(Dispatchers.IO) {
                 ImageIO.read(URL(url))
             }, 270).toByteArray().toExternalResource()
-            val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
+            val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {
                 rotate270.close()
             }
 
 
             val imageData = getInfo(picUri)
-            val imageData90 = getInfo(code90!!)
-            val imageData180 = getInfo(code180!!)
-            val imageData270 = getInfo(code270!!)
+            val imageData90 = getInfo(code90)
+            val imageData180 = getInfo(code180)
+            val imageData270 = getInfo(code270)
 
 
             /**
@@ -216,7 +217,7 @@ object Saucenao {
         try {
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Config.token.saucenao}&testmode=1&numres=16&url=${picUri}",
                 requestBody,
                 headers.build()
             )

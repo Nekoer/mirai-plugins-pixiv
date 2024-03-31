@@ -25,7 +25,7 @@ object Iqdb {
         val list = mutableListOf<Message>()
 
         try{
-            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+            val url = picUri
             val lqdb = "https://www.iqdb.org"
             val message: Message = At(event.sender).plus("\n")
 

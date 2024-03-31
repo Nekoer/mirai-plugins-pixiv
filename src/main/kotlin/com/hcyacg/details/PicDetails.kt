@@ -370,7 +370,7 @@ object PicDetails {
                     .headers(headers.build()).get().build()
             ).execute()
 
-            output.writeBytes(response.body.byteStream().readBytes())
+            response.body?.byteStream()?.let { output.writeBytes(it.readBytes()) }
 
             ZipUtil.unzip(dir.path + File.separator + "${ugoiraId}.zip", dir.path + File.separator + "image")
 

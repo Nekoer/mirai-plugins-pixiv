@@ -26,8 +26,7 @@ object Style2paints {
         /**
          * 获取图片的代码
          */
-        val picUri = DataUtil.getImageLink(event.message) ?: return
-        val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+        val url = DataUtil.getImageLink(event.message) ?: return
 
         val base64 = Base64.getEncoder().encodeToString(ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray())
 

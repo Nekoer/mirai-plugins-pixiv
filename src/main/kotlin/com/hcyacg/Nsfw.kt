@@ -90,8 +90,7 @@ object Nsfw {
 
     suspend fun load(event: GroupMessageEvent) {
         println("检测中")
-        val picUri = DataUtil.getImageLink(event.message) ?: return
-        val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
+        val url = DataUtil.getImageLink(event.message) ?: return
 
         val uri = "https://api.dnlab.net/animepic/upload"
 
@@ -102,7 +101,7 @@ object Nsfw {
                 "image/*".toMediaTypeOrNull(),
                 0, body.size
             )
-        requestBody.addFormDataPart("img", "${picUri}.png", bodies)
+        requestBody.addFormDataPart("img", "image.png", bodies)
 
         headers.add(
             "User-Agent",
