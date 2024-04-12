@@ -90,7 +90,7 @@ object Nsfw {
 
     suspend fun load(event: GroupMessageEvent) {
         println("检测中")
-        val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
+        val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[overflow:image:{", "}.")!!
             .replace("-", "")
         val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
 

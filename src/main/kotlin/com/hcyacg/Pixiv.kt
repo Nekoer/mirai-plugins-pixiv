@@ -153,7 +153,7 @@ object Pixiv : KotlinPlugin(
 
             val lowPoly = Pattern.compile("(?i)^(${Command.lowPoly}).+\$")
             content { lowPoly.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply {
-                val picUri = DataUtil.getSubString(this.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
+                val picUri = DataUtil.getSubString(this.message.toString().replace(" ", ""), "[overflow:image:{", "}.")!!
                     .replace("-", "")
                 val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
                 val byte = ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray()

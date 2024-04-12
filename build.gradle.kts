@@ -1,27 +1,45 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.6.21"
+    val kotlinVersion = "1.8.21"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("net.mamoe.mirai-console") version "2.15.0-M1"
+    id("net.mamoe.mirai-console") version "2.16.0"
     id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 }
 
 group = "com.hcyacg"
-version = "1.7.6"
+version = "1.7.7"
 
 repositories {
+//    maven("https://maven.aliyun.com/repository/public")
 //    mavenLocal()
 //    maven("https://maven.aliyun.com/repository/gradle-plugin")
 //    maven("https://maven.aliyun.com/repository/central")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     mavenCentral()
+//    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
+
+mirai {
+    noTestCore = true
+    setupConsoleTestRuntime {
+        // 移除 mirai-core 依赖
+        classpath = classpath.filter {
+            !it.nameWithoutExtension.startsWith("mirai-core-jvm")
+        }
+    }
+}
+
 dependencies {
+    val overflowVersion = "2.16.0-febc5da-SNAPSHOT"
+//    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
+//    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
@@ -31,6 +49,7 @@ dependencies {
     compileOnly("org.bytedeco:javacv-platform:1.5.7")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
+
 }
 
 noArg {

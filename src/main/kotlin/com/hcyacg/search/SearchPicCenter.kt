@@ -19,7 +19,7 @@ object SearchPicCenter {
         /**
          * 获取图片的代码
          */
-        val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[mirai:image:{", "}.")!!
+        val picUri = DataUtil.getSubString(event.message.toString().replace(" ", ""), "[overflow:image:{", "}.")!!
             .replace("-", "")
 
         if (Config.enable.search.ascii2d) {
