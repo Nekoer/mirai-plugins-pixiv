@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.7.7"
+version = "1.7.8"
 
 repositories {
 //    maven("https://maven.aliyun.com/repository/public")
@@ -63,6 +63,7 @@ allOpen{
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
+
 }
 
 val compileTestKotlin: KotlinCompile by tasks

@@ -80,7 +80,7 @@ object Pixiv : KotlinPlugin(
                 findUserWorksById.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
             } quoteReply { UserDetails.findUserWorksById(this) }
             //测试成功
-            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic}).+$")
+            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic})(\\n){0,1}.+\$")
             content { searchInfoByPic.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply {
                 Trace.searchInfoByPic(
                     this

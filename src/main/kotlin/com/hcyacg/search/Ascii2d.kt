@@ -64,8 +64,7 @@ object Ascii2d {
             val sslsf = SSLConnectionSocketFactory(sc)
             val httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
 
-            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
-            val ascii2d = "https://ascii2d.net/search/url/$url"
+            val ascii2d = "https://ascii2d.net/search/url/$picUri"
 //            val headers = mutableMapOf<String,String>()
 //            headers["User-Agent"] = "PostmanRuntime/7.28.4"
 

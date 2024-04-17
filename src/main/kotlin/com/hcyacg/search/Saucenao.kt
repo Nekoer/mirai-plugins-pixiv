@@ -58,9 +58,8 @@ object Saucenao {
 //                .replace("-", "")
 
             //旋转三次
-            val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
             val rotate90 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 90).toByteArray().toExternalResource()
             val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             withContext(Dispatchers.IO) {
@@ -68,7 +67,7 @@ object Saucenao {
             }
 
             val rotate180 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 180).toByteArray().toExternalResource()
             val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             withContext(Dispatchers.IO) {
@@ -76,7 +75,7 @@ object Saucenao {
             }
 
             val rotate270 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 270).toByteArray().toExternalResource()
             val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
             withContext(Dispatchers.IO) {
