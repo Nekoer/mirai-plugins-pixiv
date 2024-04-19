@@ -56,9 +56,9 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueDescription("lolicon图大小:original,regular,small,thumb,mini")
     var loliconSize:String by value("original")
 
-//    @ValueName("deepdanbooru")
-//    @ValueDescription("https://github.com/nanoskript/deepdanbooru-docker")
-//    var deepdanbooru: String by value("192.168.10.108:7777")
+    @ValueName("deepdanbooru")
+    @ValueDescription("https://github.com/nanoskript/deepdanbooru-docker")
+    var deepdanbooru: String by value("192.168.10.108:7777")
 }
 
 @NoArgOpenDataClass
