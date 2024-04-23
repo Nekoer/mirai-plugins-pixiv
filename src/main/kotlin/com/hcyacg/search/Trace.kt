@@ -49,11 +49,9 @@ object Trace {
             /**
              * 获取图片的代码
              */
-            /**
-             * 获取图片的代码
-             */
             val picUri = DataUtil.getImageLink(event.message) ?: return
 
+            println(picUri)
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://api.trace.moe/search?cutBorders&url=${picUri}",
@@ -62,9 +60,10 @@ object Trace {
             )
 
             val trace = data?.let { Json.decodeFromJsonElement<com.hcyacg.entity.Trace>(it) }
-//                logger.warning(data.toString())
+                logger.warning(data.toString())
             val result = trace?.result
 
+            println(result)
 
 
 

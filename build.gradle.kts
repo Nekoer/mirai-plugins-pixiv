@@ -5,7 +5,6 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
     id("net.mamoe.mirai-console") version "2.16.0"
@@ -13,16 +12,28 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.7.6"
+version = "1.7.8"
 
 repositories {
-//    mavenLocal()
     maven("https://maven.aliyun.com/repository/central")
     maven("https://maven.aliyun.com/repository/gradle-plugin")
-    mavenCentral()
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
+
+mirai {
+    noTestCore = true
+    setupConsoleTestRuntime {
+        // 移除 mirai-core 依赖
+        classpath = classpath.filter {
+            !it.nameWithoutExtension.startsWith("mirai-core-jvm")
+        }
+    }
+}
+
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.14.0")
+    val overflowVersion = "2.16.0-febc5da-SNAPSHOT"
+    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.jsoup:jsoup:1.15.4")
@@ -31,6 +42,7 @@ dependencies {
     implementation("org.bytedeco:javacv-platform:1.5.10")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
+
 }
 
 noArg {
@@ -44,6 +56,7 @@ allOpen{
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
+
 }
 
 val compileTestKotlin: KotlinCompile by tasks

@@ -59,9 +59,8 @@ object Saucenao {
 //                .replace("-", "")
 
             //旋转三次
-            val url = picUri
             val rotate90 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 90).toByteArray().toExternalResource()
             val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {
@@ -69,7 +68,7 @@ object Saucenao {
             }
 
             val rotate180 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 180).toByteArray().toExternalResource()
             val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {
@@ -77,7 +76,7 @@ object Saucenao {
             }
 
             val rotate270 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(url))
+                ImageIO.read(URL(picUri))
             }, 270).toByteArray().toExternalResource()
             val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
             withContext(Dispatchers.IO) {

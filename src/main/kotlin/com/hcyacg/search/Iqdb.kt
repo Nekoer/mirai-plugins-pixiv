@@ -25,12 +25,11 @@ object Iqdb {
         val list = mutableListOf<Message>()
 
         try{
-            val url = picUri
             val lqdb = "https://www.iqdb.org"
             val message: Message = At(event.sender).plus("\n")
 
 
-            val doc: Document = Jsoup.connect(lqdb).data("url",url).timeout(60000).post()
+            val doc: Document = Jsoup.connect(lqdb).data("url",picUri).timeout(60000).post()
             val select = doc.select("#pages div")
             select.forEach {
                 if(!it.html().contains("Your image")){

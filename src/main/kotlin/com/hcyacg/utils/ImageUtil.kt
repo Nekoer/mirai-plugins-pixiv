@@ -51,6 +51,8 @@ class ImageUtil {
                     imageUri.split("/").last()
                 }
 
+//                println("temp: $temp")
+//                println("imageUri: $imageUri")
                 val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){
                     client.build().newCall(request).execute()
@@ -59,15 +61,13 @@ class ImageUtil {
                     client.proxy(proxy).build().newCall(request).execute()
                 }
 
-                val `in` = response.body?.byteStream()
+                val `in` = response.body.byteStream()
 
 
                 val buffer = ByteArray(2048)
                 var len = 0
-                if (`in` != null) {
-                    while (`in`.read(buffer).also { len = it } > 0) {
-                        infoStream.write(buffer, 0, len)
-                    }
+                while (`in`.read(buffer).also { len = it } > 0) {
+                    infoStream.write(buffer, 0, len)
                 }
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()

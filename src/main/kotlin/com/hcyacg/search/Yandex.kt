@@ -36,10 +36,8 @@ object Yandex {
         val list = mutableListOf<Message>()
 
         try {
-            val url = picUri
-
             val yandexImageUpload =
-                "https://yandex.com/images-apphost/image-download?url=${url}&cbird=111&images_avatars_size=preview&images_avatars_namespace=images-cbir"
+                "https://yandex.com/images-apphost/image-download?url=${picUri}&cbird=111&images_avatars_size=preview&images_avatars_namespace=images-cbir"
             val message: Message = At(event.sender).plus("\n")
 
 
