@@ -103,10 +103,7 @@ object Nsfw {
     suspend fun load(event: GroupMessageEvent) {
         println("监控中……")
         event.subject.sendMessage(At(event.sender).plus("检测中,请稍后"));
-        val url = DataUtil.getImageLink(event.message) ?: return
-
-        val picUri = DataUtil.getSubString(event.message.toString().replace("\\s*".toRegex(), "").replace(" ", ""), "[overflow:image,url=", "]")!!
-
+        val picUri = DataUtil.getImageLink(event.message) ?: return
 
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
         val body = ImageUtil.getImage(picUri, CacheUtil.Type.NONSUPPORT).toByteArray()
