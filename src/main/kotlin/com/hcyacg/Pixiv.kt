@@ -82,7 +82,7 @@ object Pixiv : KotlinPlugin(
                 findUserWorksById.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
             } quoteReply { UserDetails.findUserWorksById(this) }
             //测试成功
-            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic})(\\n){0,1}.+\$")
+            val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic})(?:\\n?.+)?\$")
             content { searchInfoByPic.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
                     &&  (searchAnimeWaitMap["${this.group.id}-${this.sender.id}"]?: 0) < System.currentTimeMillis()
             } quoteReply {
