@@ -4,135 +4,143 @@ import com.hcyacg.initial.Config
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.At
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger
-import okhttp3.*
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.IOException
-import java.net.*
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 
 object Google {
     private val logger = MiraiLogger.Factory.create(this::class.java)
-    private val headers = Headers.Builder()
-    private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
-        .readTimeout(60000, TimeUnit.MILLISECONDS).followRedirects(false)
-
 
     suspend fun load(event: GroupMessageEvent, picUri: String): List<Message> {
 
         val list = mutableListOf<Message>()
+        val ua =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        val host = Config.proxy.host
+        val port = Config.proxy.port
 
-        try{
-            val host = Config.proxy.host
-            val port = Config.proxy.port
-            val uri = "${Config.googleConfig.googleUrl}/searchbyimage?image_url=${DataUtil.urlEncode(picUri)}&hl=zh-CN"
-
-            val response: Response = if (host.isBlank() || port == -1) {
-                client.build().newCall(Request.Builder().url(uri).headers(headers.build()).get().build()).execute()
+        val doc = try {
+            if (host.isBlank() || port == -1) {
+                Jsoup.connect(
+                    "${Config.googleConfig.googleImageUrl}/searchbyimage?safe=off&sbisrc=tg&image_url=${
+                        DataUtil.urlEncode(picUri)
+                    }&hl=zh-CN"
+                ).header("User-Agent", ua).timeout(60000).get()
             } else {
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-                client.proxy(proxy).build().newCall(Request.Builder().url(uri).headers(headers.build()).get().build()).execute()
+                Jsoup.connect(
+                    "${Config.googleConfig.googleImageUrl}/searchbyimage?safe=off&sbisrc=tg&image_url=${
+                        DataUtil.urlEncode(picUri)
+                    }&hl=zh-CN"
+                ).header("User-Agent", ua).proxy(host, port).timeout(60000).get()
             }
-
-            val location = response.header("location")
-
-            val tbs = getParamByUrl(location,"tbs")
-
-
-            val doc: Document = if (host.isBlank() || port == -1){
-                Jsoup.connect("${Config.googleConfig.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").timeout(60000).get()
-            }else{
-                Jsoup.connect("${Config.googleConfig.googleUrl}/search?tbs=${tbs}&hl=zh-CN").header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44").proxy(host,port).timeout(60000).get()
+        } catch (e: Exception) {
+            return if (isNetworkException(e)) {
+                logger.warning("连接至Google的网络出现异常，请检查网络")
+                list.add(PlainText("Google网络异常"))
+                list
+            } else {
+                logger.error(e)
+                list
             }
+        }
 
-            val pattern = Pattern.compile("<script.*?>.*?(data:image.*?)['|\\\"];.*?</script>")
-            val matcher = pattern.matcher(doc.html())
-            val map = mutableMapOf<String,String>()
-            while (matcher.find()){
-                val id = DataUtil.getSubString(matcher.group(),"var ii=['","'];")
-                val base64 = DataUtil.getSubString(matcher.group(),"(function(){var s='","';var ii=['")
-                if (id != null) {
-                    if (base64 != null) {
-                        if (id.isNotEmpty() && base64.isNotEmpty())
-                            map[id] = base64.replace("\\x3d\\x3d","")
+        // Google精准搜索
+        try {
+            val links = doc.select("a[href]")
+            val linkHref = links.find { it.text() == "全部尺寸" }
+            if (linkHref != null) {
+                val docAllSize: Document = if (host.isBlank() || port == -1) {
+                    Jsoup.connect("${Config.googleConfig.googleImageUrl}${linkHref.attr("href")}")
+                        .header("User-Agent", ua).timeout(60000).get()
+                } else {
+                    Jsoup.connect("${Config.googleConfig.googleImageUrl}${linkHref.attr("href")}")
+                        .header("User-Agent", ua).proxy(host, port).timeout(60000).get()
+                }
+                val element = docAllSize.selectFirst("div[data-ri]")
+                if (element != null) {
+                    val title = element.selectFirst("h3")?.text()
+                    val url = element.selectFirst("a[rel=\"noopener\"]")?.attr("href")
+                    val imageDataId = element.selectFirst("img")?.attr("data-iid")
+                    val image = docAllSize.html().substringAfter("_setImgSrc('${imageDataId}','").substringBefore("');</script>")
+                    val imageId = if (image.isNotBlank()) {
+                        val toExternalResource = ImageUtil.generateImage(image)?.toExternalResource()
+                        toExternalResource?.uploadAsImage(event.group)?.imageId
+                    } else {
+                        null
                     }
+
+                    list.add(buildMessageChain {
+                        +At(event.sender)
+                        +PlainText("\n")
+                        if (imageId != null) {
+                            +Image(imageId)
+                        }
+                        +PlainText("\n当前为Google精准搜索\n")
+                        +PlainText("标题：${title}\n")
+                        +PlainText("网址：${url}")
+                    })
                 }
             }
+        } catch (e: Exception) {
+            if (isNetworkException(e)) {
+                logger.warning("连接至Google的网络出现异常，请检查网络")
+                list.add(PlainText("Google精准搜索网络异常"))
+            } else {
+                logger.error(e)
+            }
+        }
 
-
+        // Google相似搜索
+        try {
             var num = 0
-            doc.select("#search").select(".g").forEach {
-
-                if (num < Config.googleConfig.resultNum - 1){
-                    var message: Message = At(event.sender).plus("\n")
-                    val title = it.selectFirst("h3")?.html()
+            doc.select("#search .ULSxyf").last()?.select(".g")?.forEach {
+                if (num < Config.googleConfig.resultNum - 1) {
+                    val title = it.selectFirst("h3")?.text()
                     val url = it.selectFirst("a")?.attr("href")
-                    val image = map[it.select("img").attr("id")]
-
-                    if (null != image){
+                    val imageDataId = it.select("img").last()?.id()
+                    val image = doc.html().substringBefore("';var ii=['${imageDataId}']").substringAfterLast("(function(){var s='")
+                    println(image)
+                    val imageId = if (image.isNotBlank()) {
                         val toExternalResource = ImageUtil.generateImage(image)?.toExternalResource()
-                        val imageId = toExternalResource?.uploadAsImage(event.group)?.imageId
-                        if (null != imageId){
-                            message = message.plus(Image(imageId)).plus("\n")
-                        }
+                        toExternalResource?.uploadAsImage(event.group)?.imageId
+                    } else {
+                        null
                     }
 
-                    list.add(message
-                        .plus("当前为Google").plus("\n")
-                        .plus("标题：${title}").plus("\n")
-                        .plus("网址：${url}").plus("\n"))
+                    list.add(buildMessageChain {
+                        +At(event.sender)
+                        +PlainText("\n")
+                        if (imageId != null) {
+                            +Image(imageId)
+                        }
+                        +PlainText("\n当前为Google相似搜索\n")
+                        +PlainText("标题：${title}\n")
+                        +PlainText("网址：${url}")
+                    })
                     num += 1
                 }
             }
-
-//            println(doc.select("#search").select(".g"))
-
-            response.close()
-            return list
-        }catch (e: IOException) {
-            logger.warning("连接至Google出现异常，请检查网络")
-            list.add(PlainText("Google网络异常"))
-            return list
-        } catch (e: HttpStatusException) {
-            logger.warning("连接至Google的网络超时，请检查网络")
-            list.add(PlainText("Google网络异常"))
-            return list
-        } catch (e: SocketTimeoutException) {
-            logger.warning("连接至Google的网络超时，请检查网络")
-            list.add(PlainText("Google网络异常"))
-            return list
-        } catch (e: ConnectException) {
-            logger.warning("连接至Google的网络出现异常，请检查网络")
-            list.add(PlainText("Google网络异常"))
-            return list
-        } catch (e: SocketException) {
-            logger.warning("连接至Google的网络出现异常，请检查网络")
-            list.add(PlainText("Google网络异常"))
-            return list
         } catch (e: Exception) {
-            logger.error(e)
-            return list
-        }
-    }
-
-    private fun getParamByUrl(url: String?, name: String): String? {
-        url?.replace("${Config.googleConfig.googleUrl}/search?", "")?.split("&")?.forEach {
-            val data = it.split("=")
-            if (data[0].contentEquals(name)) {
-                return data[1]
+            if (isNetworkException(e)) {
+                logger.warning("连接至Google的网络出现异常，请检查网络")
+                list.add(PlainText("Google相似搜索网络异常"))
+            } else {
+                logger.error(e)
             }
         }
-        return null
+
+        return list
     }
 
-
+    private fun isNetworkException(e: Exception): Boolean {
+        return e is HttpStatusException || e is SocketTimeoutException || e is ConnectException || e is SocketException || e is IOException
+    }
 }
