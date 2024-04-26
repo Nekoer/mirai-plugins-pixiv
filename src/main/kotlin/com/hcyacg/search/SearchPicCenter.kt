@@ -32,7 +32,7 @@ object SearchPicCenter {
         val srSauceNao = scope.launch {
             if (Config.enable.search.saucenao) {
                 //Saucenao 搜索
-                val picToSearch = Saucenao.picToSearch(event, picUri)
+                val picToSearch = Saucenao.picToSearch(event, picUri, Config.saucenaoEco)
                 picToSearch.forEach {
                     nodes.add(
                         ForwardMessage.Node(

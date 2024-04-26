@@ -39,7 +39,7 @@ object Saucenao {
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent, picUri: String): List<Message> {
+    suspend fun picToSearch(event: GroupMessageEvent, picUri: String, eco: Boolean): List<Message> {
         val list = mutableListOf<Message>()
 
         try {
@@ -58,80 +58,85 @@ object Saucenao {
 //            val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
 //                .replace("-", "")
 
-            //旋转三次
-            val rotate90 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 90).toByteArray().toExternalResource()
-            val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
-            withContext(Dispatchers.IO) {
-                rotate90.close()
-            }
-
-            val rotate180 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 180).toByteArray().toExternalResource()
-            val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
-            withContext(Dispatchers.IO) {
-                rotate180.close()
-            }
-
-            val rotate270 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 270).toByteArray().toExternalResource()
-            val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
-            withContext(Dispatchers.IO) {
-                rotate270.close()
-            }
-
-
-            val imageData = getInfo(picUri)
-            val imageData90 = getInfo(code90)
-            val imageData180 = getInfo(code180)
-            val imageData270 = getInfo(code270)
-
-
-            /**
-             * 进行相似度对比，取最大值
-             */
-            var similarity: Double = 0.0
-            var similarity90: Double = 0.0
-            var similarity180: Double = 0.0
-            var similarity270: Double = 0.0
-
-            val double = mutableListOf<Double>()
-
-            if (null != imageData) {
-                similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity)
-            }
-
-            if (null != imageData90) {
-                similarity90 = imageData90.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity90)
-            }
-
-            if (null != imageData180) {
-                similarity180 = imageData180.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity180)
-            }
-
-            if (null != imageData270) {
-                similarity270 = imageData270.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity270)
-            }
-
-            when (double.max()) {
-                similarity -> {
-                    imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+            if (eco) {
+                val imageData = getInfo(picUri)
+                imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+            } else {
+                //旋转三次
+                val rotate90 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 90).toByteArray().toExternalResource()
+                val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate90.close()
                 }
-                similarity90 -> {
-                    imageData90?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+
+                val rotate180 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 180).toByteArray().toExternalResource()
+                val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate180.close()
                 }
-                similarity180 -> {
-                    imageData180?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+
+                val rotate270 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 270).toByteArray().toExternalResource()
+                val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate270.close()
                 }
-                similarity270 -> {
-                    imageData270?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+
+
+                val imageData = getInfo(picUri)
+                val imageData90 = getInfo(code90)
+                val imageData180 = getInfo(code180)
+                val imageData270 = getInfo(code270)
+
+
+                /**
+                 * 进行相似度对比，取最大值
+                 */
+                var similarity: Double = 0.0
+                var similarity90: Double = 0.0
+                var similarity180: Double = 0.0
+                var similarity270: Double = 0.0
+
+                val double = mutableListOf<Double>()
+
+                if (null != imageData) {
+                    similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity)
+                }
+
+                if (null != imageData90) {
+                    similarity90 = imageData90.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity90)
+                }
+
+                if (null != imageData180) {
+                    similarity180 = imageData180.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity180)
+                }
+
+                if (null != imageData270) {
+                    similarity270 = imageData270.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity270)
+                }
+
+                when (double.max()) {
+                    similarity -> {
+                        imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
+                    similarity90 -> {
+                        imageData90?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
+                    similarity180 -> {
+                        imageData180?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
+                    similarity270 -> {
+                        imageData270?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
                 }
             }
             return list

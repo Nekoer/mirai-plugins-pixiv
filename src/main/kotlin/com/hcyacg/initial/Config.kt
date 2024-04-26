@@ -48,6 +48,10 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueDescription("本地图库目录")
     val localImagePath: String by value(System.getProperty("user.dir") + File.separator + "image")
 
+    @ValueName("saucenaoEco")
+    @ValueDescription("Saucenao的省流经济模式 可以节约Token次数 也可避免部分Onebot实现产生浪费 可能降低准确度")
+    var saucenaoEco: Boolean by value(false)
+
     @ValueName("google")
     @ValueDescription("Google搜索配置项 镜像源和搜索显示的数量")
     val googleConfig: GoogleConfig by value()
