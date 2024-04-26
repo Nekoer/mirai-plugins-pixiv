@@ -100,7 +100,8 @@ object Pixiv : KotlinPlugin(
                 Trace.searchInfoByPic(this)
             }
 
-            content { message.contentToString().contains("检测")  && !Setting.black.contains(group.id.toString()) } reply { Nsfw.load(this) }
+            val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(\\n){0,1}.+$")
+            content { detect.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } reply { Nsfw.load(this) }
 
             val setu: Pattern = Pattern.compile("(?i)^(${Command.setu})\$")
             content { setu.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString()) } reply { SexyCenter.init(this) }

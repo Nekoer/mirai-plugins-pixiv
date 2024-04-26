@@ -41,6 +41,10 @@ object Command: AutoSavePluginConfig("Command") {
     @ValueDescription("搜索标签排行榜 tag-萝莉-页码")
     var tag: String by value("tag-")
 
+    @ValueName("detect")
+    @ValueDescription("检测图片的涩情程度并打上标签")
+    var detect: String by value("检测")
+
     @ValueName("help")
     @ValueDescription("帮助")
     var help: String by value("帮助")
