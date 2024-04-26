@@ -25,9 +25,7 @@ class DataUtil {
         fun getImageLinkFromImage(image: Image): String {
             val pic = image.toString()
             return if (pic.contains("overflow:image")) {
-                pic
-                    .substringAfter("[overflow:image,url=")
-                    .substringBefore("]")
+                image.imageId
             } else {
                 val picUri = image.imageId.replace("-", "")
                 "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
