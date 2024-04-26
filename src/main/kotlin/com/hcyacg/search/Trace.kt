@@ -54,7 +54,7 @@ object Trace {
             println(picUri)
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://api.trace.moe/search?cutBorders&url=${picUri}",
+                "https://api.trace.moe/search?cutBorders&url=${DataUtil.urlEncode(picUri)}",
                 requestBody,
                 headers.build()
             )

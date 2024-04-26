@@ -32,6 +32,10 @@ class DataUtil {
             }
         }
 
+        fun urlEncode(url: String): String {
+            return URLEncoder.encode(url, "UTF-8")
+        }
+
         fun getSubString(text: String, left: String?, right: String?): String? {
             var result = ""
             var zLen: Int

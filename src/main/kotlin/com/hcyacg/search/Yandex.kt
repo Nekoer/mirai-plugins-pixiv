@@ -3,6 +3,7 @@ package com.hcyacg.search
 import com.hcyacg.entity.YandexImage
 import com.hcyacg.entity.YandexSearchResult
 import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
 import kotlinx.serialization.json.Json
@@ -37,7 +38,7 @@ object Yandex {
 
         try {
             val yandexImageUpload =
-                "https://yandex.com/images-apphost/image-download?url=${picUri}&cbird=111&images_avatars_size=preview&images_avatars_namespace=images-cbir"
+                "https://yandex.com/images-apphost/image-download?url=${DataUtil.urlEncode(picUri)}&cbird=111&images_avatars_size=preview&images_avatars_namespace=images-cbir"
             val message: Message = At(event.sender).plus("\n")
 
 

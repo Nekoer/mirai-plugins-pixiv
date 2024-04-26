@@ -184,8 +184,7 @@ object Pixiv : KotlinPlugin(
                 if (picUri == null) {
                     "请输入正确的命令 ${Command.lowPoly}图片"
                 }
-                val url = "https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?"
-                val byte = ImageUtil.getImage(url, CacheUtil.Type.NONSUPPORT).toByteArray()
+                val byte = ImageUtil.getImage(picUri!!, CacheUtil.Type.NONSUPPORT).toByteArray()
                 val toExternalResource = LowPoly.generate(
                     ByteArrayInputStream(byte),
                     200,
