@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.8.21"
+    val kotlinVersion = "1.9.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
@@ -15,13 +15,9 @@ group = "com.hcyacg"
 version = "1.7.8"
 
 repositories {
-//    maven("https://maven.aliyun.com/repository/public")
-//    mavenLocal()
-//    maven("https://maven.aliyun.com/repository/gradle-plugin")
-//    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
-    mavenCentral()
-//    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
 mirai {
@@ -35,18 +31,15 @@ mirai {
 }
 
 dependencies {
+    implementation("org.apache.commons:commons-lang3:3.14.0")
     val overflowVersion = "2.16.0-febc5da-SNAPSHOT"
-//    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
-//    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
-
-    implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("commons-codec:commons-codec:1.15")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("org.jsoup:jsoup:1.15.3")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
+    implementation("org.jsoup:jsoup:1.15.4")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.madgag:animated-gif-lib:1.4")
-    compileOnly("org.bytedeco:javacv-platform:1.5.7")
+    implementation("org.bytedeco:javacv-platform:1.5.10")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
 

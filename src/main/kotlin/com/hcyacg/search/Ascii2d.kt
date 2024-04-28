@@ -3,6 +3,7 @@ package com.hcyacg.search
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
@@ -64,7 +65,8 @@ object Ascii2d {
             val sslsf = SSLConnectionSocketFactory(sc)
             val httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
 
-            val ascii2d = "https://ascii2d.net/search/url/$picUri"
+
+            val ascii2d = "https://ascii2d.net/search/url/${DataUtil.urlEncode(picUri)}"
 //            val headers = mutableMapOf<String,String>()
 //            headers["User-Agent"] = "PostmanRuntime/7.28.4"
 

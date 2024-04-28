@@ -9,6 +9,7 @@ import com.hcyacg.utils.RequestUtil
 import com.hcyacg.entity.SaucenaoItem
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
+import com.hcyacg.utils.DataUtil.Companion.getImageLinkFromImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
@@ -38,7 +39,7 @@ object Saucenao {
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent, picUri: String): List<Message> {
+    suspend fun picToSearch(event: GroupMessageEvent, picUri: String, eco: Boolean): List<Message> {
         val list = mutableListOf<Message>()
 
         try {
@@ -57,91 +58,85 @@ object Saucenao {
 //            val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
 //                .replace("-", "")
 
-            //旋转三次
-            val rotate90 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 90).toByteArray().toExternalResource()
-            val code90 = DataUtil.getSubString(rotate90.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            withContext(Dispatchers.IO) {
-                rotate90.close()
-            }
+            if (eco) {
+                val imageData = getInfo(picUri)
+                imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+            } else {
+                //旋转三次
+                val rotate90 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 90).toByteArray().toExternalResource()
+                val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate90.close()
+                }
 
-            val rotate180 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 180).toByteArray().toExternalResource()
-            val code180 = DataUtil.getSubString(rotate180.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            withContext(Dispatchers.IO) {
-                rotate180.close()
-            }
+                val rotate180 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 180).toByteArray().toExternalResource()
+                val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate180.close()
+                }
 
-            val rotate270 = rotate(withContext(Dispatchers.IO) {
-                ImageIO.read(URL(picUri))
-            }, 270).toByteArray().toExternalResource()
-            val code270 = DataUtil.getSubString(rotate270.uploadAsImage(event.group).imageId.replace("-", ""), "{", "}")
-            withContext(Dispatchers.IO) {
-                rotate270.close()
-            }
-
-
-            val imageData = getInfo(picUri)
-            val imageData90 = getInfo(code90!!)
-            val imageData180 = getInfo(code180!!)
-            val imageData270 = getInfo(code270!!)
+                val rotate270 = rotate(withContext(Dispatchers.IO) {
+                    ImageIO.read(URL(picUri))
+                }, 270).toByteArray().toExternalResource()
+                val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
+                withContext(Dispatchers.IO) {
+                    rotate270.close()
+                }
 
 
-            /**
-             * 进行相似度对比，取最大值
-             */
-            var similarity: Double = 0.0
-            var similarity90: Double = 0.0
-            var similarity180: Double = 0.0
-            var similarity270: Double = 0.0
+                val imageData = getInfo(picUri)
+                val imageData90 = getInfo(code90)
+                val imageData180 = getInfo(code180)
+                val imageData270 = getInfo(code270)
 
-            val double = mutableListOf<Double>()
 
-            if (null != imageData) {
-                similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity)
-            }
+                /**
+                 * 进行相似度对比，取最大值
+                 */
+                var similarity: Double = 0.0
+                var similarity90: Double = 0.0
+                var similarity180: Double = 0.0
+                var similarity270: Double = 0.0
 
-            if (null != imageData90) {
-                similarity90 = imageData90.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity90)
-            }
+                val double = mutableListOf<Double>()
 
-            if (null != imageData180) {
-                similarity180 = imageData180.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity180)
-            }
+                if (null != imageData) {
+                    similarity = imageData.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity)
+                }
 
-            if (null != imageData270) {
-                similarity270 = imageData270.results?.get(0)?.header?.similarity.toString().toDouble()
-                double.add(similarity270)
-            }
+                if (null != imageData90) {
+                    similarity90 = imageData90.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity90)
+                }
 
-            var temp: Double = 0.0
-            for (i in double.indices) {
-                for (j in i + 1 until double.size) {
-                    if (double[i] > double[j]) {
-                        temp = double[i]
-                        double[i] = double[j]
-                        double[j] = temp
+                if (null != imageData180) {
+                    similarity180 = imageData180.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity180)
+                }
+
+                if (null != imageData270) {
+                    similarity270 = imageData270.results?.get(0)?.header?.similarity.toString().toDouble()
+                    double.add(similarity270)
+                }
+
+                when (double.max()) {
+                    similarity -> {
+                        imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
                     }
-                }
-            }
-
-            when (temp) {
-                similarity -> {
-                    imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
-                }
-                similarity90 -> {
-                    imageData90?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
-                }
-                similarity180 -> {
-                    imageData180?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
-                }
-                similarity270 -> {
-                    imageData270?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    similarity90 -> {
+                        imageData90?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
+                    similarity180 -> {
+                        imageData180?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
+                    similarity270 -> {
+                        imageData270?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
+                    }
                 }
             }
             return list
@@ -215,7 +210,7 @@ object Saucenao {
         try {
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
-                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Config.token.saucenao}&testmode=1&numres=16&url=https://gchat.qpic.cn/gchatpic_new/0/0-0-${picUri}/0?",
+                "https://saucenao.com/search.php?db=999&output_type=2&api_key=${Config.token.saucenao}&testmode=1&numres=16&url=${DataUtil.urlEncode(picUri)}",
                 requestBody,
                 headers.build()
             )
@@ -262,7 +257,9 @@ object Saucenao {
                 toExternalResource?.close()
             }
 
-            if (!thumbnail!!.contains("https://img3.saucenao.com/")) {
+            if (thumbnail != null &&
+                (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/"))
+            ) {
                 At(event.sender).plus("\r\n").plus(Image(imageId!!)).plus("\r\n")
                     .plus("Title: $title").plus("\r\n")
                     .plus("ID: $pixivId").plus("\r\n")
@@ -306,7 +303,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
                     .plus("ID: $danbooruId").plus("\r\n")
@@ -350,7 +347,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -400,7 +397,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -449,7 +446,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -498,7 +495,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -544,7 +541,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")
@@ -594,7 +591,7 @@ object Saucenao {
             withContext(Dispatchers.IO) {
                 toExternalResource.close()
             }
-            if (!thumbnail.contains("https://img3.saucenao.com/")) {
+            if (!thumbnail.contains("https://img3.saucenao.com/") || !thumbnail.contains("https://img1.saucenao.com/")) {
 
                 At(event.sender).plus("\r\n")
                     .plus(Image(imageId)).plus("\r\n")

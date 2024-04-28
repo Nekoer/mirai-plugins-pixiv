@@ -22,6 +22,7 @@ import java.math.RoundingMode
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.text.DecimalFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -103,9 +104,7 @@ object Nsfw {
     suspend fun load(event: GroupMessageEvent) {
         println("监控中……")
         event.subject.sendMessage(At(event.sender).plus("检测中,请稍后"));
-
-        val picUri = DataUtil.getSubString(event.message.toString().replace("\\s*".toRegex(), "").replace(" ", ""), "[overflow:image,url=", "]")!!
-
+        val picUri = DataUtil.getImageLink(event.message) ?: return
 
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
         val body = ImageUtil.getImage(picUri, CacheUtil.Type.NONSUPPORT).toByteArray()
@@ -113,7 +112,8 @@ object Nsfw {
             "multipart/form-data".toMediaTypeOrNull(),
             0, body.size
         )
-        requestBody.addFormDataPart("file", "${picUri}.jpeg", bodies)
+        val name = UUID.randomUUID().toString() + ".jpeg"
+        requestBody.addFormDataPart("file", name, bodies)
         requestBody.addFormDataPart("network_type", "general")
 
         var uri = "http://dev.kanotype.net:8003/deepdanbooru/upload"
@@ -147,7 +147,7 @@ object Nsfw {
             uri = "http://${Config.deepdanbooru}/deepdanbooru"
             val requestB = MultipartBody.Builder().setType(MultipartBody.FORM)
 
-            requestB.addFormDataPart("image","${picUri}.jpeg", bodies)
+            requestB.addFormDataPart("image" ,name, bodies)
 
             headers.add("Content-Type", "multipart/form-data;boundary=ebf9f03029db4c2799ae16b5428b06bd1")
             headers.add("Accept", "application/json")

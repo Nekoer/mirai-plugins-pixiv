@@ -17,6 +17,10 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueDescription("开关 search:搜索图片的引擎开关 sexy:涩图库来源开关")
     var enable: Enable by value()
 
+    @ValueName("waitTime")
+    @ValueDescription("等待时间 搜图搜番时指令与图片分开发送模式下的等待时间（秒）")
+    var waitTime: Int by value(60)
+
     @ValueName("forward")
     @ValueDescription("转发模式 rankAndTagAndUserByForward:排行榜、标签、作者三个变成转发模式; imageToForward:查看图片详情变成转发模式 可发送该作品的所有图片")
     val forward: ForWard by value()
@@ -43,6 +47,10 @@ object Config : AutoSavePluginConfig("Config") {
     @ValueName("localImagePath")
     @ValueDescription("本地图库目录")
     val localImagePath: String by value(System.getProperty("user.dir") + File.separator + "image")
+
+    @ValueName("saucenaoEco")
+    @ValueDescription("Saucenao的省流经济模式 可以节约Token次数 也可避免部分Onebot实现产生浪费 可能降低准确度")
+    var saucenaoEco: Boolean by value(false)
 
     @ValueName("google")
     @ValueDescription("Google搜索配置项 镜像源和搜索显示的数量")

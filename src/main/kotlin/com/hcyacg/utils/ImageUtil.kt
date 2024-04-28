@@ -61,13 +61,15 @@ class ImageUtil {
                     client.proxy(proxy).build().newCall(request).execute()
                 }
 
-                val `in` = response.body.byteStream()
+                val `in` = response.body?.byteStream()
 
 
                 val buffer = ByteArray(2048)
-                var len = 0
-                while (`in`.read(buffer).also { len = it } > 0) {
-                    infoStream.write(buffer, 0, len)
+                var len: Int
+                if (`in` != null) {
+                    while (`in`.read(buffer).also { len = it } > 0) {
+                        infoStream.write(buffer, 0, len)
+                    }
                 }
                 infoStream.write((Math.random() * 100).toInt() + 1)
                 infoStream.close()
