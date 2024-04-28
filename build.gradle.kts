@@ -39,7 +39,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.madgag:animated-gif-lib:1.4")
-    implementation("org.bytedeco:javacv-platform:1.5.10")
+    compileOnly("org.bytedeco:javacv-platform:1.5.10")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
 
