@@ -32,13 +32,18 @@ mirai {
 
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.14.0")
-    val overflowVersion = "2.16.0-febc5da-SNAPSHOT"
+    
+    val overflowVersion = "2.16.0-a1e9d27-SNAPSHOT"
+    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.jsoup:jsoup:1.15.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.madgag:animated-gif-lib:1.4")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
+
     compileOnly("org.bytedeco:javacv-platform:1.5.10")
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))

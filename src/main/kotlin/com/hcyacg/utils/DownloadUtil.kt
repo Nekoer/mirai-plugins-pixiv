@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 object DownloadUtil {
     private var okHttpClient = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS)
+    private val logger by logger()
     /**
      * @param url 下载连接
      * @param saveDir 储存下载文件的SDCard目录
@@ -38,7 +39,7 @@ object DownloadUtil {
             override fun onResponse(call: Call, response: Response) {
                 var `is`: InputStream? = null
                 val buf = ByteArray(2048)
-                var len = 0
+                var len: Int
                 var fos: FileOutputStream? = null
                 // 储存下载文件的目录
                 val savePath = isExistDir(saveDir)

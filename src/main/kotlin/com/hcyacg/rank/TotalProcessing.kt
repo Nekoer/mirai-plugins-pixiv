@@ -2,10 +2,9 @@ package com.hcyacg.rank
 
 
 import com.hcyacg.initial.Config
-import com.hcyacg.initial.Setting
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.serialization.json.JsonElement
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 
@@ -15,7 +14,7 @@ import okhttp3.RequestBody
 class TotalProcessing {
     private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     /**
      * 动态拼接参数并返回数据
      */

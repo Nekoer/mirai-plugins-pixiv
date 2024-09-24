@@ -9,6 +9,7 @@ import com.hcyacg.rank.TotalProcessing
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
@@ -20,7 +21,6 @@ import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.jsoup.HttpStatusException
@@ -41,7 +41,7 @@ object SexyCenter {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     suspend fun init(event: GroupMessageEvent) {
 
         if (!Setting.groups.contains(event.group.id.toString())) {
@@ -169,25 +169,25 @@ object SexyCenter {
             }
 
         } catch (e: IOException) {
-            logger.warning("连接至yande出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至Yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
-            logger.warning("连接至yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: ConnectException) {
-            logger.warning("连接至yande的网络出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketException) {
-            logger.warning("连接至yande的网络出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
-            logger.warning(e)
+            logger.error { e.message }
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -251,25 +251,25 @@ object SexyCenter {
                 event.subject.sendMessage("内容为空")
             }
         } catch (e: IOException) {
-            logger.warning("连接至yande出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
-            logger.warning("连接至yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至yande的网络超时，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: ConnectException) {
-            logger.warning("连接至yande的网络出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketException) {
-            logger.warning("连接至yande的网络出现异常，请检查网络")
+            logger.warn { "连接至yande出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
-            logger.warning(e)
+            logger.error { e.message }
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -338,25 +338,25 @@ object SexyCenter {
             }
 
         } catch (e: IOException) {
-            logger.warning("连接至Lolicon出现异常，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: ConnectException) {
-            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketException) {
-            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
-            logger.warning(e)
+            logger.error { e.message }
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -417,25 +417,25 @@ object SexyCenter {
                 event.subject.sendMessage("内容为空")
             }
         } catch (e: IOException) {
-            logger.warning("连接至konachan出现异常，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至konachan的网络超时，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
-            logger.warning("连接至konachan的网络超时，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至konachan的网络超时，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: ConnectException) {
-            logger.warning("连接至konachan的网络出现异常，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketException) {
-            logger.warning("连接至konachan的网络出现异常，请检查网络")
+            logger.warn { "连接至konachan出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
-            logger.warning(e)
+            logger.error { e.message }
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -493,25 +493,25 @@ object SexyCenter {
                 event.subject.sendMessage(quoteReply.plus(Image(imageId)).plus("来源:Pixiv($id)"))
             }
         } catch (e: IOException) {
-            logger.warning("连接至pixiv出现异常，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至pixiv的网络超时，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: HttpStatusException) {
-            logger.warning("连接至pixiv的网络超时，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至pixiv的网络超时，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: ConnectException) {
-            logger.warning("连接至pixiv的网络出现异常，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: SocketException) {
-            logger.warning("连接至pixiv的网络出现异常，请检查网络")
+            logger.warn { "连接至pixiv出现异常，请检查网络" }
             event.subject.sendMessage("网络异常")
         } catch (e: Exception) {
-            logger.warning(e)
+            logger.error { e.message }
             event.subject.sendMessage("发送图片失败")
         }
     }
@@ -531,14 +531,14 @@ object SexyCenter {
                 return
             }
             val num = 0 until list.size
-            println(num)
+            logger.debug { num }
             val imageFile = File(list[num.random()])
             val input = withContext(Dispatchers.IO) {
                 FileInputStream(imageFile)
             }
             val out = ByteArrayOutputStream()
             val buffer = ByteArray(2048)
-            var len = 0
+            var len: Int
             while (withContext(Dispatchers.IO) {
                     input.read(buffer)
                 }.also { len = it } > 0) {
@@ -576,7 +576,7 @@ object SexyCenter {
             }
 
         } catch (e: IOException) {
-            logger.warning("连接至本地图库出现异常,请检查本地图库是否已经设置")
+            logger.warn { "连接至本地图库出现异常,请检查本地图库是否已经设置" }
             event.subject.sendMessage("本地图库出现异常")
         } catch (e: Exception) {
             e.printStackTrace()
@@ -600,10 +600,10 @@ object SexyCenter {
                             if (arrayOf("jpg","png","gif").contains(type)){
                                 imageList.add(tempFile.path)
                             }else{
-                                logger.warning("${tempFile.path}不是有效图片")
+                                logger.warn { "${tempFile.path}不是有效图片" }
                             }
                         }else{
-                            logger.warning("${tempFile.path}不是有效图片")
+                            logger.warn { "${tempFile.path}不是有效图片" }
                         }
                     }
                 }

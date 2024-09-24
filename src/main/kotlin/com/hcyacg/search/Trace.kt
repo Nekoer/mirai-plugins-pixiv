@@ -1,10 +1,7 @@
 package com.hcyacg.search
 
 import com.hcyacg.entity.Anilist
-import com.hcyacg.utils.CacheUtil
-import com.hcyacg.utils.DataUtil
-import com.hcyacg.utils.ImageUtil
-import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.*
 import com.madgag.gif.fmsware.AnimatedGifEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +14,6 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -39,10 +35,10 @@ import java.util.*
 object Trace {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
 
     suspend fun searchInfoByPic(event: GroupMessageEvent) {
-        var data: JsonElement? = null
+        val data: JsonElement?
         // https://api.trace.moe/search?url=
 
         try {
@@ -51,7 +47,7 @@ object Trace {
              */
             val picUri = DataUtil.getImageLink(event.message) ?: return
 
-            println(picUri)
+            logger.debug { picUri }
             data = RequestUtil.request(
                 RequestUtil.Companion.Method.GET,
                 "https://api.trace.moe/search?cutBorders&url=${DataUtil.urlEncode(picUri)}",
@@ -60,10 +56,9 @@ object Trace {
             )
 
             val trace = data?.let { Json.decodeFromJsonElement<com.hcyacg.entity.Trace>(it) }
-                logger.warning(data.toString())
+            logger.debug { data.toString() }
             val result = trace?.result
-
-            println(result)
+            logger.debug { result }
 
 
 
@@ -134,25 +129,26 @@ object Trace {
             }
 
         } catch (e: IOException) {
-            logger.warning("连接至Trace出现异常，请检查网络")
+            logger.warn { "连接至Trace出现异常，请检查网络" }
             event.subject.sendMessage("Trace网络异常")
 
         } catch (e: HttpStatusException) {
-            logger.warning("连接至Trace的网络超时，请检查网络")
+            logger.warn{ "连接至Trace的网络超时，请检查网络" }
             event.subject.sendMessage("Trace网络异常")
 
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至Trace的网络超时，请检查网络")
+            logger.warn { "连接至Trace的网络超时，请检查网络" }
             event.subject.sendMessage("Trace网络异常")
 
         } catch (e: ConnectException) {
-            logger.warning("连接至Trace的网络出现异常，请检查网络")
+            logger.warn { "连接至Trace的网络出现异常，请检查网络" }
             event.subject.sendMessage("Trace网络异常")
 
         } catch (e: SocketException) {
-            logger.warning("连接至Trace的网络出现异常，请检查网络")
+            logger.warn { "连接至Trace的网络出现异常，请检查网络" }
             event.subject.sendMessage("Trace网络异常")
         } catch (e:IllegalStateException){
+            logger.error { e.message }
             event.subject.sendMessage("该功能发现错误,错误信息【${e.message}】")
         }
     }
@@ -181,10 +177,10 @@ object Trace {
             }
             return infoStream
         }catch (e:Exception){
-//            e.printStackTrace()
+            logger.error { e.message }
             return infoStream
         }catch(e:NoClassDefFoundError){
-            logger.error("您未使用FFmpeg版本,将缺少视频转Gif的功能")
+            logger.error { "您未使用FFmpeg版本,将缺少视频转Gif的功能" }
             return infoStream
         }
     }

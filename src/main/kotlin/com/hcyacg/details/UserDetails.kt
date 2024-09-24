@@ -5,17 +5,19 @@ import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
-
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
@@ -23,11 +25,11 @@ import org.apache.commons.lang3.StringUtils
 object UserDetails {
     private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     suspend fun findUserWorksById(event: GroupMessageEvent){
 
-        var data: JsonElement? = null
-        var authorData: JsonElement? = null
+        val data: JsonElement?
+        val authorData: JsonElement?
         var enable = false
         try{
             if (!event.message.contentToString().contains(Command.findUserWorksById)){
@@ -46,8 +48,8 @@ object UserDetails {
             }else{
                 1
             }
-            var offset = 0
-            var num = 0
+            val offset: Int
+            val num: Int
             if (page % 3 != 0){
                 offset = ((page - (page % 3)) / 3) * 30 + 30
                 num = page % 3 * 10
@@ -195,6 +197,7 @@ object UserDetails {
                 event.subject.sendMessage(message.plus("作品共 ${if(totalIllusts % 10 != 0){ (totalIllusts/10) +1 }else{totalIllusts/10}} 页,目前处于${page}页"))
             }
         }catch (e:Exception){
+            logger.error { e.message }
             e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${Command.findUserWorksById}作者Id-页码")
         }

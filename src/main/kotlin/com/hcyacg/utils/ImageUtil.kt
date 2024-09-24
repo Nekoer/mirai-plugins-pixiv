@@ -1,8 +1,6 @@
 package com.hcyacg.utils
 
 import com.hcyacg.initial.Config
-import com.hcyacg.initial.Setting
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,7 +11,10 @@ import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
@@ -32,7 +33,7 @@ class ImageUtil {
                 "user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
             )
-        val logger = MiraiLogger.Factory.create(this::class.java)
+        private val logger by logger()
 
 
         /**
@@ -80,7 +81,7 @@ class ImageUtil {
 
                 return infoStream
             }catch (e:Exception){
-                logger.warning("${imageUri}获取失败,请检查网络")
+                logger.warn { "${imageUri}获取失败,请检查网络" }
                 e.printStackTrace()
                 return infoStream
             }

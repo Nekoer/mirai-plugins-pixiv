@@ -1,25 +1,26 @@
 package com.hcyacg.search
 
-import com.hcyacg.initial.Setting
-import com.hcyacg.utils.DataUtil
-import com.hcyacg.utils.CacheUtil
-import com.hcyacg.utils.ImageUtil.Companion.getImage
-import com.hcyacg.utils.ImageUtil.Companion.rotate
-import com.hcyacg.utils.RequestUtil
 import com.hcyacg.entity.SaucenaoItem
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
+import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.DataUtil.Companion.getImageLinkFromImage
+import com.hcyacg.utils.ImageUtil.Companion.getImage
+import com.hcyacg.utils.ImageUtil.Companion.rotate
+import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
@@ -31,7 +32,7 @@ object Saucenao {
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
     private val jsonObject: JsonElement? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     private val tracePath: File =
         File(System.getProperty("user.dir") + File.separator + "data" + File.separator + "trace")
 
@@ -97,10 +98,10 @@ object Saucenao {
                 /**
                  * 进行相似度对比，取最大值
                  */
-                var similarity: Double = 0.0
-                var similarity90: Double = 0.0
-                var similarity180: Double = 0.0
-                var similarity270: Double = 0.0
+                var similarity = 0.0
+                var similarity90 = 0.0
+                var similarity180 = 0.0
+                var similarity270 = 0.0
 
                 val double = mutableListOf<Double>()
 
@@ -141,6 +142,7 @@ object Saucenao {
             }
             return list
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
             list.clear()
@@ -194,6 +196,7 @@ object Saucenao {
             }
 
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
             return null
@@ -205,7 +208,7 @@ object Saucenao {
      * 获取四张照片的第一个搜索数据
      */
     private fun getInfo(picUri: String): SaucenaoItem? {
-        var data: JsonElement? = null
+        val data: JsonElement?
 
         try {
             data = RequestUtil.request(
@@ -226,6 +229,7 @@ object Saucenao {
             }
             return null
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             return null
         }
@@ -278,6 +282,7 @@ object Saucenao {
                     .plus(getExtUrls(extUrls))
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
             //return At(event.sender).plus(e.message.toString())
@@ -321,6 +326,7 @@ object Saucenao {
                     .plus(getExtUrls(extUrls))
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -372,6 +378,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -420,6 +427,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -471,6 +479,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -516,6 +525,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -566,6 +576,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -616,6 +627,7 @@ object Saucenao {
 
             }
         } catch (e: java.lang.Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             null
         }
@@ -626,10 +638,11 @@ object Saucenao {
         return try {
             val data = StringBuilder()
             for (extUrl in extUrls!!) {
-                data.append(extUrl.toString().replace("\"", "")).append("\r\n")
+                data.append(extUrl.replace("\"", "")).append("\r\n")
             }
             data.toString()
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             ""
         }
@@ -640,6 +653,7 @@ object Saucenao {
             val data = StringBuilder()
             data.append(extUrls!![0]).toString().replace("\"", "")
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             ""
         }

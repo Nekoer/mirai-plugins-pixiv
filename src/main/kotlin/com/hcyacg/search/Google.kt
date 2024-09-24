@@ -3,11 +3,11 @@ package com.hcyacg.search
 import com.hcyacg.initial.Config
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
+import com.hcyacg.utils.logger
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -17,7 +17,7 @@ import java.net.SocketException
 import java.net.SocketTimeoutException
 
 object Google {
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
 
     suspend fun load(event: GroupMessageEvent, picUri: String): List<Message> {
 
@@ -43,11 +43,11 @@ object Google {
             }
         } catch (e: Exception) {
             return if (isNetworkException(e)) {
-                logger.warning("连接至Google的网络出现异常，请检查网络")
+                logger.warn { "连接至Google的网络出现异常，请检查网络" }
                 list.add(PlainText("Google网络异常"))
                 list
             } else {
-                logger.error(e)
+                logger.error{ e.message }
                 list
             }
         }
@@ -91,10 +91,10 @@ object Google {
             }
         } catch (e: Exception) {
             if (isNetworkException(e)) {
-                logger.warning("连接至Google的网络出现异常，请检查网络")
+                logger.warn {  "连接至Google的网络出现异常，请检查网络" }
                 list.add(PlainText("Google精准搜索网络异常"))
             } else {
-                logger.error(e)
+                logger.error{e.message}
             }
         }
 
@@ -107,7 +107,7 @@ object Google {
                     val url = it.selectFirst("a")?.attr("href")
                     val imageDataId = it.select("img").last()?.id()
                     val image = doc.html().substringBefore("';var ii=['${imageDataId}']").substringAfterLast("(function(){var s='")
-                    println(image)
+                    logger.debug { image }
                     val imageId = if (image.isNotBlank()) {
                         val toExternalResource = ImageUtil.generateImage(image)?.toExternalResource()
                         toExternalResource?.uploadAsImage(event.group)?.imageId
@@ -130,10 +130,10 @@ object Google {
             }
         } catch (e: Exception) {
             if (isNetworkException(e)) {
-                logger.warning("连接至Google的网络出现异常，请检查网络")
+                logger.warn { "连接至Google的网络出现异常，请检查网络" }
                 list.add(PlainText("Google相似搜索网络异常"))
             } else {
-                logger.error(e)
+                logger.error{ e.message }
             }
         }
 

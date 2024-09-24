@@ -100,13 +100,13 @@ object Pixiv : KotlinPlugin(
                 Trace.searchInfoByPic(this)
             }
 
-            val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(\\n){0,1}.+$")
+            val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(\\n)?.+$")
             content { detect.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } reply { Nsfw.load(this) }
 
             val setu: Pattern = Pattern.compile("(?i)^(${Command.setu})\$")
             content { setu.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString()) } reply { SexyCenter.init(this) }
 
-            val setuTag: Pattern = Pattern.compile("(?i)^(${Command.setu})[ ]{1}[\\S]*[ ]?(r18)?\$")
+            val setuTag: Pattern = Pattern.compile("(?i)^(${Command.setu})[ ]\\S* ?(r18)?$")
             content { setuTag.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} reply { SexyCenter.yandeTagSearch(this) }
 
             //测试成功

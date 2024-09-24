@@ -7,6 +7,7 @@ import com.hcyacg.initial.Setting
 import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
@@ -18,7 +19,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import java.io.ByteArrayInputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,16 +26,16 @@ import java.util.*
 
 object Rank {
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     suspend fun showRank(event: GroupMessageEvent) {
-        var data: JsonElement? = null
+        val data: JsonElement?
         val perPage = 10
         //获取日本排行榜时间，当前天数-2
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -2)
         val date: String = sdf.format(calendar.time)
 
-        var page = 1
+        var page: Int
         var mode: String? = null
         var enable = false
 

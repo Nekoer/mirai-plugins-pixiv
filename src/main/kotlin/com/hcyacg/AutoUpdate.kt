@@ -5,12 +5,12 @@ import com.hcyacg.entity.GithubReleaseItem
 import com.hcyacg.initial.Github
 import com.hcyacg.utils.DownloadUtil
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.console.ConsoleFrontEndImplementation
 import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.console.plugin.version
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import java.util.*
@@ -23,7 +23,7 @@ object AutoUpdate {
     const val githubUrl = "https://api.github.com/repos/Nekoer/mirai-plugins-pixiv/releases?per_page=1"
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
@@ -65,7 +65,7 @@ object AutoUpdate {
                             githubRelease[0].assets?.get(0)?.browserDownloadUrl!!.split("/").last()
                         }
 
-                        logger.info("$temp 更新开始")
+                        logger.info { "$temp 更新开始" }
 
                         DownloadUtil.download(
                             githubRelease[0].assets?.get(0)?.browserDownloadUrl!!.replace(
@@ -75,7 +75,7 @@ object AutoUpdate {
                             MiraiConsole.pluginManager.pluginsFolder.path,
                             object : DownloadUtil.OnDownloadListener {
                                 override fun onDownloadSuccess() {
-                                    logger.info("$temp 更新完成")
+                                    logger.info { "$temp 更新完成" }
 
                                     /**
                                      * 插件下载完后覆盖本地的version-id并保存
@@ -86,7 +86,7 @@ object AutoUpdate {
                                     /**
                                      * 启动mcl后关闭本程序
                                      */
-                                    logger.info("请删除旧版本插件并重启程序")
+                                    logger.info { "请删除旧版本插件并重启程序" }
 
 //                                    val name = ManagementFactory.getRuntimeMXBean().name
 //                                    val pid: String = name.split("@")[0]
@@ -96,11 +96,11 @@ object AutoUpdate {
                                 }
 
                                 override fun onDownloading(progress: Int) {
-                                    logger.info("$temp 已下载 $progress %")
+                                    logger.info { "$temp 已下载 $progress %" }
                                 }
 
                                 override fun onDownloadFailed() {
-                                    logger.warning("$temp 更新失败")
+                                    logger.warn { "$temp 更新失败" }
                                 }
                             }
                         )

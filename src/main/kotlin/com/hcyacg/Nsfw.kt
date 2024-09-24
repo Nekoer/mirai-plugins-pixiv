@@ -2,7 +2,6 @@ package com.hcyacg
 
 
 import com.hcyacg.initial.Config
-import com.hcyacg.search.Yandex
 import com.hcyacg.utils.*
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.console.MiraiConsole
@@ -10,13 +9,10 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.QuoteReply
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.File
 import java.math.RoundingMode
 import java.net.InetSocketAddress
@@ -27,24 +23,24 @@ import java.util.concurrent.TimeUnit
 
 
 object Nsfw {
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
     private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS).followRedirects(false)
     private val tags = mutableMapOf<String,String>()
     private val json = Json
-    const val url = "https://fastly.jsdelivr.net/gh/Nekoer/mirai-plugins-pixiv@master/src/main/resources/tags.json"
+    const val URL = "https://fastly.jsdelivr.net/gh/Nekoer/mirai-plugins-pixiv@master/src/main/resources/tags.json"
     init {
         val file = File(MiraiConsole.pluginManager.pluginsConfigFolder.path + File.separator +"com.hcyacg.pixiv"+ File.separator+ "tags.json")
 
         if (!file.exists()){
             DownloadUtil.download(
-                url,
+                URL,
                 file.parentFile.path,
                 object : DownloadUtil.OnDownloadListener {
                     override fun onDownloadSuccess() {
-                        logger.info("tags.json下载成功")
+                        logger.info { "tags.json下载成功" }
                         val jsonTemp = json.parseToJsonElement(file.readText())
                         jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
                             tags[t] = u.jsonPrimitive.content
@@ -56,22 +52,29 @@ object Nsfw {
                     }
 
                     override fun onDownloadFailed() {
-                        logger.warning("tags.json下载失败,请使用代理或者手动下载 ${url.replace("raw.githubusercontent.com","raw.fastgit.org")} 并存放到 ${file.parentFile.path}")
+                        logger.warn {
+                            ("tags.json下载失败,请使用代理或者手动下载 ${
+                                URL.replace(
+                                    "raw.githubusercontent.com",
+                                    "raw.fastgit.org"
+                                )
+                            } 并存放到 ${file.parentFile.path}")
+                        }
 
                     }
                 }
             )
         }else{
-            val data = RequestUtil.request(RequestUtil.Companion.Method.GET,url,null, headers.build())
+            val data = RequestUtil.request(RequestUtil.Companion.Method.GET,URL,null, headers.build())
             val jsonTemp = json.parseToJsonElement(file.readText())
             if (data != null) {
                 if (!data.jsonObject["version"]!!.jsonPrimitive.content.contentEquals(jsonTemp.jsonObject["version"]!!.jsonPrimitive.content)){
                     DownloadUtil.download(
-                        url,
+                        URL,
                         file.parentFile.path,
                         object : DownloadUtil.OnDownloadListener {
                             override fun onDownloadSuccess() {
-                                logger.info("tags.json下载成功")
+                                logger.info { "tags.json下载成功" }
                                 jsonTemp.jsonObject["data"]!!.jsonObject.forEach { t, u ->
                                     tags[t] = u.jsonPrimitive.content
                                 }
@@ -82,7 +85,14 @@ object Nsfw {
                             }
 
                             override fun onDownloadFailed() {
-                                logger.warning("tags.json下载失败,请使用代理或者手动下载 ${url.replace("raw.githubusercontent.com","raw.fastgit.org")} 并存放到 ${file.parentFile.path}")
+                                logger.warn {
+                                    ("tags.json下载失败,请使用代理或者手动下载 ${
+                                        URL.replace(
+                                            "raw.githubusercontent.com",
+                                            "raw.fastgit.org"
+                                        )
+                                    } 并存放到 ${file.parentFile.path}")
+                                }
                             }
                         }
                     )
@@ -102,9 +112,10 @@ object Nsfw {
     }
 
     suspend fun load(event: GroupMessageEvent) {
-        println("监控中……")
-        event.subject.sendMessage(At(event.sender).plus("检测中,请稍后"));
         val picUri = DataUtil.getImageLink(event.message) ?: return
+
+        logger.info { "监控中……" }
+        event.subject.sendMessage(At(event.sender).plus("检测中,请稍后"))
 
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
         val body = ImageUtil.getImage(picUri, CacheUtil.Type.NONSUPPORT).toByteArray()
@@ -129,7 +140,7 @@ object Nsfw {
                 client.proxy(proxy).build().newCall(Request.Builder().url(uri).headers(headers.build()).post(requestBody.build()).build()).execute()
             }
         }catch (e: Exception){
-            logger.error(e.message)
+            logger.error { e.message }
             null
         }
 
@@ -142,7 +153,7 @@ object Nsfw {
         format.roundingMode = RoundingMode.FLOOR
 
         if (response?.code != 302){
-            logger.warning("HTTP代码：${response?.code}")
+            logger.warn { "HTTP代码：${response?.code}" }
 
             uri = "http://${Config.deepdanbooru}/deepdanbooru"
             val requestB = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -154,10 +165,10 @@ object Nsfw {
             val data = try {
                 RequestUtil.request(RequestUtil.Companion.Method.POST, uri,requestB.build(),headers.build())
             }catch (e:Exception){
-                logger.warning(e.message)
+                logger.warn { e.message }
                 null
             }
-            println(data)
+            logger.debug { data }
             data?.jsonArray?.forEach {
                 val tag = it.jsonObject["tag"]?.jsonPrimitive?.content
                 val score = it.jsonObject["score"]?.jsonPrimitive?.float
@@ -219,7 +230,7 @@ object Nsfw {
                                 //角色识别 character
                                 quoteReply = quoteReply.plus("===角色识别===\n")
                                 trs.forEach {tr ->
-                                    println(tr)
+                                    logger.debug { tr }
                                     val td = tr.select("td")
                                     val tag = td[0].getElementsByTag("a").text()
                                     val score = td[1].text()
@@ -296,7 +307,7 @@ object Nsfw {
                     "        \"detect\": true\n" +
                     "    }"
             val temp = RequestUtil.request(RequestUtil.Companion.Method.POST, url, body.toRequestBody(), headers.build())
-            println(temp)
+            logger.debug { temp }
             temp?.jsonObject?.get("target")?.jsonArray
         } catch (e: Exception) {
             e.printStackTrace()

@@ -10,6 +10,7 @@ import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil.Companion
 import com.hcyacg.utils.RequestUtil.Companion.request
 import com.hcyacg.utils.ZipUtil
+import com.hcyacg.utils.logger
 import com.madgag.gif.fmsware.AnimatedGifEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +20,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import org.apache.commons.lang3.StringUtils
 import java.awt.image.BufferedImage
@@ -34,11 +34,10 @@ object PicDetails {
     private val headers = Headers.Builder().add("token", Config.token.acgmx)
     private val requestBody: RequestBody? = null
     private var isChange: Boolean = false
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     private val json = Json { ignoreUnknownKeys = true }
     suspend fun load(event: GroupMessageEvent){
 
-        val data: JsonElement?
         val messageChain: MessageChain = event.message
 
         if (!event.message.contentToString().contains(Command.getDetailOfId)) {
@@ -54,6 +53,7 @@ object PicDetails {
             page =
                 messageChain.contentToString().replace(Command.getDetailOfId, "").replace(" ", "").split("-")[1]
         } catch (e: Exception) {
+            logger.error { e.message }
             id = messageChain.contentToString().replace(Command.getDetailOfId, "").replace(" ", "")
             page = "1"
         }
@@ -62,6 +62,7 @@ object PicDetails {
             try {
                 id = messageChain.content.replace(Command.getDetailOfId, "").replace(" ", "").split("-")[0]
             } catch (e: Exception) {
+                logger.error { e.message }
                 event.subject.sendMessage("请输入正确的插画id  ${Command.getDetailOfId}id")
                 return
             }
@@ -330,6 +331,7 @@ object PicDetails {
 
             return tempData?.let<JsonElement, PixivImageDetail> { json.decodeFromJsonElement(it) } ?: return null
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             return null
         }
@@ -422,6 +424,7 @@ object PicDetails {
 
             return file.readBytes()
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             return null
         } finally {

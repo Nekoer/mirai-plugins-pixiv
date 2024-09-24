@@ -1,8 +1,9 @@
 package com.hcyacg.science
 
-import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -10,7 +11,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.*
 import java.io.File
 import java.util.*
@@ -20,7 +20,7 @@ object Style2paints {
 
     private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS)
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
 
     suspend fun coloring(event: GroupMessageEvent) {
         /**

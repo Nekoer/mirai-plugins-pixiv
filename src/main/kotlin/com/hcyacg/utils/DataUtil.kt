@@ -1,4 +1,4 @@
-package com.hcyacg.utils;
+package com.hcyacg.utils
 
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.MessageChain
@@ -13,6 +13,7 @@ import java.text.NumberFormat
  */
 class DataUtil {
     companion object {
+        private val logger by logger()
         fun getImageLink(chain: MessageChain): String? {
             chain.forEach {
                 if (it is Image) {
@@ -36,8 +37,8 @@ class DataUtil {
             return URLEncoder.encode(url, "UTF-8")
         }
 
-        fun getSubString(text: String, left: String?, right: String?): String? {
-            var result = ""
+        fun getSubString(text: String, left: String?, right: String?): String {
+            val result: String
             var zLen: Int
             if (left == null || left.isEmpty()) {
                 zLen = 0
@@ -50,7 +51,7 @@ class DataUtil {
                 }
             }
             var yLen = text.indexOf(right!!, zLen)
-            if (yLen < 0 || right == null || right.isEmpty()) {
+            if (yLen < 0 || right.isEmpty()) {
                 yLen = text.length
             }
             result = text.substring(zLen, yLen)
@@ -58,7 +59,7 @@ class DataUtil {
         }
 
         @Throws(UnsupportedEncodingException::class)
-        fun getFileNameByURL(data: String): String? {
+        fun getFileNameByURL(data: String): String {
             val resultURL = StringBuilder()
             //遍历字符串
             for (element in data) {

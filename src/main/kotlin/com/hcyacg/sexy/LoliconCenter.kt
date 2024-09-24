@@ -4,10 +4,11 @@ import com.hcyacg.entity.Lolicon
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
+import com.hcyacg.lowpoly.LowPoly
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
-import com.hcyacg.lowpoly.LowPoly
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -20,7 +21,6 @@ import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 import org.jsoup.HttpStatusException
@@ -34,7 +34,7 @@ import javax.net.ssl.SSLHandshakeException
 object LoliconCenter {
     private val requestBody: RequestBody? = null
     private var isChange: Boolean = false
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     private val headers = Headers.Builder()
 
     suspend fun load(event: GroupMessageEvent) {
@@ -160,24 +160,25 @@ object LoliconCenter {
                 )
             }
         } catch (e: IOException) {
-            logger.warning("连接至Lolicon出现异常，请检查网络")
+            logger.warn { "连接至Lolicon出现异常，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: SSLHandshakeException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon的网络超时，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: HttpStatusException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon的网络超时，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至Lolicon的网络超时，请检查网络")
+            logger.warn { "连接至Lolicon的网络超时，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: ConnectException) {
-            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            logger.warn { "连接至Lolicon的网络超时，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: SocketException) {
-            logger.warning("连接至Lolicon的网络出现异常，请检查网络")
+            logger.warn { "连接至Lolicon的网络超时，请检查网络" }
             event.subject.sendMessage(message.plus("网络异常"))
         } catch (e: Exception) {
+            logger.error { e.message }
             e.printStackTrace()
             event.subject.sendMessage(message.plus("服务错误"))
         }

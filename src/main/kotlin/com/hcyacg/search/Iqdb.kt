@@ -2,6 +2,7 @@ package com.hcyacg.search
 
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
+import com.hcyacg.utils.logger
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
@@ -9,7 +10,6 @@ import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -19,7 +19,7 @@ import java.net.SocketException
 import java.net.SocketTimeoutException
 
 object Iqdb {
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
 
     suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String) :List<Message>{
         val list = mutableListOf<Message>()
@@ -57,27 +57,27 @@ object Iqdb {
             }
             return list
         } catch (e: IOException) {
-            logger.warning("连接至Iqdb出现异常，请检查网络")
+            logger.warn { "连接至Iqdb出现异常，请检查网络" }
             list.add(PlainText("Iqdb网络异常"))
             return list
         } catch (e: HttpStatusException) {
-            logger.warning("连接至Iqdb的网络超时，请检查网络")
+            logger.warn{ "连接至Iqdb的网络超时，请检查网络" }
             list.add(PlainText("Iqdb网络异常"))
             return list
         } catch (e: SocketTimeoutException) {
-            logger.warning("连接至Iqdb的网络超时，请检查网络")
+            logger.warn{ "连接至Iqdb的网络超时，请检查网络" }
             list.add(PlainText("Iqdb网络异常"))
             return list
         } catch (e: ConnectException) {
-            logger.warning("连接至Iqdb的网络出现异常，请检查网络")
+            logger.warn{ "连接至Iqdb的网络出现异常，请检查网络" }
             list.add(PlainText("Iqdb网络异常"))
             return list
         } catch (e: SocketException) {
-            logger.warning("连接至Iqdb的网络出现异常，请检查网络")
+            logger.warn{ "连接至Iqdb的网络出现异常，请检查网络" }
             list.add(PlainText("Iqdb网络异常"))
             return list
         } catch (e:Exception){
-            logger.error(e)
+            logger.error{ e.message }
             return list
         }
     }

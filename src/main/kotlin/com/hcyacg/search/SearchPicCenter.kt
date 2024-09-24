@@ -3,18 +3,22 @@ package com.hcyacg.search
 import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.utils.DataUtil
+import com.hcyacg.utils.logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.RawForwardMessage
-import kotlinx.coroutines.*
 
 /**
  * 搜索二次元图片转发中心
  */
 object SearchPicCenter {
-
+    private val logger by logger()
     suspend fun forward(event: GroupMessageEvent) {
         val nodes = mutableListOf<ForwardMessage.Node>()
         event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))

@@ -7,6 +7,7 @@ import com.hcyacg.initial.Setting
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.RequestUtil
+import com.hcyacg.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonArray
@@ -17,7 +18,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Headers
 import okhttp3.RequestBody
 
@@ -29,7 +29,7 @@ import okhttp3.RequestBody
 object Tag {
     private val headers = Headers.Builder()
     private var requestBody: RequestBody? = null
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
     suspend fun init(event: GroupMessageEvent) {
         var enable = false
 
@@ -39,8 +39,8 @@ object Tag {
             }
             val q = event.message.content.replace(Command.tag, "").replace(" ", "").split("-")[0]
             val page = event.message.content.replace(Command.tag, "").replace(" ", "").split("-")[1].toInt()
-            var offset = 0
-            var num = 0
+            val offset: Int
+            val num: Int
             if (page % 3 != 0) {
                 offset = ((page - (page % 3)) / 3) * 30 + 30
                 num = page % 3 * 10

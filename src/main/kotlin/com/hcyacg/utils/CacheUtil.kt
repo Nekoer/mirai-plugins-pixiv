@@ -1,14 +1,12 @@
 package com.hcyacg.utils
 
 import com.hcyacg.initial.Config
-import com.hcyacg.initial.Setting
-import net.mamoe.mirai.utils.MiraiLogger
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
 object CacheUtil {
-    private val logger = MiraiLogger.Factory.create(this::class.java)
+    private val logger by logger()
 
     enum class Type{
         PIXIV,YANDE,LOLICON,KONACHAN,NONSUPPORT
@@ -47,7 +45,7 @@ object CacheUtil {
             out.write(infoStream.toByteArray())
             out.close()
         }catch (e:Exception){
-            logger.warning(e)
+            logger.error { e.message }
         }
     }
 
