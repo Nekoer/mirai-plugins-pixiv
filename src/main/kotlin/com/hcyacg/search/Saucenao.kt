@@ -5,7 +5,6 @@ import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.DataUtil
-import com.hcyacg.utils.DataUtil.Companion.getImageLinkFromImage
 import com.hcyacg.utils.ImageUtil.Companion.getImage
 import com.hcyacg.utils.ImageUtil.Companion.rotate
 import com.hcyacg.utils.RequestUtil
@@ -18,6 +17,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
@@ -67,7 +67,7 @@ object Saucenao {
                 val rotate90 = rotate(withContext(Dispatchers.IO) {
                     ImageIO.read(URL(picUri))
                 }, 90).toByteArray().toExternalResource()
-                val code90 = getImageLinkFromImage(rotate90.uploadAsImage(event.group))
+                val code90 = rotate90.uploadAsImage(event.group).queryUrl()
                 withContext(Dispatchers.IO) {
                     rotate90.close()
                 }
@@ -75,7 +75,7 @@ object Saucenao {
                 val rotate180 = rotate(withContext(Dispatchers.IO) {
                     ImageIO.read(URL(picUri))
                 }, 180).toByteArray().toExternalResource()
-                val code180 = getImageLinkFromImage(rotate180.uploadAsImage(event.group))
+                val code180 = rotate180.uploadAsImage(event.group).queryUrl()
                 withContext(Dispatchers.IO) {
                     rotate180.close()
                 }
@@ -83,7 +83,7 @@ object Saucenao {
                 val rotate270 = rotate(withContext(Dispatchers.IO) {
                     ImageIO.read(URL(picUri))
                 }, 270).toByteArray().toExternalResource()
-                val code270 = getImageLinkFromImage(rotate270.uploadAsImage(event.group))
+                val code270 = rotate270.uploadAsImage(event.group).queryUrl()
                 withContext(Dispatchers.IO) {
                     rotate270.close()
                 }
