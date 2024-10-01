@@ -61,11 +61,6 @@ object Pixiv : KotlinPlugin(
         val nsfwWaitMap = ConcurrentHashMap<String, Long>()
 
         globalEventChannel().subscribeGroupMessages {
-            content { group.id == 104967737L } reply {
-                println(this.message)
-                println(this.message.contentToString())
-            }
-
             //测试成功
             val getDetailOfId: Pattern =
                 Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
