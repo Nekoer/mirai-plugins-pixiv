@@ -1,8 +1,7 @@
 package com.hcyacg.utils;
 
-import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
-import net.mamoe.mirai.message.data.MessageChain
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.text.NumberFormat

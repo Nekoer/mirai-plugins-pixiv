@@ -58,8 +58,13 @@ object Pixiv : KotlinPlugin(
 
         val searchImageWaitMap = ConcurrentHashMap<String, Long>()
         val searchAnimeWaitMap = ConcurrentHashMap<String, Long>()
+        val nsfwWaitMap = ConcurrentHashMap<String, Long>()
 
         globalEventChannel().subscribeGroupMessages {
+            content { group.id == 104967737L } reply {
+                println(this.message)
+                println(this.message.contentToString())
+            }
 
             //测试成功
             val getDetailOfId: Pattern =
@@ -100,8 +105,28 @@ object Pixiv : KotlinPlugin(
                 Trace.searchInfoByPic(this)
             }
 
-            val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(\\n)?.+$")
-            content { detect.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } reply { Nsfw.load(this) }
+            //(?i)^[@]\d+[ ][${Command.detect}](\n)?.+|(${Command.detect})?.+$
+            //(?i)^(${Command.detect})(\n)?.+$
+            //(?i)^(${Command.detect})(?:\n?.+)?$
+            val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(?:\\n?.+)?\$")
+            content {
+                detect.matcher(message.contentToString()).find()
+                        && !Setting.black.contains(group.id.toString())
+                        && (nsfwWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) < System.currentTimeMillis()
+            } reply {
+                if (DataUtil.getImageLink(this.message) == null) {
+                    nsfwWaitMap["${this.group.id}-${this.sender.id}"] = System.currentTimeMillis() + Config.waitTime * 1000
+                    "请在${Config.waitTime}秒内发送检测图片"
+                } else {
+                    Nsfw.load(this)
+                }
+            }
+            content {
+                (nsfwWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) >= System.currentTimeMillis()
+            } reply {
+                nsfwWaitMap["${this.group.id}-${this.sender.id}"] = 0
+                Nsfw.load(this)
+            }
 
             val setu: Pattern = Pattern.compile("(?i)^(${Command.setu})\$")
             content { setu.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString()) } reply { SexyCenter.init(this) }

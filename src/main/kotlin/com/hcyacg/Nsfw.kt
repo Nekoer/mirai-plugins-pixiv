@@ -112,9 +112,8 @@ object Nsfw {
     }
 
     suspend fun load(event: GroupMessageEvent) {
-        val picUri = DataUtil.getImageLink(event.message) ?: return
-
         logger.info { "监控中……" }
+        val picUri = DataUtil.getImageLink(event.message) ?: return
         event.subject.sendMessage(At(event.sender).plus("检测中,请稍后"))
 
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
