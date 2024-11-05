@@ -36,6 +36,8 @@ object PicDetails {
     private var isChange: Boolean = false
     private val logger by logger()
     private val json = Json { ignoreUnknownKeys = true }
+
+
     suspend fun load(event: GroupMessageEvent){
 
         val messageChain: MessageChain = event.message
@@ -43,7 +45,7 @@ object PicDetails {
         if (!event.message.contentToString().contains(Command.getDetailOfId)) {
             return
         }
-        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"));
+        event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
         /**
          * 获取要查询的id和图片的张数，通过分割获取
          */
@@ -329,7 +331,7 @@ object PicDetails {
 
             val tempData = data.jsonObject["data"]?.jsonObject?.get("illust")
 
-            return tempData?.let<JsonElement, PixivImageDetail> { json.decodeFromJsonElement(it) } ?: return null
+            return tempData?.let<JsonElement, PixivImageDetail> { json.decodeFromJsonElement(it) }
         } catch (e: Exception) {
             logger.error { e.message }
             e.printStackTrace()

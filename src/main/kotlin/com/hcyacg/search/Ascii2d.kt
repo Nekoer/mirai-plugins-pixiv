@@ -1,6 +1,5 @@
 package com.hcyacg.search
 
-import com.hcyacg.initial.Config
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
@@ -12,10 +11,13 @@ import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.util.EntityUtils
+import org.apache.hc.client5.http.classic.methods.HttpGet
+import org.apache.hc.client5.http.config.TlsConfig
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.core5.http.ssl.TLS
+import org.apache.hc.core5.util.Timeout
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -24,12 +26,7 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
-import java.security.cert.CertificateException
-import java.security.cert.X509Certificate
 import java.util.*
-import javax.net.ssl.SSLContext
-import javax.net.ssl.X509TrustManager
-
 
 object Ascii2d {
 
@@ -41,30 +38,14 @@ object Ascii2d {
         val list = mutableListOf<Message>()
         try {
 
-            /**
-             * 设置TLSv1.1
-             */
+            val cm = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultTlsConfig(TlsConfig.custom()
+                    .setHandshakeTimeout(Timeout.ofSeconds(30))
+                    .setSupportedProtocols(TLS.V_1_1,TLS.V_1_2,TLS.V_1_3)
+                    .build())
+                .build()
 
-            val trustManager: X509TrustManager = object : X509TrustManager {
-                @Throws(CertificateException::class)
-                override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
-                }
-
-                @Throws(CertificateException::class)
-                override fun checkServerTrusted(chain: Array<X509Certificate?>?, authType: String?) {
-                }
-
-                override fun getAcceptedIssuers(): Array<X509Certificate>? {
-                    return null
-                }
-            }
-
-            val sc = SSLContext.getInstance(Config.tlsVersion)
-            sc.init(null, arrayOf(trustManager), null)
-
-            val sslsf = SSLConnectionSocketFactory(sc)
-            val httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
-
+            val httpClient = HttpClients.custom().setConnectionManager(cm).build()
 
             val ascii2d = "https://ascii2d.net/search/url/${DataUtil.urlEncode(picUri)}"
 //            val headers = mutableMapOf<String,String>()
@@ -73,10 +54,7 @@ object Ascii2d {
 
             val httpGet = HttpGet(ascii2d)
             httpGet.addHeader("User-Agent", "PostmanRuntime/7.29.0")
-            val httpResponse = httpClient.execute(httpGet)
-
-            val httpEntity = httpResponse.entity
-            val result = EntityUtils.toString(httpEntity, "UTF-8")
+            val result = httpClient.execute(httpGet,BasicHttpClientResponseHandler())
 
             val doc: Document = Jsoup.parse(result)
             val elementsByClass = doc.select(".item-box")

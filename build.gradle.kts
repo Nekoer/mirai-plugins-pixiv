@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
     id("net.mamoe.mirai-console") version "2.16.0"
+
     id("me.him188.maven-central-publish") version "1.0.0-dev-3"
 }
 
@@ -20,26 +21,17 @@ repositories {
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
-mirai {
-    noTestCore = true
-    setupConsoleTestRuntime {
-        // 移除 mirai-core 依赖
-        classpath = classpath.filter {
-            !it.nameWithoutExtension.startsWith("mirai-core-jvm")
-        }
-    }
-}
 
 dependencies {
-    implementation("org.apache.commons:commons-lang3:3.14.0")
+    implementation("org.apache.commons:commons-lang3:3.17.0")
     
-    val overflowVersion = "2.16.0-a1e9d27-SNAPSHOT"
-    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
-    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+//    val overflowVersion = "2.16.0-a1e9d27-SNAPSHOT"
+//    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
+//    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
 
-    implementation("commons-codec:commons-codec:1.15")
-    implementation("org.apache.httpcomponents:httpclient:4.5.14")
-    implementation("org.jsoup:jsoup:1.15.4")
+    implementation("commons-codec:commons-codec:1.17.1")
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.4.1")
+    implementation("org.jsoup:jsoup:1.18.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.madgag:animated-gif-lib:1.4")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")

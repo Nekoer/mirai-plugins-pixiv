@@ -7,6 +7,7 @@ import com.hcyacg.initial.Config
 import com.hcyacg.initial.Setting
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.event.events.UserMessageEvent
 import net.mamoe.mirai.message.data.*
 
 /**
@@ -379,6 +380,36 @@ object Helper {
         Setting.save()
         Setting.reload()
         event.subject.sendMessage(At(event.sender).plus("\n").plus("该群已${message}"))
+    }
+
+    suspend fun directBlack(event: UserMessageEvent){
+        if (!Setting.admins.contains(event.sender.id.toString())) {
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("您没有权限设置"))
+            return
+        }
+
+        val message = event.message.contentToString()
+        if (message.contains("ban")){
+            val tempMessage = message.split("ban")
+            val group = tempMessage[1]
+            Setting.black.add(group)
+
+            Setting.save()
+            Setting.reload()
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("该群( $group )已禁止"))
+
+        }
+
+        if (message.contains("unban")){
+            val tempMessage = message.split("unban")
+            val group = tempMessage[1]
+            Setting.black.remove(group)
+
+            Setting.save()
+            Setting.reload()
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("该群( $group )已准许"))
+        }
+
     }
 
     suspend fun setLoliconSize(event: GroupMessageEvent){

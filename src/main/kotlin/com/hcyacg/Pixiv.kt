@@ -25,6 +25,7 @@ import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.events.BotLeaveEvent
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeGroupMessages
+import net.mamoe.mirai.event.subscribeUserMessages
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import java.io.ByteArrayInputStream
 import java.util.concurrent.ConcurrentHashMap
@@ -62,8 +63,7 @@ object Pixiv : KotlinPlugin(
 
         globalEventChannel().subscribeGroupMessages {
             //测试成功
-            val getDetailOfId: Pattern =
-                Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
+            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
             content { getDetailOfId.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply {
                 PicDetails.load(
                     this
@@ -234,6 +234,10 @@ object Pixiv : KotlinPlugin(
             Setting.groups.remove(it.groupId.toString())
             Setting.save()
             Setting.reload()
+        }
+
+        globalEventChannel().subscribeUserMessages{
+            content { "ban".contains(message.contentToString()) or "unban".contains(message.contentToString())} quoteReply { Helper.directBlack(this) }
         }
 
     }
