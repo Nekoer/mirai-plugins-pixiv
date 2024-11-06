@@ -48,7 +48,7 @@ jobs:
           arguments: buildPluginLegacy -Poverflow
         #取文件名
       - name: Get Plugin Name
-        run: echo "NAME=$(find /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai \( -name "*.mirai.jar" -o -name "*.mirai2.jar" -o -name "*overflow.mirai2.jar" -o -name "*overflow.mirai.jar" \) -exec basename {} \; | sed -E 's/(.*)(mirai|mirai2|overflow-mirai|overflow-mirai2)\.jar/\1-mirai/')" >> $GITHUB_ENV
+        run: echo "NAME=$(find /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai \( -name "*mirai.jar" -o -name "*mirai2.jar" \) -exec basename {} \; | sed 's/\.(mirai|mirai2|overflow.mirai|overflow.mirai2)\.jar/-mirai/')" >> $GITHUB_ENV
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         if: success()
