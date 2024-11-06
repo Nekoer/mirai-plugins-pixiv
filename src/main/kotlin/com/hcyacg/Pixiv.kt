@@ -295,9 +295,8 @@ object Pixiv : KotlinPlugin(
             Setting.save()
             Setting.reload()
         }
-
         globalEventChannel().subscribeAlways<UserMessageEvent> {
-            if ("ban".contains(message.contentToString()) or "unban".contains(message.contentToString())) {
+            if (message.contentToString().contains("ban") || message.contentToString().contains("unban")) {
                 Helper.directBlack(this)
             }
         }

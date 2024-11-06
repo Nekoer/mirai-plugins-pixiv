@@ -388,18 +388,7 @@ object Helper {
             return
         }
 
-        val message = event.message.contentToString()
-        if (message.contains("ban")){
-            val tempMessage = message.split("ban")
-            val group = tempMessage[1]
-            Setting.black.add(group)
-
-            Setting.save()
-            Setting.reload()
-            event.subject.sendMessage(At(event.sender).plus("\n").plus("该群( $group )已禁止"))
-
-        }
-
+        val message = event.message.contentToString().replace(" ","")
         if (message.contains("unban")){
             val tempMessage = message.split("unban")
             val group = tempMessage[1]
@@ -408,6 +397,15 @@ object Helper {
             Setting.save()
             Setting.reload()
             event.subject.sendMessage(At(event.sender).plus("\n").plus("该群( $group )已准许"))
+        }else if (message.contains("ban")){
+            val tempMessage = message.split("ban")
+            val group = tempMessage[1]
+            Setting.black.add(group)
+
+            Setting.save()
+            Setting.reload()
+            event.subject.sendMessage(At(event.sender).plus("\n").plus("该群( $group )已禁止"))
+
         }
 
     }
