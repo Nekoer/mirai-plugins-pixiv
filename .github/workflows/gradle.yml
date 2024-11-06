@@ -30,22 +30,16 @@ jobs:
           distribution: 'temurin'
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Build Plugin
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: buildPlugin
+        run: ./gradlew build buildPlugin
       - name: Build Plugin Legacy
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: buildPluginLegacy
+        run: ./gradlew build buildPluginLegacy
       - name: Build Overflow Plugin
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: buildPlugin -Poverflow
+        run: ./gradlew build buildPlugin -Poverflow
       - name: Build Overflow Plugin Legacy
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: buildPluginLegacy -Poverflow
+        run: ./gradlew build buildPluginLegacy -Poverflow
         #取文件名
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
