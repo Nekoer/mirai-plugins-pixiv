@@ -13,7 +13,8 @@ plugins {
 }
 
 group = "com.hcyacg"
-version = "1.7.8"
+val tempVersion = "1.7.8"
+version = tempVersion
 
 repositories {
     maven("https://maven.aliyun.com/repository/central")
@@ -24,10 +25,15 @@ repositories {
 
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.17.0")
-    
-//    val overflowVersion = "2.16.0-a1e9d27-SNAPSHOT"
-//    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
-//    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+
+    // 根据项目属性动态添加的依赖项
+    if (project.hasProperty("overflow")) {
+        val overflowVersion = "1.0.0.519-0d68f08-SNAPSHOT"
+        compileOnly("top.mrxiaom.mirai:overflow-core-api:$overflowVersion")
+        testConsoleRuntime("top.mrxiaom.mirai:overflow-core:$overflowVersion")
+        version = "$tempVersion-overfolw"
+    }
+
 
     implementation("commons-codec:commons-codec:1.17.1")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.4.1")
@@ -42,11 +48,23 @@ dependencies {
 
 }
 
+mirai {
+    if (project.hasProperty("overflow")) {
+        noTestCore = true
+        setupConsoleTestRuntime {
+            // 移除 mirai-core 依赖
+            classpath = classpath.filter {
+                !it.nameWithoutExtension.startsWith("mirai-core-jvm")
+            }
+        }
+    }
+}
+
 noArg {
     annotation("com.hcyacg.anno.NoArgOpenDataClass")
 }
 
-allOpen{
+allOpen {
     annotation("com.hcyacg.anno.NoArgOpenDataClass")
 }
 

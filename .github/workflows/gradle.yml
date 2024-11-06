@@ -22,30 +22,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
-    - name: Build Plugin
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: buildPlugin
-    - name: Build Plugin Legacy
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: buildPluginLegacy
-      #取文件名
-    - name: Get Plugin Name
-      run: echo "NAME=$(find /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai -name "*mirai.jar" -exec basename {} \; | sed 's/\.mirai.jar/-mirai/')" >> $GITHUB_ENV
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
-      if: success()
-      with:
-        name: ${{ env.NAME }}
-        path: /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai/*.jar
-        retention-days: 0
-        if-no-files-found: error
+      - uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+      - name: Build Plugin
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: buildPlugin
+      - name: Build Plugin Legacy
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: buildPluginLegacy
+      - name: Build Overflow Plugin
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: buildPlugin -Poverflow
+      - name: Build Overflow Plugin Legacy
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: buildPluginLegacy -Poverflow
+        #取文件名
+      - name: Get Plugin Name
+        run: echo "NAME=$(find /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai -name "*mirai.jar" -exec basename {} \; | sed 's/\.mirai.jar/-mirai/')" >> $GITHUB_ENV
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ env.NAME }}
+          path: /home/runner/work/mirai-plugins-pixiv/mirai-plugins-pixiv/build/mirai/*.jar
+          retention-days: 0
+          if-no-files-found: error

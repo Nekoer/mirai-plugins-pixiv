@@ -23,9 +23,9 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.events.BotLeaveEvent
+import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.event.events.UserMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
-import net.mamoe.mirai.event.subscribeGroupMessages
-import net.mamoe.mirai.event.subscribeUserMessages
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import java.io.ByteArrayInputStream
 import java.util.concurrent.ConcurrentHashMap
@@ -61,41 +61,49 @@ object Pixiv : KotlinPlugin(
         val searchAnimeWaitMap = ConcurrentHashMap<String, Long>()
         val nsfwWaitMap = ConcurrentHashMap<String, Long>()
 
-        globalEventChannel().subscribeGroupMessages {
+        globalEventChannel().subscribeAlways<GroupMessageEvent> {
             //测试成功
-            val getDetailOfId: Pattern = Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
-            content { getDetailOfId.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply {
-                PicDetails.load(
-                    this
-                )
+            val getDetailOfId: Pattern =
+                Pattern.compile("(?i)^(${Command.getDetailOfId})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
+            if (getDetailOfId.matcher(message.contentToString())
+                    .find() && !Setting.black.contains(group.id.toString())
+            ) {
+                PicDetails.load(this)
             }
 
             //测试成功
             val rank: Pattern =
                 Pattern.compile("(?i)^(${Command.showRank})(daily|weekly|monthly|rookie|original|male|female|daily_r18|weekly_r18|male_r18|female_r18|r18g)-([0-9]*[1-9][0-9]*)\$")
-            content { rank.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply { Rank.showRank(this) }
+            if (rank.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())) {
+                Rank.showRank(this)
+            }
 
             //测试成功
             val findUserWorksById: Pattern =
                 Pattern.compile("(?i)^(${Command.findUserWorksById})([0-9]*[1-9][0-9]*)|-([0-9]*[1-9][0-9]*)\$")
-            content {
-                findUserWorksById.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
-            } quoteReply { UserDetails.findUserWorksById(this) }
+            if (
+                findUserWorksById.matcher(message.contentToString())
+                    .find() && !Setting.black.contains(group.id.toString())
+            ) {
+                UserDetails.findUserWorksById(this)
+            }
             //测试成功
             val searchInfoByPic: Pattern = Pattern.compile("(?i)^(${Command.searchInfoByPic})(?:\\n?.+)?\$")
-            content { searchInfoByPic.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
-                    &&  (searchAnimeWaitMap["${this.group.id}-${this.sender.id}"]?: 0) < System.currentTimeMillis()
-            } quoteReply {
+            if (searchInfoByPic.matcher(message.contentToString())
+                    .find() && !Setting.black.contains(group.id.toString())
+                && (searchAnimeWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) < System.currentTimeMillis()
+            ) {
                 if (DataUtil.getImageLink(this.message) == null) {
-                    searchAnimeWaitMap["${this.group.id}-${this.sender.id}"] = System.currentTimeMillis() + Config.waitTime * 1000
+                    searchAnimeWaitMap["${this.group.id}-${this.sender.id}"] =
+                        System.currentTimeMillis() + Config.waitTime * 1000
                     "请在${Config.waitTime}秒内发送搜番图片"
                 } else {
                     Trace.searchInfoByPic(this)
                 }
             }
-            content {
+            if (
                 (searchAnimeWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) >= System.currentTimeMillis()
-            } reply {
+            ) {
                 searchAnimeWaitMap["${this.group.id}-${this.sender.id}"] = 0
                 Trace.searchInfoByPic(this)
             }
@@ -104,103 +112,155 @@ object Pixiv : KotlinPlugin(
             //(?i)^(${Command.detect})(\n)?.+$
             //(?i)^(${Command.detect})(?:\n?.+)?$
             val detect: Pattern = Pattern.compile("(?i)^(${Command.detect})(?:\\n?.+)?\$")
-            content {
+            if (
                 detect.matcher(message.contentToString()).find()
-                        && !Setting.black.contains(group.id.toString())
-                        && (nsfwWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) < System.currentTimeMillis()
-            } reply {
+                && !Setting.black.contains(group.id.toString())
+                && (nsfwWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) < System.currentTimeMillis()
+            ) {
                 if (DataUtil.getImageLink(this.message) == null) {
-                    nsfwWaitMap["${this.group.id}-${this.sender.id}"] = System.currentTimeMillis() + Config.waitTime * 1000
+                    nsfwWaitMap["${this.group.id}-${this.sender.id}"] =
+                        System.currentTimeMillis() + Config.waitTime * 1000
                     "请在${Config.waitTime}秒内发送检测图片"
                 } else {
                     Nsfw.load(this)
                 }
             }
-            content {
+            if (
                 (nsfwWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) >= System.currentTimeMillis()
-            } reply {
+            ) {
                 nsfwWaitMap["${this.group.id}-${this.sender.id}"] = 0
                 Nsfw.load(this)
             }
 
             val setu: Pattern = Pattern.compile("(?i)^(${Command.setu})\$")
-            content { setu.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString()) } reply { SexyCenter.init(this) }
+            if (setu.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())) {
+                SexyCenter.init(this)
+            }
 
             val setuTag: Pattern = Pattern.compile("(?i)^(${Command.setu})[ ]\\S* ?(r18)?$")
-            content { setuTag.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} reply { SexyCenter.yandeTagSearch(this) }
+            if (setuTag.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())) {
+                SexyCenter.yandeTagSearch(this)
+            }
 
             //测试成功
             val tag: Pattern = Pattern.compile("(?i)^(${Command.tag})([\\s\\S]*)-([0-9]*[1-9][0-9]*)\$")
-            content { tag.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply { Tag.init(this) }
+            if (tag.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())) {
+                Tag.init(this)
+            }
             //测试成功
             val picToSearch: Pattern = Pattern.compile("(?i)^(${Command.picToSearch})(?:\\n?.+)?\$")
-            content {
+            if (
                 picToSearch.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) &&
-                        (searchImageWaitMap["${this.group.id}-${this.sender.id}"]?: 0) < System.currentTimeMillis()
-            } quoteReply {
+                (searchImageWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) < System.currentTimeMillis()
+            ) {
                 if (DataUtil.getImageLink(this.message) == null) {
-                    searchImageWaitMap["${this.group.id}-${this.sender.id}"] = System.currentTimeMillis() + Config.waitTime * 1000
+                    searchImageWaitMap["${this.group.id}-${this.sender.id}"] =
+                        System.currentTimeMillis() + Config.waitTime * 1000
                     "请在${Config.waitTime}秒内发送搜图图片"
                 } else {
                     SearchPicCenter.forward(this)
                 }
             }
-            content {
+            if (
                 (searchImageWaitMap["${this.group.id}-${this.sender.id}"] ?: 0) >= System.currentTimeMillis()
-            } reply {
+            ) {
                 searchImageWaitMap["${this.group.id}-${this.sender.id}"] = 0
                 SearchPicCenter.forward(this)
             }
 
             val lolicon: Pattern = Pattern.compile("(?i)^(${Command.lolicon})( ([^ ]*)( (r18))?)?\$")
-            content { lolicon.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply { LoliconCenter.load(this) }
+            if (
+                lolicon.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
+            ) {
+                LoliconCenter.load(this)
+            }
 
-            content { Command.help.contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply { Helper.load(this) }
+            if (Command.help.contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
+                Helper.load(
+                    this
+                )
+            }
 
-            content { "切换涩图开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply { Helper.setuEnable(this) }
-            content { "切换缓存开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply { Helper.enableLocal(this) }
-            content { "切换转发开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply { Helper.enableForward(this) }
-            content { "ban".contentEquals(message.contentToString()) or "unban".contentEquals(message.contentToString())} quoteReply { Helper.black(this) }
-            content { "切换图片转发开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply {
+            if ("切换涩图开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
+                Helper.setuEnable(
+                    this
+                )
+            }
+            if ("切换缓存开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
+                Helper.enableLocal(
+                    this
+                )
+            }
+            if ("切换转发开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
+                Helper.enableForward(
+                    this
+                )
+            }
+            if ("ban".contentEquals(message.contentToString()) or "unban".contentEquals(message.contentToString())) {
+                Helper.black(
+                    this
+                )
+            }
+            if ("切换图片转发开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
                 Helper.enableImageToForward(
                     this
                 )
             }
-            content { "切换晶格化开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString()) } quoteReply {
+            if ("切换晶格化开关".contentEquals(message.contentToString()) && !Setting.black.contains(group.id.toString())) {
                 Helper.enableLowPoly(
                     this
                 )
             }
-            content { message.contentToString().contains("设置撤回") && !Setting.black.contains(group.id.toString()) } quoteReply {
+            if (
+                message.contentToString().contains("设置撤回") && !Setting.black.contains(group.id.toString())
+            ) {
                 Helper.changeRecall(
                     this
                 )
             }
 
-            content { message.contentToString().contains("设置loli图片大小") && !Setting.black.contains(group.id.toString()) } quoteReply {
+            if (
+                message.contentToString().contains("设置loli图片大小") && !Setting.black.contains(group.id.toString())
+            ) {
                 Helper.setLoliconSize(
                     this
                 )
             }
 
-            content { message.contentToString().contains("suki") && !Setting.black.contains(group.id.toString()) } quoteReply {
+            if (
+                message.contentToString().contains("suki") && !Setting.black.contains(group.id.toString())
+            ) {
                 WarehouseCenter.init(
                     this
                 )
             }
 
             val vip = Pattern.compile("(?i)^(购买)(月费|季度|半年|年费)会员\$")
-            content { vip.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString()) } quoteReply {Vip.buy(this)}
+            if (
+                vip.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
+            ) {
+                Vip.buy(this)
+            }
 
             val enableSetu = Pattern.compile("(?i)^(关闭|开启)(pixiv|yande|lolicon|local|konachan)\$")
-            content { enableSetu.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply { Helper.enableSetu(this) }
+            if (
+                enableSetu.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
+            ) {
+                Helper.enableSetu(this)
+            }
 
             val enableSearch = Pattern.compile("(?i)^(关闭|开启)(ascii2d|google|saucenao|yandex|iqdb)\$")
-            content { enableSearch.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply { Helper.enableSearch(this) }
+            if (
+                enableSearch.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
+            ) {
+                Helper.enableSearch(this)
+            }
 
 
             val lowPoly = Pattern.compile("(?i)^(${Command.lowPoly}).+\$")
-            content { lowPoly.matcher(message.contentToString()).find()  && !Setting.black.contains(group.id.toString())} quoteReply {
+            if (
+                lowPoly.matcher(message.contentToString()).find() && !Setting.black.contains(group.id.toString())
+            ) {
                 val picUri = DataUtil.getImageLink(this.message)
                 if (picUri == null) {
                     "请输入正确的命令 ${Command.lowPoly}图片"
@@ -217,7 +277,7 @@ object Pixiv : KotlinPlugin(
                 ).toByteArray().toExternalResource()
 
 
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     subject.sendImage(toExternalResource)
                 }
                 toExternalResource.close()
@@ -230,14 +290,16 @@ object Pixiv : KotlinPlugin(
         }
 
         //获取到退群事件，删除groups中的相同群号
-        globalEventChannel().subscribeAlways<BotLeaveEvent>{
+        globalEventChannel().subscribeAlways<BotLeaveEvent> {
             Setting.groups.remove(it.groupId.toString())
             Setting.save()
             Setting.reload()
         }
 
-        globalEventChannel().subscribeUserMessages{
-            content { "ban".contains(message.contentToString()) or "unban".contains(message.contentToString())} quoteReply { Helper.directBlack(this) }
+        globalEventChannel().subscribeAlways<UserMessageEvent> {
+            if ("ban".contains(message.contentToString()) or "unban".contains(message.contentToString())) {
+                Helper.directBlack(this)
+            }
         }
 
     }
