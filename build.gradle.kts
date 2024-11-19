@@ -46,6 +46,8 @@ dependencies {
 //    compileOnly
     implementation(kotlin("stdlib-jdk8"))
 
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
 }
 
 mirai {
@@ -54,6 +56,19 @@ mirai {
         setupConsoleTestRuntime {
             // 移除 mirai-core 依赖
             classpath = classpath.filter {
+                !it.nameWithoutExtension.startsWith("mirai-core-jvm")
+            }
+        }
+    }
+
+    if (project.hasProperty("nt")) {
+        noTestCore = true
+        setupConsoleTestRuntime {
+            // 移除 mirai-core 依赖
+            classpath = classpath.filter {
+                !it.nameWithoutExtension.startsWith("mirai-console")
+                !it.nameWithoutExtension.startsWith("mirai-console-terminal")
+                !it.nameWithoutExtension.startsWith("mirai-core-all")
                 !it.nameWithoutExtension.startsWith("mirai-core-jvm")
             }
         }

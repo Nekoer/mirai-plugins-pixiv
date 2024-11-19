@@ -1,5 +1,6 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
@@ -8,25 +9,27 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketException
-import java.net.SocketTimeoutException
 
-object Google {
+object Google: Search {
     private val logger by logger()
 
-    suspend fun load(event: GroupMessageEvent, picUri: String): List<Message> {
+    override suspend fun load(event: GroupMessageEvent): List<Message> {
 
         val list = mutableListOf<Message>()
         val ua =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         val host = Config.proxy.host
         val port = Config.proxy.port
-
+        /**
+         * 获取图片的代码
+         */
+        val picUri = DataUtil.getImageLink(event.message)
+        if (picUri == null) {
+            event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
+            return list
+        }
         val doc = try {
             if (host.isBlank() || port == -1) {
                 Jsoup.connect(
@@ -138,9 +141,5 @@ object Google {
         }
 
         return list
-    }
-
-    private fun isNetworkException(e: Exception): Boolean {
-        return e is HttpStatusException || e is SocketTimeoutException || e is ConnectException || e is SocketException || e is IOException
     }
 }

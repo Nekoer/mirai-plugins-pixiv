@@ -28,7 +28,7 @@ import java.io.File
 import java.net.URL
 import javax.imageio.ImageIO
 
-object Saucenao {
+object Saucenao: Search {
     private val headers = Headers.Builder()
     private val requestBody: RequestBody? = null
     private val jsonObject: JsonElement? = null
@@ -40,11 +40,18 @@ object Saucenao {
     /**
      * 通过图片来搜索信息
      */
-    suspend fun picToSearch(event: GroupMessageEvent, picUri: String, eco: Boolean): List<Message> {
+    override suspend fun load(event: GroupMessageEvent): List<Message> {
         val list = mutableListOf<Message>()
 
         try {
-
+            /**
+             * 获取图片的代码
+             */
+            val picUri = DataUtil.getImageLink(event.message)
+            if (picUri == null) {
+                event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
+                return list
+            }
             /**
              * 未配置key通知用户
              */
@@ -59,7 +66,7 @@ object Saucenao {
 //            val picUri = DataUtil.getSubString(messageChain.toString().replace(" ",""), "[mirai:image:{", "}.")!!
 //                .replace("-", "")
 
-            if (eco) {
+            if (Config.saucenaoEco) {
                 val imageData = getInfo(picUri)
                 imageData?.let { mate(event, it)?.let { it1 -> list.add(it1.plus("当前为Saucenao搜索")) } }
             } else {

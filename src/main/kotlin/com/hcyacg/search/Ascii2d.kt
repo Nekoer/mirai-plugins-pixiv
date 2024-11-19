@@ -1,5 +1,7 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.utils.CacheUtil
 import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
@@ -16,37 +18,47 @@ import org.apache.hc.client5.http.config.TlsConfig
 import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.http.ssl.TLS
 import org.apache.hc.core5.util.Timeout
-import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketException
-import java.net.SocketTimeoutException
 import java.util.*
 
-object Ascii2d {
+object Ascii2d: Search {
 
     private var md5: String = ""
     private const val BASEURL: String = "https://ascii2d.net"
     private val logger by logger()
 
-    suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String): List<Message> {
+    override suspend fun load(event: GroupMessageEvent): List<Message> {
         val list = mutableListOf<Message>()
         try {
-
+            /**
+             * 获取图片的代码
+             */
+            val picUri = DataUtil.getImageLink(event.message)
+            if (picUri == null) {
+                event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
+                return list
+            }
             val cm = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDefaultTlsConfig(TlsConfig.custom()
                     .setHandshakeTimeout(Timeout.ofSeconds(30))
                     .setSupportedProtocols(TLS.V_1_1,TLS.V_1_2,TLS.V_1_3)
                     .build())
                 .build()
+            val host = Config.proxy.host
+            val port = Config.proxy.port
 
-            val httpClient = HttpClients.custom().setConnectionManager(cm).build()
+            val httpClient = if (host.isBlank() || port == -1) {
+                HttpClients.custom().setConnectionManager(cm).build()
+            } else{
+                HttpClients.custom().setConnectionManager(cm)
+                    .setProxy(HttpHost(Config.proxy.host,Config.proxy.port)).build()
 
+            }
             val ascii2d = "https://ascii2d.net/search/url/${DataUtil.urlEncode(picUri)}"
 //            val headers = mutableMapOf<String,String>()
 //            headers["User-Agent"] = "PostmanRuntime/7.28.4"
@@ -54,6 +66,7 @@ object Ascii2d {
 
             val httpGet = HttpGet(ascii2d)
             httpGet.addHeader("User-Agent", "PostmanRuntime/7.29.0")
+
             val result = httpClient.execute(httpGet,BasicHttpClientResponseHandler())
 
             val doc: Document = Jsoup.parse(result)
@@ -61,7 +74,7 @@ object Ascii2d {
 
             elementsByClass.forEach {
                 val link = it.select(".detail-box a")
-                if (link.size == 0) {
+                if (link.isEmpty()) {
                     md5 = it.selectFirst(".image-box img")?.attr("alt").toString().lowercase(Locale.getDefault())
                 } else {
                     list.add(color(elementsByClass, event))
@@ -72,31 +85,15 @@ object Ascii2d {
 
             list.clear()
             return list
-        } catch (e: IOException) {
-            logger.warn { "连接至Ascii2d出现异常，请检查网络" }
-            list.add(PlainText("Ascii2d网络异常"))
-            return list
-        } catch (e: HttpStatusException) {
-            logger.warn { "连接至Ascii2d的网络超时，请检查网络" }
-            list.add(PlainText("Ascii2d网络异常"))
-            return list
-        } catch (e: SocketTimeoutException) {
-            logger.warn { "连接至Ascii2d的网络超时，请检查网络" }
-            list.add(PlainText("Ascii2d网络异常"))
-            return list
-        } catch (e: ConnectException) {
-            logger.warn { "连接至Ascii2d的网络出现异常，请检查网络" }
-            list.add(PlainText("Ascii2d网络异常"))
-            return list
-        } catch (e: SocketException) {
-            logger.warn { "连接至Ascii2d的网络出现异常，请检查网络" }
-            list.add(PlainText("Ascii2d网络异常"))
-            return list
         } catch (e: Exception) {
-            logger.error { e.message }
+            if (isNetworkException(e)) {
+                logger.warn { "连接至Ascii2d的网络出现异常，请检查网络" }
+                list.add(PlainText("Ascii2d网络异常"))
+            } else {
+                logger.error{ e.message }
+            }
             return list
         }
-
     }
 
     private suspend fun color(elements: Elements, event: GroupMessageEvent): Message {
@@ -138,7 +135,7 @@ object Ascii2d {
         val message: Message = At(event.sender).plus("\n")
         elements.forEach {
             val link = it.select(".detail-box a")
-            if (link.size != 0) {
+            if (link.isNotEmpty()) {
                 val title = link[0].html()
 
                 val thumbnail = BASEURL + it.select(".image-box img").attr("src")

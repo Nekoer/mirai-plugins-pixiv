@@ -1,8 +1,6 @@
 package com.hcyacg.search
 
-import com.hcyacg.initial.Command
 import com.hcyacg.initial.Config
-import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,21 +20,14 @@ object SearchPicCenter {
     suspend fun forward(event: GroupMessageEvent) {
         val nodes = mutableListOf<ForwardMessage.Node>()
         event.subject.sendMessage(At(event.sender).plus("正在获取中,请稍后"))
-        /**
-         * 获取图片的代码
-         */
-        val picUri = DataUtil.getImageLink(event.message)
-        if (picUri == null) {
-            event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
-            return
-        }
+
 
         val scope = CoroutineScope(Dispatchers.Default)
 
         val srSauceNao = scope.launch {
             if (Config.enable.search.saucenao) {
                 //Saucenao 搜索
-                val picToSearch = Saucenao.picToSearch(event, picUri, Config.saucenaoEco)
+                val picToSearch = Saucenao.load(event)
                 picToSearch.forEach {
                     nodes.add(
                         ForwardMessage.Node(
@@ -52,7 +43,7 @@ object SearchPicCenter {
 
         val srAscii2d = scope.launch {
             if (Config.enable.search.ascii2d) {
-                val picToHtmlSearch = Ascii2d.picToHtmlSearch(event, picUri)
+                val picToHtmlSearch = Ascii2d.load(event)
                 //Ascii2d 搜索
                 picToHtmlSearch.forEach {
                     nodes.add(
@@ -70,7 +61,7 @@ object SearchPicCenter {
         val srIqdb = scope.launch {
             if (Config.enable.search.iqdb) {
                 //iqdb搜索
-                val iqdb = Iqdb.picToHtmlSearch(event, picUri)
+                val iqdb = Iqdb.load(event)
                 iqdb.forEach {
                     nodes.add(
                         ForwardMessage.Node(
@@ -86,7 +77,7 @@ object SearchPicCenter {
 
         val srYandex = scope.launch {
             if (Config.enable.search.yandex) {
-                val yandex = Yandex.picToHtmlSearch(event, picUri)
+                val yandex = Yandex.load(event)
                 yandex.forEach {
                     nodes.add(
                         ForwardMessage.Node(
@@ -103,7 +94,7 @@ object SearchPicCenter {
         val srGoogle = scope.launch {
             if (Config.enable.search.google) {
                 //谷歌搜图
-                val google = Google.load(event, picUri)
+                val google = Google.load(event)
                 google.forEach {
                     nodes.add(
                         ForwardMessage.Node(

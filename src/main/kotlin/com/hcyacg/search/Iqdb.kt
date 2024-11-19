@@ -1,6 +1,9 @@
 package com.hcyacg.search
 
+import com.hcyacg.initial.Command
+import com.hcyacg.initial.Config
 import com.hcyacg.utils.CacheUtil
+import com.hcyacg.utils.DataUtil
 import com.hcyacg.utils.ImageUtil
 import com.hcyacg.utils.logger
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -10,26 +13,45 @@ import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketException
-import java.net.SocketTimeoutException
 
-object Iqdb {
+object Iqdb: Search {
     private val logger by logger()
 
-    suspend fun picToHtmlSearch(event: GroupMessageEvent, picUri: String) :List<Message>{
+    override suspend fun load(event: GroupMessageEvent) :List<Message>{
         val list = mutableListOf<Message>()
-
+        val host = Config.proxy.host
+        val port = Config.proxy.port
         try{
+            /**
+             * 获取图片的代码
+             */
+            val picUri = DataUtil.getImageLink(event.message)
+            if (picUri == null) {
+                event.subject.sendMessage("请输入正确的命令 ${Command.picToSearch}图片")
+                return list
+            }
+
             val lqdb = "https://www.iqdb.org"
             val message: Message = At(event.sender).plus("\n")
 
 
-            val doc: Document = Jsoup.connect(lqdb).data("url",picUri).timeout(60000).post()
+            val doc = try {
+                if (host.isBlank() || port == -1) {
+                    Jsoup.connect(lqdb).data("url",picUri).timeout(60000).post()
+                } else {
+                    Jsoup.connect(lqdb).data("url",picUri).proxy(host, port).timeout(60000).post()
+                }
+            } catch (e: Exception) {
+                if (isNetworkException(e)) {
+                    logger.warn { "连接至Iqdb的网络出现异常，请检查网络" }
+                    list.add(PlainText("Iqdb网络异常"))
+                } else {
+                    logger.error{ e.message }
+                }
+                return list
+            }
+
             val select = doc.select("#pages div")
             select.forEach {
                 if(!it.html().contains("Your image")){
@@ -56,31 +78,14 @@ object Iqdb {
                 }
             }
             return list
-        } catch (e: IOException) {
-            logger.warn { "连接至Iqdb出现异常，请检查网络" }
-            list.add(PlainText("Iqdb网络异常"))
-            return list
-        } catch (e: HttpStatusException) {
-            logger.warn{ "连接至Iqdb的网络超时，请检查网络" }
-            list.add(PlainText("Iqdb网络异常"))
-            return list
-        } catch (e: SocketTimeoutException) {
-            logger.warn{ "连接至Iqdb的网络超时，请检查网络" }
-            list.add(PlainText("Iqdb网络异常"))
-            return list
-        } catch (e: ConnectException) {
-            logger.warn{ "连接至Iqdb的网络出现异常，请检查网络" }
-            list.add(PlainText("Iqdb网络异常"))
-            return list
-        } catch (e: SocketException) {
-            logger.warn{ "连接至Iqdb的网络出现异常，请检查网络" }
-            list.add(PlainText("Iqdb网络异常"))
-            return list
         } catch (e:Exception){
-            logger.error{ e.message }
+            if (isNetworkException(e)) {
+                logger.warn { "连接至Iqdb的网络出现异常，请检查网络" }
+                list.add(PlainText("Iqdb网络异常"))
+            } else {
+                logger.error{ e.message }
+            }
             return list
         }
     }
-
-
 }
