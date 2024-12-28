@@ -57,7 +57,6 @@ object Ascii2d: Search {
             } else{
                 HttpClients.custom().setConnectionManager(cm)
                     .setProxy(HttpHost(Config.proxy.host,Config.proxy.port)).build()
-
             }
             val ascii2d = "https://ascii2d.net/search/url/${DataUtil.urlEncode(picUri)}"
 //            val headers = mutableMapOf<String,String>()

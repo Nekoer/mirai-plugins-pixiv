@@ -33,9 +33,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Build Plugin
-        run: ./gradlew build buildPlugin
+        run: ./gradlew build buildPlugin -Pnt
       - name: Build Plugin Legacy
-        run: ./gradlew build buildPluginLegacy
+        run: ./gradlew build buildPluginLegacy -Pnt
       - name: Build Overflow Plugin
         run: ./gradlew build buildPlugin -Poverflow
       - name: Build Overflow Plugin Legacy

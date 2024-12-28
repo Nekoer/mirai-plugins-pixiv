@@ -20,6 +20,7 @@ repositories {
     maven("https://maven.aliyun.com/repository/central")
     maven("https://maven.aliyun.com/repository/gradle-plugin")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+    mavenCentral()
 }
 
 
