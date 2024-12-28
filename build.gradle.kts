@@ -29,7 +29,7 @@ dependencies {
 
     // 根据项目属性动态添加的依赖项
     if (project.hasProperty("overflow")) {
-        val overflowVersion = "1.0.0.519-0d68f08-SNAPSHOT"
+        val overflowVersion = "1.0.1"
         compileOnly("top.mrxiaom.mirai:overflow-core-api:$overflowVersion")
         testConsoleRuntime("top.mrxiaom.mirai:overflow-core:$overflowVersion")
         version = "$tempVersion-overfolw"
