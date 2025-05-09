@@ -27,7 +27,7 @@ import okhttp3.RequestBody
  * @Date: 2021/8/20 21:52
  */
 object Tag {
-    private val headers = Headers.Builder()
+    private val headers = Headers.Builder().add("token", Config.token.acgmx).add("referer", "https://www.acgmx.com")
     private var requestBody: RequestBody? = null
     private val logger by logger()
     suspend fun init(event: GroupMessageEvent) {

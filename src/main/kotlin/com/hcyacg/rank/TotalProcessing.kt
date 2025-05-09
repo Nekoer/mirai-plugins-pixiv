@@ -12,7 +12,7 @@ import okhttp3.RequestBody
  * 排行榜总处理中心
  */
 class TotalProcessing {
-    private val headers = Headers.Builder().add("token", Config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx).add("referer", "https://www.acgmx.com")
     private val requestBody: RequestBody? = null
     private val logger by logger()
     /**

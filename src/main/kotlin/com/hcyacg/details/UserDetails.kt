@@ -23,7 +23,7 @@ import okhttp3.RequestBody
 import org.apache.commons.lang3.StringUtils
 
 object UserDetails {
-    private val headers = Headers.Builder().add("token", Config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx).add("referer", "https://www.acgmx.com")
     private val requestBody: RequestBody? = null
     private val logger by logger()
     suspend fun findUserWorksById(event: GroupMessageEvent){

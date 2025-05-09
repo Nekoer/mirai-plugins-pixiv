@@ -31,7 +31,7 @@ import javax.imageio.ImageIO
 
 
 object PicDetails {
-    private val headers = Headers.Builder().add("token", Config.token.acgmx)
+    private val headers = Headers.Builder().add("token", Config.token.acgmx).add("referer", "https://www.acgmx.com")
     private val requestBody: RequestBody? = null
     private var isChange: Boolean = false
     private val logger by logger()
@@ -343,7 +343,6 @@ object PicDetails {
 //        val ugoiraId = 97727495
         val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS)
             .readTimeout(60000, TimeUnit.MILLISECONDS)
-        val headers = Headers.Builder()
         val dir = File(System.getProperty("user.dir") + File.separator + "cache" + File.separator + ugoiraId)
         val data: JsonElement?
         try {
