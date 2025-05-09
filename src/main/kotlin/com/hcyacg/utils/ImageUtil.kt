@@ -1,7 +1,6 @@
 package com.hcyacg.utils
 
 import com.hcyacg.initial.Config
-import kotlinx.serialization.json.add
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,7 +28,7 @@ class ImageUtil {
     companion object {
         private val client = OkHttpClient().newBuilder().connectTimeout(60000, TimeUnit.MILLISECONDS).readTimeout(60000,
             TimeUnit.MILLISECONDS)
-        private val headers = Headers.Builder()
+        private val headers = Headers.Builder().add("referer", "https://i.acgmx.com")
             .add(
                 "user-agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59"
@@ -55,7 +54,7 @@ class ImageUtil {
 
 //                println("temp: $temp")
 //                println("imageUri: $imageUri")
-                val request = Request.Builder().add("referer", "https://i.acgmx.com").url(imageUri).headers(headers.build()).get().build()
+                val request = Request.Builder().url(imageUri).headers(headers.build()).get().build()
                 val response: Response  = if (host.isBlank() || port == -1){
                     client.build().newCall(request).execute()
                 }else{
